@@ -1,0 +1,425 @@
+/* 
+    Document   : mystyle
+    Created on : Oct 31, 2013, 2:07:52 PM
+    Author     : RotelandO
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Open Sans Light'), local('OpenSans-Light'), url(../font/DXI1ORHCpsQm3Vp6mXoaTXhCUOGz7vYGh680lGh-uXM.woff) format('woff');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url(../font/cJZKeOuBrn4kERxqtaUH3T8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
+
+.activity-container {   
+    overflow-y: scroll; 
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+}
+
+.error-message {
+    margin-top: 5px;
+    border-left: #DD5D16 10px solid;
+    background: #D5C0C0;
+    width: 30%;
+    height: auto;
+    padding: 2px 20px;
+    position: relative;
+}
+
+.custom-widget-body {
+    padding: 15px;
+}
+
+/*Autocomplete suggestion styles*/
+.autocomplete-suggestions { border: 1px solid #999; background: #fff; cursor: default; overflow: auto; }
+.autocomplete-suggestion { padding: 10px 5px; font-size: 1.2em; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #f0f0f0; }
+.autocomplete-suggestions strong { font-weight: normal; color: #3399ff; }
+
+.filter-bar {
+    margin-left: 0px;
+    display: none;
+}
+
+.filter-date-picker {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#dateoption {
+    visibility: hidden;
+    display: none;
+}
+
+.filter-bar label {
+    color: #109619;
+}
+
+a.btnfilter {
+    margin: 27px 3px 100px;
+}
+
+#statcontainer {
+    height: auto;
+}
+
+.statitem {
+    min-height: 40px;
+    width: 200px;
+    margin-bottom: 10px;
+    padding: 8px 5px;
+    color: #fff;
+}
+
+.statvalue {
+    font-size: 3em;
+    line-height: 40px;
+    color: #fff;
+    float: left;
+    margin-right: 8px;
+}
+
+.distrib {
+    font-size: 2em;
+}
+
+.border-h {
+    border-bottom: 1px solid #629dad;
+}
+.border-l {
+    border-bottom: 1px solid #c84f33;
+}
+
+.border-d {
+    border-bottom: 1px solid #6c8a67;
+}
+.clr {
+    margin: 4px 0px;
+    clear:both
+}
+
+.statloc {
+    font-weight: bold;
+}
+
+.high {
+    background: #438eb8;
+}
+
+.low {
+    background: #dc3812;
+}
+
+.distribution {
+    background: #109619;
+}
+
+.stattitle {
+    background: #fff;
+
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 5px;
+    font-weight: bold;
+}
+.title-h {
+    color: #438eb8;
+}
+
+.title-d {
+    color: #109619;
+}
+
+.title-l {
+    color: #dc3812;
+}
+
+
+.visit-accuracy {
+    /*    margin: 0 auto;
+        padding: 0px;
+        width: 300px;*/
+    /*font-family: Arial, Helvetica, sans-serif;*/
+}
+.visit-accuracy div {
+    margin: 0 auto;
+    padding: 20px;
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 150px;
+}
+
+.visit-accuracy div:hover {
+    background: #f4f4f4;
+    cursor:pointer;
+    text-decoration: none;
+}
+
+.border {
+    border:1px solid #e3e3e3;
+}
+
+.border a {
+    text-decoration: none;
+}
+
+.visit-accuracy div span {
+    display: block;
+    text-align: center;
+}
+
+.visit-accuracy div span.visit-value {
+    font-size: 2.8em;
+    font-weight: bold;
+    color: #438eb8;
+    margin-bottom: 20px;
+}
+
+.visit-accuracy div span.visit-name {
+    font-size: 1.8em;
+    color: #c2c2c2;
+}
+
+.visit-label {
+    font-size: 1.2em;
+    padding: 10px 20px;
+    color: #438eb8;
+}
+
+.dash-label {
+    font-size: 1.0em;
+    color: #505050;
+    font-family: Open Sans;
+    font-weight: bold;
+    text-align: center;
+}
+
+.order-label {
+    font-size: 1.2em;
+    padding: 10px 20px;
+    color: #438eb8;
+}
+
+.percent {
+    font-size: 1.6em;
+    font-weight: bold;
+}
+
+.dashb {
+    font-size: 1.0em;
+}
+
+.actual-plan-chart .percent {
+    color: #87b880;
+}
+.plan-target-chart .percent {
+    color: #dc3813;
+}
+.actual-target-chart .percent {
+    color: #f99406;
+}
+
+.order-accuracy {
+}
+
+.order-accuracy div {
+    margin: 0 auto;
+    padding: 20px;
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 200px;
+
+}
+
+.order-accuracy div:hover {
+    background: #f4f4f4;
+    cursor:pointer;
+    text-decoration: none;
+}
+
+.order-accuracy div span.order-value {
+    font-size: 2.8em;
+    font-weight: bold;
+    color: #438eb8;
+}
+
+.order-accuracy div span.order-name {
+    font-size: 1.8em;
+    color: #c2c2c2;
+}
+
+div.prod_avail {
+    /*        text-align: center;*/
+}
+
+.prod_avail table { 
+    border: 1px #f0f0f0 solid;
+    /*    margin: 0 auto;*/
+}
+
+.prod_avail th, .prod_avail td {
+    padding: 1px;
+    height: 30px;
+    text-align: center;
+}
+
+.table_head {
+    text-align: center!important;
+    color: #333333!important;
+}
+
+.prod_avail tbody td:hover {
+    -moz-box-shadow: 0 0 5px #a0a0a0;
+    -webkit-box-shadow: 0 0 5px #a0a0a0;
+    box-shadow: 0px 0px 5px #a0a0a0;
+    cursor: context-menu;
+}
+
+.brandproduct {
+    color: #438eb8;
+    text-shadow: none!important;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.intersect {
+    display:table-cell; 
+    vertical-align:middle;
+    font-size: 1.6em;
+    color: white;
+    background-color: #ffb752;
+}
+
+.cell-item {
+    background-color: white;
+    font-size: 1.0em;
+}
+
+.not-compared {
+    color: #DD5D16;
+}
+
+#calendar-details h4 {
+    margin: 5px 0px;
+    font-size: 1.2em;
+    color: #000000;
+    font-weight: bold;
+}
+
+#calendar-details p {
+    font-size: 1.1em;
+    color: #666666;
+}
+
+#search-input {
+    width: 300px;
+}
+/*.controls {
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}*/
+
+#outlets {
+    overflow:auto;
+    height:375px;
+    border: #c2c2c2 1px solid;
+    padding: 10px;
+    background: #fdfdfd;
+}
+
+#cal-outlets {
+    height:auto;
+    border: #c2c2c2 1px solid;
+    padding: 10px;
+    background: #fdfdfd;
+}
+
+.outlets {
+    margin: 3px 0px;
+}
+
+.visited {
+    border: #82ae6f 1px solid;
+}
+
+.visited a {
+    color: #82ae6f;
+}
+
+.unvisited {
+    border: #dc3812 1px solid;
+}
+
+.unvisited a {
+    color: #dc3812;
+}
+
+.outlets a {
+    display: block;
+    padding: 8px;
+    font-size: 1.0em;
+    text-decoration: none;
+}
+
+.outlets a:hover {
+    background: #f6f5f5;
+}
+
+.custom-header {
+    text-align: center;
+    padding: 3px;
+    background: #000;
+    color: #fff;
+}
+
+.addusertogroup {
+    width: 100px;
+}
+
+.error-page-container {
+    padding: 50px 20px;
+}
+
+.error-page-container img {
+    /*padding: 50px 0px;*/ 
+}
+
+.error-page-container h1{
+    font-size: 2.4em;
+    font-weight: bolder;
+    color: #dc3813;
+}
+
+.error-page-container p {
+    font-size: 1.2em;
+    line-height: 1.6em;
+    margin-top: 20px;
+    color: #000;
+}
+
+.multiple_select_container { 
+    padding: 10px;
+    border:1px solid #ccc; 
+    height: 200px; 
+    overflow-y: scroll;
+    font-size: 1.0em;
+}
+
+.multiple_select_container input{ 
+    margin: 10px 0px;
+}

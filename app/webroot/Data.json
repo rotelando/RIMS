@@ -1,0 +1,17 @@
+{
+  "map": {
+    "bordercolor": "005879",
+    "fillcolor": "D7F4FF",
+    "numbersuffix": "M",
+    "includevalueinlabels": "1",
+    "labelsepchar": ":",
+    "basefontsize": "10"
+  },
+  "data": [
+    {"id": "LA", "value": "515", "tooltext": "Lagos{br}Population:515{br}Position:4"},
+    {"id": "ON", "value": "373"},
+    {"id": "OS", "value": "3875"},
+    {"id": "OY", "value": "727"},
+    {"id": "FC", "value": "885"}
+  ]
+}
