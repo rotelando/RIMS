@@ -3,7 +3,7 @@
 class UsersController extends AppController {
 
     public $name = 'Users';
-    public $uses = array('User', 'Userrole', 'Locationgroup', 'License', 'Visit', 'Schedule', 'Outlet', 'Order');
+    public $uses = array('User', 'Userrole', 'Outlet');
     public $components = array('SSP');
 
     public function beforeFilter() {
@@ -43,11 +43,6 @@ class UsersController extends AppController {
                 'qry' => 'userroles.userrolename as userrolename', 
                 'al' => 'userrolename', 
                 'dt' => '2'),
-            array(
-                'db' => 'locationgroups.locationgroupname',
-                'qry' => 'locationgroups.locationgroupname as locationgroupname',
-                'al' => 'locationgroupname', 
-                'dt' => '3'),
             array( 
                 'db' => 'users.active',
                 'qry' => 'users.active as active',
@@ -71,8 +66,7 @@ class UsersController extends AppController {
         );
 
         $table_name = "users";
-        $joins = " LEFT JOIN userroles ON userroles.id = users.userroleid " .
-                 "LEFT JOIN locationgroups ON locationgroups.id = users.locationgroupid ";
+        $joins = " LEFT JOIN userroles ON userroles.id = users.userroleid ";
 
         $primaryKey = "users.id";
 
@@ -470,11 +464,6 @@ class UsersController extends AppController {
         
         $users = $this->User->find('all');
         $this->set('users', $users);
-    }
-    
-    public function _getAllLocationGroup() {
-        $locationgroups = $this->Locationgroup->find('list');
-        $this->set('locationgroups', $locationgroups);
     }
     
     public function _setSidebarActiveItem($topMenu) {

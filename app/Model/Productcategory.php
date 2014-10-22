@@ -22,10 +22,6 @@ class Productcategory extends AppModel {
         'Product' => array(
             'className' => 'Product',
             'foreignKey' => 'categoryid',
-            'conditions' => array(
-                'Product.deletedat' => null
-            ),
-            'order' => 'Product.createdat DESC',
             'dependent' => true
         )
     );

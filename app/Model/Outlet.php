@@ -8,30 +8,44 @@ class Outlet extends AppModel {
     var $belongsTo = array(
         'Location' => array(
             'className' => 'Location',
-            'foreignKey' => 'locationid',
+            'foreignKey' => 'location_id',
         ),
         'User' => array(
             'className' => 'User',
-            'foreignKey' => 'userid',
+            'foreignKey' => 'user_id',
         ),
-        'Outlettype' => array(
-            'className' => 'Outlettype',
-            'foreignKey' => 'outlettypeid',
+        'Outletclass' => array(
+            'className' => 'Outletclass',
+            'foreignKey' => 'outletclass_id',
         ),
         'Outletchannel' => array(
             'className' => 'Outletchannel',
-            'foreignKey' => 'outletchannelid',
+        ),
+        'Retailtype' => array(
+            'className' => 'Retailtype',
+            'foreignKey' => 'retailtype_id',
         )
     );
     
     public $hasMany = array(
-        'Visit' => array(
-            'className' => 'Visit',
-            'foreignKey' => 'outletid',
-            'conditions' => array(
-                'Visit.deletedat' => null
-            ),
-            'order' => 'Visit.createdat DESC',
+        'Outletmerchandize' => array(
+            'className' => 'Outletmerchandize',
+            'foreignKey' => 'outlet_id',
+            'dependent' => true
+        ),
+        'Productsource' => array(
+            'className' => 'Productsource',
+            'foreignKey' => 'outlet_id',
+            'dependent' => true
+        ),
+        'Outletproduct' => array(
+            'className' => 'Outletproduct',
+            'foreignKey' => 'outlet_id',
+            'dependent' => true
+        ),
+        'Outletimage' => array(
+            'className' => 'Outletimage',
+            'foreignKey' => 'outlet_id',
             'dependent' => true
         )
     );

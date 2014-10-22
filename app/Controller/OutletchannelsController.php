@@ -16,7 +16,7 @@ class OutletchannelsController extends AppController {
 
 
     var $name = 'Outletchannels';
-    var $uses = array('Outletchannel', 'Outlettype');
+    var $uses = array('Outletchannel', 'Outletclass');
 
     public function beforeFilter() {
         parent::beforeFilter();

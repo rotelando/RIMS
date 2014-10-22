@@ -30,7 +30,7 @@ class ProductcategoriesController extends AppController {
 //        debug($this->request->data);
         if ($this->request->is('Post') || $this->request->is('Put')) {
                 
-            $this->request->data['Productcategory']['createdat'] = $this->_createNowTimeStamp();    //create now timestamp if not set
+            $this->request->data['Productcategory']['created_at'] = $this->_createNowTimeStamp();    //create now timestamp if not set
             if ($this->Productcategory->save($this->request->data)) {
                 $this->Session->setFlash($this->request->data['Productcategory']['productcategoryname'] . ' has been added', 'page_notification_info');
                 $this->redirect(array('controller' => 'productcategories', 'action' => 'index'));
@@ -50,7 +50,7 @@ class ProductcategoriesController extends AppController {
 
         $this->Productcategory->id = $id;
 
-        if ($this->Productcategory->saveField('deletedat', "{$this->_createNowTimeStamp()}")) {
+        if ($this->Productcategory->saveField('deleted_at', "{$this->_createNowTimeStamp()}")) {
             $this->Session->setFlash('Category has been deleted', 'page_notification_info');
             $this->redirect(array('controller' => 'productcategories', 'action' => 'index'));
         } else {
@@ -77,14 +77,6 @@ class ProductcategoriesController extends AppController {
     }
     
     private function _getAllProducts() {
-//        $options['fields'] = array(
-//            '*',
-//            "{$this->Product->find('all', 
-//                    array(
-//                        'fields' => array('Product.productname'),
-//                        'conditions' => array('Product.id'=>'Compareproduct.compareproductid')))} AS compareproductname"
-//        );        
-//        $products = $this->Product->find('all', $options); 
 
         $products = $this->Product->find('all');
         $brandlist = $this->Brand->find('list');

@@ -30,7 +30,7 @@ class ProductsController extends AppController {
 //        debug($this->request->data);
         if ($this->request->is('Post') || $this->request->is('Put')) {
 
-            $this->request->data['Product']['createdat'] = $this->_createNowTimeStamp();    //create now timestamp if not set
+            $this->request->data['Product']['created_at'] = $this->_createNowTimeStamp();    //create now timestamp if not set
             if ($this->Product->save($this->request->data)) {
                 $this->Session->setFlash($this->request->data['Product']['productname'] . ' has been added', 'page_notification_info');
                 $this->redirect(array('controller' => 'products', 'action' => 'index'));
@@ -67,7 +67,7 @@ class ProductsController extends AppController {
 
         $this->Product->id = $id;
 
-        if ($this->Product->saveField('deletedat', "{$this->_createNowTimeStamp()}")) {
+        if ($this->Product->saveField('deleted_at', "{$this->_createNowTimeStamp()}")) {
             $this->Session->setFlash('Product has been deleted', 'page_notification_info');
             $this->redirect(array('controller' => 'products', 'action' => 'index'));
         } else {

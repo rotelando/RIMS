@@ -8,7 +8,7 @@ class Outletchannel extends AppModel {
     var $hasMany = array(
       'Outlet' => array(
           'className' => 'Outlet',
-          'foreignKey' => 'outletchannelid'
+          'foreignKey' => 'outletchannel_id'
       )  
     );
 }

@@ -9,10 +9,6 @@ class Userrole extends AppModel {
         'User' => array(
             'className' => 'User',
             'foreignKey' => 'userroleid',
-            'conditions' => array(
-                'User.deletedat' => null
-            ),
-            'order' => 'User.createdat DESC',
             'dependent' => true
         )
     );

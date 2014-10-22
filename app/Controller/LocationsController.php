@@ -105,17 +105,17 @@ class LocationsController extends AppController {
         $options['fields'] = array(
             'Location.id',
             'Location.locationname',
-            'Location.stateid',
-            'State.statename'
+            'Location.lga_id',
+            'Lga.lganame'
         );
         $options['recursive'] = -1;
         $options['joins'] = array(
             array(
-                'table' => 'states',
-                'alias' => 'State',
+                'table' => 'lgas',
+                'alias' => 'Lga',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Lga.id = Location.id'
                 )
             )
 //            ,

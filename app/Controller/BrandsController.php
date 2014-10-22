@@ -8,14 +8,6 @@ class BrandsController extends AppController {
         
         parent::beforeFilter();
         
-//        $allowed = $this->UserAccessRight->isAllowedSetupModule($this->_getCurrentUserId(), 'view');
-//        if(!$allowed) {
-//            $this->Session->setFlash('You are not authorized to view that page!', 'page_notification_error');
-//            $this->redirect(array('controller' => 'dashboard', 'action' => 'index'));
-//        }
-//
-//        $this->UserAccessRight->checkAuthorization('isAllowedSetupModule', $this->_getCurrentUserId(), 'view');
-        
         $this->_setSidebarActiveItem('setup');
         $this->_setSidebarActiveSubItem('brands');
         $this->_setTitleOfPage('Brands');

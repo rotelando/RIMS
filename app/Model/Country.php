@@ -4,22 +4,15 @@ class Country extends AppModel {
     
     var $name = 'Country';
     var $displayField = 'countryname';
-    
-//    var $belongsTo = array(
-//        'Region' => array(
-//            'className' => 'Region',
-//            'foreignKey' => 'countryid'
-//        )
-//    );
-//    
+
     public $hasMany = array(
         'Region' => array(
             'className' => 'Region',
             'foreignKey' => 'countryid',
             'conditions' => array(
-                'Region.deletedat' => null
+                'Region.deleted_at' => null
             ),
-            'order' => 'Region.createdat DESC',
+            'order' => 'Region.created_at DESC',
             'dependent' => true
         )
     );

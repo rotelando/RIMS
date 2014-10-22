@@ -35,7 +35,7 @@ App::uses('Controller', 'Controller', 'Utility');
  */
 class AppController extends Controller {
 
-    var $uses = array('Setting', 'Outlet', 'Visit', 'Location', 'User', 'Rolemodule', 'Locationgroup', 'Country', 'State', 'Region');
+    var $uses = array('Setting', 'Outlet', 'Location', 'User', 'Rolemodule', 'Country', 'State', 'Region');
     var $helper = array('RoleAccess');
     var $components = array(
         'DebugKit.Toolbar',
@@ -103,19 +103,6 @@ class AppController extends Controller {
     protected function _getCurrentUserId() {
         return $this->Auth->user('id');
     }
-    
-    protected function _getCurrentUserLocationGroupId() {
-        $currloc = $this->User->find('first', array(
-            'fields' => array('User.locationgroupid'),
-            'recursive' => -1,
-            'conditions' => array('User.id' => $this->_getCurrentUserId())
-        ));
-        if(!isset($currloc['User']['locationgroupid'])) {
-            return null;
-        }
-        
-        return $currloc['User']['locationgroupid'];
-    }
 
     protected function _createNowTimeStamp() {
         return date('Y-m-d H:i:s');
@@ -129,7 +116,7 @@ class AppController extends Controller {
 
     public function _getOutletCount($options = null) {
         
-        $options = $this->Filter->getPostDataFilterOptions('Outlet');
+        /*$options = $this->Filter->getPostDataFilterOptions('Outlet');
         // debug($options);
         $options['recursive'] = -1;
         $options['joins'] = array(
@@ -138,7 +125,7 @@ class AppController extends Controller {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -152,12 +139,12 @@ class AppController extends Controller {
         );
 
         $outletcount = $this->Outlet->find('count', $options);
-        return $outletcount; 
+        return $outletcount;*/
     }
 
     public function _getVisitCount($options = null) {
 
-        $options = $this->Filter->getPostDataFilterOptions('Outlet');
+        /*$options = $this->Filter->getPostDataFilterOptions('Outlet');
         $options['recursive'] = -1;
         $options['joins'] = array(
             array(
@@ -187,7 +174,7 @@ class AppController extends Controller {
         );
         
         $visitcount = $this->Visit->find('count', $options);
-        return $visitcount;
+        return $visitcount;*/
     }
 
     public function _setSidebarActiveItem($topMenu) {
@@ -206,7 +193,7 @@ class AppController extends Controller {
 
     public function setCurrentUserSettings() {
 
-        $uid = 'USER_' . $this->Auth->user('id');
+        /*$uid = 'USER_' . $this->Auth->user('id');
         $settings = $this->Setting->findByKey($uid);
         
         if (isset($settings['Setting']['value'])) {
@@ -230,7 +217,7 @@ class AppController extends Controller {
             $this->set('setting', $newsettings);
         }
         
-        return $newsettings;
+        return $newsettings;*/
     }
 
     public function setDomainName() {
@@ -238,7 +225,7 @@ class AppController extends Controller {
     }
 
     public function _outletList($setValue = true) {
-        $options['conditions'] = array('Locationgroup.id' => $this->_getCurrentUserLocationGroupId());
+        /*$options['conditions'] = array('Locationgroup.id' => $this->_getCurrentUserLocationGroupId());
         $options['recursive'] = -1;
         $locationids = $this->Locationgroup->find('first', $options);
         
@@ -248,7 +235,7 @@ class AppController extends Controller {
         } else {
             
             $arr_loc_ids = explode(',',$locationids['Locationgroup']['locationids']);
-            $options['conditions'] = array('Outlet.locationid' => $arr_loc_ids);
+            $options['conditions'] = array('Outlet.location_id' => $arr_loc_ids);
             $options['recursive'] = -1;
             $outletlist = $this->Outlet->find('list', $options);
         }
@@ -257,12 +244,12 @@ class AppController extends Controller {
             $this->set('outlets', $outletlist);
         } else {
             return $outletlist;
-        }
+        }*/
         
     }
     
     public function _fieldrepLists($setValue = true, $count = false) {
-        $currentUserSettings = $this->setCurrentUserSettings();
+        /*$currentUserSettings = $this->setCurrentUserSettings();
         if (!isset($currentUserSettings['Setting']['fieldrepid'])) {
             $fieldrepid = 3;
         } else {
@@ -291,14 +278,14 @@ class AppController extends Controller {
                 $fieldreps = $this->User->find('list', $options);
             }
             return $fieldreps;
-        }
+        }*/
     }
 
     public function _locationLists($setValue = true) {
         
         //Nationals
 
-        $nationals = $this->Country->find('list');
+        /*$nationals = $this->Country->find('list');
         if(isset($nationals)) {
             foreach ($nationals as $key => $value) {
                 $key = 'nat_' . $key;
@@ -341,7 +328,7 @@ class AppController extends Controller {
             $this->set(array('locations' => $outputlocation));
         } else {
             return $outputlocation;
-        }
+        }*/
     }
 
     public function _datePickerList() {
@@ -361,7 +348,7 @@ class AppController extends Controller {
 
     public function _getFilterDisplayText($option) {
 
-        $filtertext = '';
+        /*$filtertext = '';
         if(isset($option['Location'])) {
             $filtertext .= "Location: <strong>{$option['Location']}</strong>";
         }
@@ -378,7 +365,7 @@ class AppController extends Controller {
     
     public function _setBreadCrumb($breadcrumb) {
         
-        $this->set(array('breadcrumb' => $breadcrumb));
+        $this->set(array('breadcrumb' => $breadcrumb));*/
     }
     
 }

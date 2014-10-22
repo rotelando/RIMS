@@ -38,7 +38,7 @@ class AppModel extends Model {
         if (!isset($query['conditions']))
             $query['conditions'] = array();
 
-        $query['conditions'][$this->alias . '.deletedat'] = null;
+        $query['conditions'][$this->alias . '.deleted_at'] = null;
         
         return $query;
         

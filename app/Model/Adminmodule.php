@@ -10,9 +10,9 @@ class Adminmodule extends AppModel {
             'className' => 'Rolemodule',
             'foreignKey' => 'adminmoduleid',
             'conditions' => array(
-                'Rolemodule.deletedat' => null
+                'Rolemodule.deleted_at' => null
             ),
-            'order' => 'Rolemodule.createdat DESC',
+            'order' => 'Rolemodule.created_at DESC',
             'dependent' => true
         )
     );

@@ -8,18 +8,14 @@ class Region extends AppModel {
     var $belongsTo = array(
         'Country' => array(
             'className' => 'Country',
-            'foreignKey' => 'countryid'
+            'foreignKey' => 'country_id'
         )
     );
     
    public $hasMany = array(
-       'State' => array(
-           'className' => 'State',
-           'foreignKey' => 'regionid',
-           'conditions' => array(
-               'State.deletedat' => null
-           ),
-           'order' => 'State.createdat DESC',
+       'Subregion' => array(
+           'className' => 'Subregion',
+           'foreignKey' => 'region_id',
            'dependent' => true
        )
    );

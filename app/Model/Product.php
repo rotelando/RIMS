@@ -17,14 +17,14 @@ class Product extends AppModel {
     );
     
     public $hasMany = array(
-        'Order' => array(
+        /*'Order' => array(
             'className' => 'Order',
             'foreignKey' => 'productid',
             'conditions' => array(
-                'Order.deletedat' => null
+                'Order.deleted_at' => null
             ),
-            'order' => 'Order.createdat DESC',
+            'order' => 'Order.created_at DESC',
             'dependent' => true
-        )
+        )*/
     );
 }

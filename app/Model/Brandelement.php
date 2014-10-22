@@ -1,22 +1,23 @@
 <?php
 
-class Brandelement extends AppModel {
+class Merchandize extends AppModel {
 
-    var $name = 'Brandelement';
-    var $displayField = 'brandelementname';
+    var $name = 'Merchandize';
+    var $displayField = 'merchandizename';
     var $validate = array(
-        'brandelementname' => array(
+        'merchandizename' => array(
             'Must be unique' => array(
                 'rule' => 'isUnique',
-                'message' => 'Element name already exist'
+                'message' => 'Merchandize already exist'
             )
         )
     );
-    
-    var $hasMany = array(
-      'Visibilityevaluation' => array(
-          'className' => 'Visibilityevaluation',
-          'foreignKey' => 'visibilityelementid'
-      )  
+
+    public $hasMany = array(
+        'Outletmerchandize' => array(
+            'className' => 'Outletmerchandize',
+            'foreignKey' => 'merchandize_id',
+            'dependent' => true
+        )
     );
 }

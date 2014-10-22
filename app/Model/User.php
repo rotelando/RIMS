@@ -78,21 +78,13 @@ class User extends AppModel {
         'Userrole' => array(
             'className' => 'Userrole',
             'foreignKey' => 'userroleid'
-        ),
-        'Locationgroup' => array(
-            'className' => 'Locationgroup',
-            'foreignKey' => 'locationgroupid'
         )
     );
     
     public $hasMany = array(
         'Outlet' => array(
             'className' => 'Outlet',
-            'foreignKey' => 'userid',
-            'conditions' => array(
-                'Outlet.deletedat' => null
-            ),
-            'order' => 'Outlet.createdat DESC',
+            'foreignKey' => 'user_id',
             'dependent' => true
         )
     );

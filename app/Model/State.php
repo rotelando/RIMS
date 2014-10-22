@@ -6,34 +6,17 @@ class State extends AppModel {
     var $displayField = 'statename';
     
     var $belongsTo = array(
-        'Country' => array(
-            'className' => 'Country',
-            'foreignKey' => 'countryid'
-        ),
-        'Region' => array(
-            'className' => 'Region',
-            'foreignKey' => 'regionid'
+        'Subregion' => array(
+            'className' => 'Subregion',
+            'foreignKey' => 'subregion_id'
         )
     );
-    
+
     public $hasMany = array(
-        'Location' => array(
-            'className' => 'Location',
-            'foreignKey' => 'stateid',
-            'conditions' => array(
-                'Location.deletedat' => null
-            ),
-            'order' => 'Location.createdat DESC',
+        'Territory' => array(
+            'className' => 'Territory',
+            'foreignKey' => 'state_id',
             'dependent' => true
         ),
-        'Locationgroup' => array(
-            'className' => 'Locationgroup',
-            'foreignKey' => 'stateid',
-            'conditions' => array(
-                'Locationgroup.deletedat' => null
-            ),
-            'order' => 'Locationgroup.createdat DESC',
-            'dependent' => true
-        )
     );
 }

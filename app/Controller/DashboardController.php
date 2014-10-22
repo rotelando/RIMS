@@ -4,7 +4,7 @@ class DashboardController extends AppController {
 
     public $name = 'dashboard';
     //The first item is assumed to be the Model!
-    public $uses = array('Order', 'Productavailability', 'Brand', 'Product', 'Image', 'User', 'Location', 'State', 'Brief', 'Schedule');
+    public $uses = array('Brand', 'Product', 'Image', 'User', 'Location', 'State', 'Brief');
     public $components = array('Paginator', 'Filter');
     public $helpers = array('MyLink');
 
@@ -12,31 +12,15 @@ class DashboardController extends AppController {
     public $postoptions = array();
     
     function index() {
-        
-        $modelcounts['actualvsplannedvisit'] = $this->_getActualVsPlannedVisitToday();
-        $modelcounts['totalsales'] = $this->_getTotalSalesToday();
-        $modelcounts['actualvstotalstaff'] = $this->_getActualVsTotalFieldStaffToday();
-        $modelcounts['actualvstotallocation'] = $this->_getActualVsTotalLocationsToday();
-        $modelcounts['visitexceptions'] = $this->_getVisitExceptionsToday();
-        
-        
-        $this->set($modelcounts);
 
-        $this->_fetchAndSetAllVisits(5);
+        //$recentImages = $this->_getResentImages(16);
 
-        $this->_visitaccuracy();
+        //$this->set('images', $recentImages);
 
-        $this->_setProductAvailability();
-        
-        $recentImages = $this->_getResentImages(16);
-//        debug($recentImages);
-        $this->set('images', $recentImages);
-//        debug(hash('sha512', 'hello'));
-
-        $distrib = $this->_outletdistribution(true);
-        $least = $this->_leastCrowdedLocations();
-        $most = $this->_mostCrowdedLocations();
-        $this->set(array('least_location' => $least, 'most_location' => $most, 'distributions' => $distrib));
+        //$distrib = $this->_outletdistribution(true);
+        //$least = $this->_leastCrowdedLocations();
+        //$most = $this->_mostCrowdedLocations();
+        //$this->set(array('least_location' => $least, 'most_location' => $most, 'distributions' => $distrib));
     }
 
     public function beforeFilter() {
@@ -77,7 +61,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -95,8 +79,8 @@ class DashboardController extends AppController {
     
     private function _leastCrowdedLocations($number = 3) {
         $result = $this->Outlet->find('all', array(
-            'fields' => array('Outlet.locationid', 'Location.locationname', 'COUNT(Outlet.locationid) as count'),
-            'group' => array('Outlet.locationid'),
+            'fields' => array('Outlet.location_id', 'Location.locationname', 'COUNT(Outlet.location_id) as count'),
+            'group' => array('Outlet.location_id'),
             'limit' => $number,
             'recursive' => -1,
             'order' => array('count asc'),
@@ -106,7 +90,7 @@ class DashboardController extends AppController {
                     'alias' => 'Location',
                     'type' => 'LEFT',
                     'conditions' => array(
-                        'Location.id = Outlet.locationid'
+                        'Location.id = Outlet.location_id'
                     )
                 ))
         ));
@@ -115,8 +99,8 @@ class DashboardController extends AppController {
 
     private function _mostCrowdedLocations($number = 3) {
         $result = $this->Outlet->find('all', array(
-            'fields' => array('Outlet.locationid', 'Location.locationname', 'COUNT(Outlet.locationid) as count'),
-            'group' => array('Outlet.locationid'),
+            'fields' => array('Outlet.location_id', 'Location.locationname', 'COUNT(Outlet.location_id) as count'),
+            'group' => array('Outlet.location_id'),
             'limit' => $number,
             'recursive' => -1,
             'order' => array('count desc'),
@@ -126,70 +110,11 @@ class DashboardController extends AppController {
                     'alias' => 'Location',
                     'type' => 'LEFT',
                     'conditions' => array(
-                        'Location.id = Outlet.locationid'
+                        'Location.id = Outlet.location_id'
                     )
                 ))
         ));
         return $result;
-    }
-
-    private function _visitaccuracy() {
-
-        $options = $this->Filter->getPostDataFilterOptions('Schedule');
-        $this->_getFilterDisplayText($this->Filter->getFilterText($this->modelClass)); //set the filter text on the page title
-        
-        $options['recursive'] = -1;
-        if (isset($options)) {
-            $options['joins'] = array(
-                array(
-                    'table' => 'outlets',
-                    'alias' => 'Outlet',
-                    'type' => 'LEFT',
-                    'conditions' => array(
-                        'Outlet.id = Schedule.outletid'
-                    )
-                ),
-                array(
-                    'table' => 'users',
-                    'alias' => 'User',
-                    'type' => 'LEFT',
-                    'conditions' => array(
-                        'User.id = Outlet.userid'
-                    )
-                )
-            );
-        }
-
-        $planned = $this->Schedule->find('count', $options);
-
-        $options['conditions']['visited'] = 1;
-        $actual = $this->Schedule->find('count', $options);
-
-        $settings = $this->setCurrentUserSettings();
-        $target = isset($settings['Setting']['TargetVisit']) ? intval($settings['Setting']['TargetVisit']) : null;
-
-        if ($planned != 0) {
-            $actual_vs_planned = intval(($actual / $planned) * 100);
-        } else {
-            $actual_vs_planned = 100;
-        }
-
-        if (isset($target) || $target > 0) {
-            $actual_vs_target = intval(($actual / $target) * 100);
-            $planned_vs_target = intval(($planned / $target) * 100);
-        } else {
-            $actual_vs_target = 100;
-            $planned_vs_target = 100;
-        }
-        $response = array(
-            'planned' => $planned,
-            'actual' => $actual,
-            'target' => $target,
-            'actual_vs_planned' => $actual_vs_planned,
-            'actual_vs_target' => $actual_vs_target,
-            'planned_vs_target' => $planned_vs_target
-        );
-        $this->set('vaccuracy', $response);
     }
 
     private function _setViewVariables() {
@@ -360,14 +285,14 @@ class DashboardController extends AppController {
 
     private function _getBrandProduct($brandId) {
 //        if (isset($this->params['url']['floc'])) {
-//            $options['conditions']['locationid'] = $this->params['url']['floc'];
+//            $options['conditions']['location_id'] = $this->params['url']['floc'];
 //        }
 //        //condition for fieldrep filter
 //        if (isset($this->params['url']['fuid'])) {
 //            $options['conditions']['userid'] = $this->params['url']['fuid'];
 //        }
         
-        $options['fields'] = array(
+        /*$options['fields'] = array(
             'Brand.id',
             'Brand.brandname',
             'Product.id',
@@ -425,14 +350,14 @@ class DashboardController extends AppController {
             )
         );
         $brandproducts = $this->Productavailability->find('all', $options);
-        return $brandproducts;
+        return $brandproducts;*/
     }
 
     private function _getProductAvailabilityWithoutCurrentBrand($currentId) {
         //Get Product Availability data for other Brands apart from the current ordered by how they will be added
         //to the Matrix - Row => Compareproductid, Column => Brandid
         if (isset($this->params['url']['floc'])) {
-            $options['conditions']['locationid'] = $this->params['url']['floc'];
+            $options['conditions']['location_id'] = $this->params['url']['floc'];
         }
         //condition for fieldrep filter
         if (isset($this->params['url']['fuid'])) {
@@ -503,7 +428,7 @@ class DashboardController extends AppController {
     private function _getAllProductAvailabilityList() {
 
         if (isset($this->params['url']['floc'])) {
-            $options['conditions']['locationid'] = $this->params['url']['floc'];
+            $options['conditions']['location_id'] = $this->params['url']['floc'];
         }
         //condition for fieldrep filter
         if (isset($this->params['url']['fuid'])) {
@@ -701,7 +626,7 @@ class DashboardController extends AppController {
     }
 
     private function _orderCountByLocation() {
-        $options['fields'] = array('State.internalid, COUNT(Outlet.locationid) as ordercount');
+        $options['fields'] = array('State.internalid, COUNT(Outlet.location_id) as ordercount');
         $options['group'] = array('State.internalid');
         $options['recursive'] = -1;
         $options['joins'] = array(
@@ -726,7 +651,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -754,7 +679,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -798,7 +723,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -840,7 +765,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -1022,7 +947,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -1051,7 +976,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -1087,7 +1012,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -1124,7 +1049,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -1198,7 +1123,7 @@ class DashboardController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -1269,7 +1194,7 @@ class DashboardController extends AppController {
         $options['conditions']["DATE_FORMAT( Visit.createdat,  '%Y-%m-%d' )"] = $today;
         $options['recursive'] = -1;
         $options['fields'] = array(
-            'COUNT(DISTINCT Outlet.locationid) AS count'
+            'COUNT(DISTINCT Outlet.location_id) AS count'
         );
         $options['joins'] = array(
             array(

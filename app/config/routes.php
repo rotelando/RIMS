@@ -60,10 +60,10 @@
 	Router::connect('/setup/productcategories/:action',
 		array('controller' => 'productcategories'));
 
-	Router::connect('/setup/outlettypes',
-		array('controller' => 'outlettypes', 'action' => 'index'));
-	Router::connect('/setup/outlettypes/:action',
-		array('controller' => 'outlettypes'));
+	Router::connect('/setup/outletclasses',
+		array('controller' => 'outletclasses', 'action' => 'index'));
+	Router::connect('/setup/outletclasses/:action',
+		array('controller' => 'outletclasses'));
 
 	Router::connect('/setup/locations/countries',
 		array('controller' => 'countries', 'action' => 'index'));

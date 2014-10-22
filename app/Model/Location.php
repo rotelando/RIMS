@@ -6,10 +6,18 @@ class Location extends AppModel {
     var $displayField = 'locationname';
     
      var $belongsTo = array(
-        'State' => array(
-            'className' => 'State',
-            'foreignKey' => 'stateid'
+        'Lga' => array(
+            'className' => 'Lga',
+            'foreignKey' => 'lag_id'
         )
+    );
+
+    public $hasMany = array(
+        'Outlet' => array(
+            'className' => 'Outlet',
+            'foreignKey' => 'location_id',
+            'dependent' => true
+        ),
     );
      
 }
