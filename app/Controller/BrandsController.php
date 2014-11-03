@@ -29,7 +29,7 @@ class BrandsController extends AppController {
             if(!isset($this->request->data['Brand']['brandcolor']) || ($this->request->data['Brand']['brandcolor'] == ''))
                 $this->request->data['Brand']['brandcolor'] = $this->_generateRandomHexadecimalColorCode();
                 
-            $this->request->data['Brand']['createdat'] = $this->_createNowTimeStamp();    //create now timestamp if not set
+            $this->request->data['Brand']['created_at'] = $this->_createNowTimeStamp();    //create now timestamp if not set
             
             if ($this->Brand->save($this->request->data)) {
                 
@@ -76,7 +76,7 @@ class BrandsController extends AppController {
 
         $this->Brand->id = $id;
 
-        if ($this->Brand->saveField('deletedat', "{$this->_createNowTimeStamp()}")) {
+        if ($this->Brand->saveField('deleted_at', "{$this->_createNowTimeStamp()}")) {
             $this->Session->setFlash('Brand has been deleted', 'page_notification_info');
             $this->redirect(array('controller' => 'brands', 'action' => 'index'));
         } else {

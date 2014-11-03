@@ -7,16 +7,17 @@ $(function() {
 
     var all_users_url = config.URL + "users/loadusers";
 
-    $('#all_users_table').DataTable( {
+    //all user's table
+    /*$('#all_users_table').DataTable( {
         "lengthMenu": [ 25, 50, 75, 100 ],
         //"pagingType": "full_numbers",
         "order": [[ 0, "asc" ]],
         "processing": true,
         "serverSide": true,
-        "ajax": {
+        *//*"ajax": {
             "url": all_users_url,
             "type": "POST"
-        },
+        },*//*
         "columnDefs": [ 
             {
                 "targets": 0,
@@ -62,8 +63,9 @@ $(function() {
                 }
             } 
         ]
-    });
+    });*/
 
+    //open the add license dialog modal
     $('#addlicence').on('click', function() {
         $('#userlicence').modal();
     });

@@ -25,33 +25,7 @@
                 <h3 class="header smaller lighter green">Locations - States</h3>
                 
                 <!--Location setup wizard-->
-                <div id="fuelux-wizard" class="row-fluid hide" data-target="#step-container" style="display: block;">
-                    <ul class="wizard-steps">
-                        <li data-target="#step1" class="complete" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">1</span>
-                            <span class="title">Country</span>
-                        </li>
-
-                        <li data-target="#step2" class="active" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">2</span>
-                            <span class="title">State</span>
-                        </li>
-
-                        <li data-target="#step3" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">3</span>
-                            <span class="title">State Groups (Regions)</span>
-                        </li>
-
-                        <li data-target="#step4" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">4</span>
-                            <span class="title">Location</span>
-                        </li>
-                        <li data-target="#step5" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">5</span>
-                            <span class="title">Location Groups</span>
-                        </li>
-                    </ul>
-                </div>
+                <?php echo $this->element('_location_setup_progress', array('active' => 'state')); ?>
                 <!--End of Location setup wizard-->
                 
                 <!--Start Main Tab-->
@@ -112,7 +86,7 @@
                             <br />
                             <p class="pull-right">
                                 <?php
-                                echo $this->Html->link('<i class="icon-chevron-right"></i> Next', array('controller' => 'regions', 'action' => 'index'), array('class' => 'btn btn-success btn-large','escape' => false));
+                                echo $this->Html->link('<i class="icon-chevron-right"></i> Next', array('controller' => 'territories', 'action' => 'index'), array('class' => 'btn btn-success btn-large','escape' => false));
                                 ?>
                             </p>
                         </div>

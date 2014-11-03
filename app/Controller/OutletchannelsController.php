@@ -16,20 +16,12 @@ class OutletchannelsController extends AppController {
 
 
     var $name = 'Outletchannels';
-    var $uses = array('Outletchannel', 'Outletclass');
+    var $uses = array('Outletchannel', 'Outletclass', 'Retailtype');
 
     public function beforeFilter() {
         parent::beforeFilter();
-        
-//        $allowed = $this->UserAccessRight->isAllowedSetupModule($this->_getCurrentUserId(), 'view');
-//        if(!$allowed) {
-//            $this->Session->setFlash('You are not authorized to view that page!', 'page_notification_error');
-//            $this->redirect(array('controller' => 'dashboard', 'action' => 'index'));
-//        }
-        
+
         $this->_setViewVariables();
-        $this->_fetchAndSetAllOutletTypes();
-        $this->_fetchAllOutletChannels();
     }
     
     public function index() {
@@ -42,7 +34,7 @@ class OutletchannelsController extends AppController {
         
         if ($this->request->is('Post') || $this->request->is('Put')) {
                 
-            $this->request->data['Outletchannel']['createdat'] = $this->_createNowTimeStamp();    //create now timestamp if not set
+            $this->request->data['Outletchannel']['created_at'] = $this->_createNowTimeStamp();    //create now timestamp if not set
             if ($this->Outletchannel->save($this->request->data)) {
                 $this->Session->setFlash($this->request->data['Outletchannel']['outletchannelname'] . ' has been added', 'page_notification_info');
                 $this->redirect(array('controller' => 'outletchannels', 'action' => 'index'));
@@ -62,7 +54,7 @@ class OutletchannelsController extends AppController {
 
         $this->Outletchannel->id = $id;
 
-        if ($this->Outletchannel->saveField('deletedat', "{$this->_createNowTimeStamp()}")) {
+        if ($this->Outletchannel->saveField('deleted_at', "{$this->_createNowTimeStamp()}")) {
             $this->Session->setFlash('Outlet channel has been deleted', 'page_notification_info');
             $this->redirect(array('controller' => 'outletchannels', 'action' => 'index'));
         } else {
@@ -89,8 +81,8 @@ class OutletchannelsController extends AppController {
     }
     
     private function _fetchAndSetAllOutletTypes() {
-        $outlettypes = $this->Outlettype->find('all'); 
-        $this->set(array('outlettypes'=>$outlettypes));
+        $outletclasses = $this->Outletclass->find('all');
+        $this->set(array('outletclasses'=>$outletclasses));
     }
 
     private function _fetchAllOutletChannels() {
@@ -98,10 +90,20 @@ class OutletchannelsController extends AppController {
         $this->set(array('outletchannels'=>$outletchannels));   
     }
 
+    private function _fetchAllRetailTypes() {
+        $retailtypes = $this->Retailtype->find('all');
+        $this->set(array('retailtypes'=>$retailtypes));
+    }
+
     private function _setViewVariables() {
         $this->_setSidebarActiveItem('setup');
         $this->_setSidebarActiveSubItem('types');
         $this->_setTitleOfPage('Outlet Channels');
+
+        $this->_fetchAndSetAllOutletTypes();
+        $this->_fetchAllOutletChannels();
+        $this->_fetchAllRetailTypes();
+
     }
     
     public function exists($name = null) {

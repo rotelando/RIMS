@@ -1,14 +1,15 @@
 <?php
 
 class Outletclass extends AppModel {
-    
-    var $name = 'Outletclass';
-    var $displayField = 'outletclass';
+
+    public $name = 'Outletclass';
+    public $useTable = 'outletclasses';
+    public $displayField = 'outletclass';
     
     var $hasMany = array(
       'Outlet' => array(
           'className' => 'Outlet',
           'foreignKey' => 'outletclass_id'
-      )  
+      )
     );
 }

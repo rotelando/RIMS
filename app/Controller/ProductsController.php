@@ -77,7 +77,8 @@ class ProductsController extends AppController {
 
     private function _getAllProducts() {
 
-        $products = $this->Product->find('all');
+        $products = $this->Product->getAllProducts();
+        //debug($products);
         $brandlist = $this->Brand->find('list');
         $options['joins'] = array(
                     array(
@@ -92,7 +93,6 @@ class ProductsController extends AppController {
         $compareproducts = $this->Product->find('list', $options);
         $options['conditions'] = array('Brand.current' => 1);
         $compareproductlist = $this->Product->find('list', $options);
-        
         $categorylist = $this->Productcategory->find('list');
 
         $this->set(array(

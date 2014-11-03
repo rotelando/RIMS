@@ -87,6 +87,7 @@
                                 User will be activated automatically when account is created</label>
                         </div>
                     </div>
+
                     <div class="control-group">
                         <label class="control-label">User Role</label>
                         <div class="controls">
@@ -94,13 +95,13 @@
                             ?>
                         </div>
                     </div>
-                    <div class="control-group">
+                    <!--<div class="control-group">
                         <label class="control-label">Location Group</label>
                         <div class="controls">
-                            <?php echo $this->Form->select('locationgroupid', $locationgroups, array('class' => 'span3 left-stripe'));
-                            ?>
+                            <?php /*echo $this->Form->select('locationgroupid', $locationgroups, array('class' => 'span3 left-stripe'));
+                            */?>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="form-actions span10">
                         <button type="submit" class="btn btn-success">Create User</button>
                         <button type="clear" class="btn btn-inverse">Cancel</button>

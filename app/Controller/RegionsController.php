@@ -3,7 +3,7 @@
 class RegionsController extends AppController {
     
     var $name = 'Regions';
-    var $uses = array('Region', 'State', 'Location');
+    var $uses = array('Region', 'Country');
     
     public function beforeFilter() {
         parent::beforeFilter();
@@ -22,15 +22,13 @@ class RegionsController extends AppController {
 //        debug($this->request->data);
 
         if ($this->request->is('Post') || $this->request->is('Put')) {
-                
-            $this->request->data['Region']['stateids'] = implode(',', $this->request->data['Region']['stateids']);
-            $this->request->data['Region']['countryid'] = 1;    //save the country - Defaults to Nigeria for now
-            $this->request->data['Region']['createdat'] = $this->_createNowTimeStamp();
+
+            $this->request->data['Region']['created_at'] = $this->_createNowTimeStamp();
             if ($this->Region->save($this->request->data)) {
-                $this->Session->setFlash("Region group successfully created!", 'page_notification_info');
+                $this->Session->setFlash("Region {$this->request->data['Region']['regionname']} has been successfully created!", 'page_notification_info');
                 $this->redirect(array('controller' => 'regions', 'action' => 'index'));
             } else {
-                $this->Session->setFlash('Problem creating state group. Please, try again', 'page_notification_error');
+                $this->Session->setFlash('There seem to be a problem creating the region. Please, try again', 'page_notification_error');
                 $this->_setViewVariables();
             }
         }
@@ -46,7 +44,7 @@ class RegionsController extends AppController {
 
         $this->Region->id = $id;
 
-        if ($this->Region->saveField('deletedat', "{$this->_createNowTimeStamp()}")) {
+        if ($this->Region->saveField('deleted_at', "{$this->_createNowTimeStamp()}")) {
             $this->Session->setFlash('Region has been deleted', 'page_notification_info');
             $this->redirect(array('controller' => 'regions', 'action' => 'index'));
         } else {
@@ -62,30 +60,16 @@ class RegionsController extends AppController {
         
         if (!($this->request->is('Post') || $this->request->is('Put')) && isset($id)) {
 
-            $this->request->data = $this->Region->read();
-            $stateids = $this->request->data['Region']['stateids'];
-            $arr_state_ids = explode(',',$stateids);
-            $this->request->data['Region']['stateids'] = $arr_state_ids;
-            $this->set('data', $this->request->data);
-
-            $states = $this->_getAllStates(false);
-            for ($i = 0; $i < count($states); $i++) {
-                if(in_array(intval($states[$i]['State']['id']), $arr_state_ids)) {
-                    $states[$i]['Region']['member'] = true;
-                } else {
-                    $states[$i]['Region']['member'] = false;
-                }
-            }
-            
+            $this->request->data = $this->Region->findById($id);
             $this->_setViewVariables();
-            $this->set('states', $states);
+            //$this->set('regions', $states);
         }
 
         $this->add($id);
     }
     
     private function _getAllStates($setValue = true) {
-        $options['fields'] = array(
+        /*$options['fields'] = array(
             'State.id',
             'State.statename'
         );
@@ -98,12 +82,12 @@ class RegionsController extends AppController {
             $this->set(array('states' => $states));
         } else {
             return $states;
-        }
+        }*/
     }
     
     public function _getAllStateGroup($setValue = true) {
         
-        $regions = $this->Region->find('all');
+        /*$regions = $this->Region->find('all');
         
         if(count($regions) != 0) {
             $allgroups = array();
@@ -130,22 +114,21 @@ class RegionsController extends AppController {
             } else {
                 return null;
             }
-        }
-    }
-    
-    
-    public function beforeRender() {
-        
-        
-        return true;
+        }*/
     }
 
     private function _setViewVariables() {
         $this->_setSidebarActiveItem('setup');
         $this->_setTitleOfPage('Setup');
-        
-        $this->_getAllStates();
-        $this->_getAllStateGroup();
-        
+
+        $countrylist = $this->Country->getCountryList();
+        $regions = $this->Region->getRegions();
+
+        $this->set(
+            array(
+                "countries" => $countrylist,
+                "regions" => $regions
+            )
+        );
     }
 }

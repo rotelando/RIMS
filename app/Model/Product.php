@@ -15,6 +15,19 @@ class Product extends AppModel {
             'foreignKey' => 'categoryid'
         )
     );
+
+    public function getAllProducts() {
+
+        $options['fields'] = array(
+            'Product.*',
+            'Brand.*',
+            'Productcategory.*'
+        );
+        $options['recursive'] = 0;
+        $products = $this->find('all', $options);
+
+        return $products;
+    }
     
     public $hasMany = array(
         /*'Order' => array(

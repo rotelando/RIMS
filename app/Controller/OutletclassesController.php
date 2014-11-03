@@ -3,20 +3,12 @@
 class OutletclassesController extends AppController {
 
     var $name = 'Outletclasses';
-    var $uses = array('Outletclass', 'Outletchannel');
+    var $uses = array('Outletclass', 'Outletchannel', 'Retailtype');
 
     public function beforeFilter() {
         parent::beforeFilter();
-        
-//        $allowed = $this->UserAccessRight->isAllowedSetupModule($this->_getCurrentUserId(), 'view');
-//        if(!$allowed) {
-//            $this->Session->setFlash('You are not authorized to view that page!', 'page_notification_error');
-//            $this->redirect(array('controller' => 'dashboard', 'action' => 'index'));
-//        }
-        
+
         $this->_setViewVariables();
-        $this->_fetchAndSetAllOutletclasses();
-        $this->_fetchAllOutletChannels();
     }
     
     public function index() {
@@ -32,10 +24,10 @@ class OutletclassesController extends AppController {
                 
             $this->request->data['Outletclass']['created_at'] = $this->_createNowTimeStamp();    //create now timestamp if not set
             if ($this->Outletclass->save($this->request->data)) {
-                $this->Session->setFlash($this->request->data['Outletclass']['Outletclassname'] . ' has been added', 'page_notification_info');
-                $this->redirect(array('controller' => 'Outletclasses', 'action' => 'index'));
+                $this->Session->setFlash($this->request->data['Outletclass']['outletclassname'] . ' has been added', 'page_notification_info');
+                $this->redirect(array('controller' => 'outletclasses', 'action' => 'index'));
             } else {
-                $this->Session->setFlash('problem adding outlet type. Please, try again', 'page_notification_error');
+                $this->Session->setFlash('problem adding outlet class. Please, try again', 'page_notification_error');
                 $this->_setViewVariables();
             }
         }
@@ -44,15 +36,15 @@ class OutletclassesController extends AppController {
     public function delete($id = null) {
         if (!$id) {
 
-            $this->Session->setFlash('Invalid outlet type selected', 'page_notification_error');
-            $this->redirect(array('controller' => 'Outletclasses', 'action' => 'index'));
+            $this->Session->setFlash('Invalid outlet class selected', 'page_notification_error');
+            $this->redirect(array('controller' => 'outletclasses', 'action' => 'index'));
         }
 
         $this->Outletclass->id = $id;
 
         if ($this->Outletclass->saveField('deleted_at', "{$this->_createNowTimeStamp()}")) {
-            $this->Session->setFlash('Outlet type has been deleted', 'page_notification_info');
-            $this->redirect(array('controller' => 'Outletclasses', 'action' => 'index'));
+            $this->Session->setFlash('Outlet class has been deleted', 'page_notification_info');
+            $this->redirect(array('controller' => 'outletclasses', 'action' => 'index'));
         } else {
             $this->Session->setFlash('Unable to delete type. Please, try again', 'page_notification_error');
         }
@@ -77,8 +69,8 @@ class OutletclassesController extends AppController {
     }
     
     private function _fetchAndSetAllOutletclasses() {
-        $Outletclasses = $this->Outletclass->find('all'); 
-        $this->set(array('Outletclasses'=>$Outletclasses));
+        $outletclasses = $this->Outletclass->find('all');
+        $this->set(array('outletclasses'=>$outletclasses));
     }
 
     private function _fetchAllOutletChannels() {
@@ -86,10 +78,19 @@ class OutletclassesController extends AppController {
         $this->set(array('outletchannels'=>$outletchannels));   
     }
 
+    private function _fetchAllRetailTypes() {
+        $retailtypes = $this->Retailtype->find('all');
+        $this->set(array('retailtypes'=>$retailtypes));
+    }
+
     private function _setViewVariables() {
         $this->_setSidebarActiveItem('setup');
         $this->_setSidebarActiveSubItem('types');
-        $this->_setTitleOfPage('Outlet Types');
+        $this->_setTitleOfPage('Outlet Class');
+
+        $this->_fetchAndSetAllOutletclasses();
+        $this->_fetchAllOutletChannels();
+        $this->_fetchAllRetailTypes();
     }
     
     public function exists($name = null) {

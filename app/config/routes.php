@@ -39,16 +39,21 @@
 		array('controller' => 'users', 'action' => 'logout'));
 
 	//setup routing urls
+
 	Router::connect('/setup/brands', 
 		array('controller' => 'brands', 'action' => 'index'));
 	Router::connect('/setup/brands/:action', 
 		array('controller' => 'brands'));
 
 	Router::connect('/setup/merchandize', 
-		array('controller' => 'brandelements', 'action' => 'index'));
+		array('controller' => 'merchandize', 'action' => 'index'));
 	Router::connect('/setup/merchandize/:action',
-		array('controller' => 'brandelements', 'action' => 'index'));
+		array('controller' => 'merchandize', 'action' => 'index'));
 
+    Router::connect('/setup/targets',
+		array('controller' => 'targets', 'action' => 'index'));
+	Router::connect('/setup/targets/:action',
+		array('controller' => 'targets', 'action' => 'index'));
 
 	Router::connect('/setup/products', 
 		array('controller' => 'products', 'action' => 'index'));
@@ -64,6 +69,16 @@
 		array('controller' => 'outletclasses', 'action' => 'index'));
 	Router::connect('/setup/outletclasses/:action',
 		array('controller' => 'outletclasses'));
+
+    Router::connect('/setup/outletchannels',
+        array('controller' => 'outletchannels', 'action' => 'index'));
+    Router::connect('/setup/outletchannels/:action',
+        array('controller' => 'outletchannels'));
+
+    Router::connect('/setup/retailtypes',
+        array('controller' => 'retailtypes', 'action' => 'index'));
+    Router::connect('/setup/retailtypes/:action',
+        array('controller' => 'retailtypes'));
 
 	Router::connect('/setup/locations/countries',
 		array('controller' => 'countries', 'action' => 'index'));
@@ -85,15 +100,25 @@
 	Router::connect('/setup/locations/states/:action', 
 		array('controller' => 'states'));
 
-	Router::connect('/setup/locations/pop', 
-		array('controller' => 'pop', 'action' => 'index'));
-	Router::connect('/setup/locations/pop/:action', 
-		array('controller' => 'pop'));
-
 	Router::connect('/setup/locations/territories', 
-		array('controller' => 'locations', 'action' => 'index'));
+		array('controller' => 'territories', 'action' => 'index'));
 	Router::connect('/setup/locations/territories/:action', 
-		array('controller' => 'locations'));
+		array('controller' => 'territories'));
+
+    Router::connect('/setup/locations/lgas',
+		array('controller' => 'lgas', 'action' => 'index'));
+	Router::connect('/setup/locations/lgas/:action',
+		array('controller' => 'lgas'));
+
+    Router::connect('/setup/locations/pop',
+        array('controller' => 'locations', 'action' => 'index'));
+    Router::connect('/setup/locations/pop/:action',
+        array('controller' => 'locations'));
+
+    Router::connect('/setup/locations',
+        array('controller' => 'countries', 'action' => 'bulkupload'));
+
+    //End Setup routes
 
 	Router::connect('/setup/users', 
 		array('controller' => 'users', 'action' => 'index'));

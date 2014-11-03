@@ -58,47 +58,67 @@
                 </li>
                 <li <?php if(isset($active_sub_item) && $active_sub_item == 'locations') echo 'class="active"'; ?> >
                     <?php echo $this->Html->link('<i class="icon-location-arrow"></i> Locations <b class="arrow icon-angle-down"></b>',
-                            array('controller'=>'locations'),
+                            array('controller'=>'locations', 'action' => ''),
                                 array('escape'=>false, 'class'=>'dropdown-toggle')); ?>
                     
                     <ul class="submenu" style="display: block;">
                                     <li>
-                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Country',
+                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Country ',
                                             array('controller'=>'countries'),
                                                 array('escape'=>false)); ?>
 									</li>
+                                    <li>
+                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Regions ',
+                                            array('controller'=>'regions'),
+                                            array('escape'=>false)); ?>
+                                    </li>
+                                    <li>
+                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Sub-Regions ',
+                                            array('controller'=>'subregions'),
+                                            array('escape'=>false)); ?>
+                                    </li>
                                     <li>
                                         <?php echo $this->Html->link('<i class="icon-globe"></i> States',
                                             array('controller'=>'states'),
                                                 array('escape'=>false)); ?>
 									</li>
 									<li>
-                                        <?php echo $this->Html->link('<i class="icon-globe"></i> State Groups (Regions)',
-                                            array('controller'=>'regions'),
+                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Territories ',
+                                            array('controller'=>'territories'),
                                                 array('escape'=>false)); ?>
 									</li>
 									<li>
-                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Towns',
+                                        <?php echo $this->Html->link('<i class="icon-globe"></i> LGAs ',
+                                            array('controller'=>'lgas'),
+                                                array('escape'=>false)); ?>
+									</li>
+                                    <li>
+                                        <?php echo $this->Html->link('<i class="icon-globe"></i> POPs ',
                                             array('controller'=>'locations'),
-                                                array('escape'=>false)); ?>
-									</li>
-									<li>
-                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Town Groups',
-                                            array('controller'=>'locationgroups'),
-                                                array('escape'=>false)); ?>
-									</li>
+                                            array('escape'=>false)); ?>
+                                    </li>
 								</ul>
                 </li>
-                                 
+
+                <!--Outlet module settings-->
                 <li <?php if(isset($active_sub_item) && $active_sub_item == 'types') echo 'class="active"'; ?> >
                     <?php echo $this->Html->link('<i class="icon-building"></i> Outlets',
                             array('controller'=>'outlettypes'),
                                 array('escape'=>false)); ?>
                 </li>
-                <li <?php if(isset($active_sub_item) && $active_sub_item == 'brandelements') echo 'class="active"'; ?> >
+
+                <!--Merchandize Module setup and settings-->
+                <li <?php if(isset($active_sub_item) && $active_sub_item == 'merchandize') echo 'class="active"'; ?> >
                     <?php echo $this->Html->link('<i class="icon-tags"></i> Merchandize',
-                            array('controller'=>'brandelements'),
+                            array('controller'=>'Merchandize'),
                                 array('escape'=>false)); ?>
+                </li>
+
+                <!--Target setup and settings-->
+                <li <?php if(isset($active_sub_item) && $active_sub_item == 'targets') echo 'class="active"'; ?> >
+                    <?php echo $this->Html->link('<i class="icon-tags"></i> Targets',
+                        array('controller'=>'targets'),
+                        array('escape'=>false)); ?>
                 </li>
             </ul>
         </li>
@@ -124,11 +144,11 @@
                             array('controller'=>'rolemodules','action'=>'index'),
                                 array('escape'=>false)); ?>
                 </li>
-                <li>
-                    <?php echo $this->Html->link('<i class="icon-credit-card"></i> License',
+                <!--<li>
+                    <?php /*echo $this->Html->link('<i class="icon-credit-card"></i> License',
                             array('controller'=>'licenses','action'=>'index'),
-                                array('escape'=>false)); ?>
-                </li>
+                                array('escape'=>false)); */?>
+                </li>-->
              </ul>   
         </li>
 

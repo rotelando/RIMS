@@ -11,4 +11,5 @@ class Retailtype extends AppModel {
             'foreignKey' => 'retailtype_id'
         )
     );
+
 }

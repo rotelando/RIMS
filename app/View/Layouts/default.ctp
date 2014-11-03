@@ -18,20 +18,7 @@
         <?php echo $this->Html->css('bootstrap-responsive.min'); ?>
         <?php echo $this->Html->css('font-awesome.min'); ?>
 
-        <!--[if IE 7]>
-          <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
-        <![endif]-->
-
-        <!--page specific plugin styles-->
-
-        <!--fonts-->
-
-        <!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,300" />-->
-
-
-        
-        <!--ace styles-->
-
+        <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
 
         <?php echo $this->Html->css('ace-responsive.min'); ?>
         <?php echo $this->Html->css('ace-skins.min'); ?>
@@ -39,11 +26,6 @@
         <!--[if lte IE 8]>
           <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
         <![endif]-->
-
-        <!--inline styles related to this page-->
-
-        <!--ace settings handler-->
-
 
         <?php echo $this->Html->css('daterangepicker'); ?>
         <?php echo $this->Html->css('bootstrap-timepicker'); ?>
@@ -64,8 +46,6 @@
         <?php echo $this->Html->css('multi-select'); ?>
 
         <?php echo $this->Html->css('mystyle'); ?>
-
-        <?php //echo $this->Html->css('select2-3.4.8/select2'); ?>
 
         <!-- DataTables CSS -->
         <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css">
@@ -104,9 +84,12 @@
                 <span class="menu-text"></span>
             </a>
 
+
             <?php echo $this->element('sidebar'); ?>
 
+
             <?php echo $this->fetch('content'); ?>
+
 
             <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-small btn-inverse">
                 <i class="icon-double-angle-up icon-only bigger-110"></i>
@@ -122,7 +105,6 @@
 
         <!--[if !IE]>-->
 
-        <!--<script src="../../../../ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>-->
         <?php echo $this->Html->script('jquery.min'); ?>
 
         <!--<![endif]-->
@@ -169,78 +151,83 @@
 
         <?php
         // echo $this->Html->script('highchart/modules/exporting');
-        if (isset($active_item)):
-        ?>
+        if (isset($active_item)) {
 
-            <?php if ($active_item == 'dashboard'): ?>
-                <!--This should be loaded when dashboard tab is clicked-->
-                <?php echo $this->Html->script('easy-pie-chart/jquery.easing.min'); ?>
-                <?php echo $this->Html->script('easy-pie-chart/jquery.easypiechart.min'); ?>
-                <?php echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min'); ?>
-                <?php echo $this->Html->script('dashboard'); ?>
-                
-            <?php elseif ($active_item == 'visits'): ?>
-                <!--This should be loaded when visits tab is clicked-->
-                <?php echo $this->Html->script('easy-pie-chart/jquery.easing.min'); ?>
-                <?php echo $this->Html->script('easy-pie-chart/jquery.easypiechart.min'); ?>
-                <?php echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min'); ?>
-                <?php echo $this->Html->script('visits'); ?>
-                <?php echo $this->Html->script('visit-map'); ?>
+            if ($active_item == 'dashboard') {
 
-            <?php elseif ($active_item == 'outlets'): 
-//                This should be loaded when Outlets tab is clicked
-                if($this->params['action'] == 'view') {
+                //This should be loaded when dashboard tab is clicked
+                echo $this->Html->script('easy-pie-chart/jquery.easing.min');
+                echo $this->Html->script('easy-pie-chart/jquery.easypiechart.min');
+                echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min');
+                echo $this->Html->script('dashboard');
+
+            } elseif ($active_item == 'visits') {
+
+                //This should be loaded when visits tab is clicked
+                echo $this->Html->script('easy-pie-chart/jquery.easing.min');
+                echo $this->Html->script('easy-pie-chart/jquery.easypiechart.min');
+                echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min');
+                echo $this->Html->script('visits');
+                echo $this->Html->script('visit-map');
+
+            } elseif ($active_item == 'outlets') {
+
+                //This should be loaded when Outlets tab is clicked
+                if ($this->params['action'] == 'view') {
                     echo $this->Html->script('outlet-view');
                 } else {
                     echo $this->Html->script('outlet-map');
                     echo $this->Html->script('outlets');
                 }
-                
-                echo $this->Html->script('vanillabox/jquery.vanillabox');
-                
-                ?>
-            
-            <?php elseif ($active_item == 'settings'): ?>
-                <!--This should be loaded when Settings tab is clicked-->
-                <?php echo $this->Html->script('settings'); ?>
-                <?php echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false); ?>
-            
-            <?php elseif ($active_item == 'visibilities'): ?>
-                <!--This should be loaded when visibilities tab is clicked-->
-                <?php echo $this->Html->script('visibilities'); ?>
-                <?php echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false); ?>
-            
-            <?php elseif ($active_item == 'productavailabilities'): ?>
-                <!--This should be loaded when productavailabilities tab is clicked-->
-                <?php echo $this->Html->script('prodavail'); ?>
-                <?php echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false); ?>
-                
-            <?php elseif ($active_item == 'orders'): ?>
-                <!--This should be loaded when orders tab is clicked-->
-                <?php echo $this->Html->script('easy-pie-chart/jquery.easing.min'); ?>
-                <?php echo $this->Html->script('easy-pie-chart/jquery.easypiechart.min'); ?>
-                <?php echo $this->Html->script('sales'); ?>
-                <?php echo $this->Html->script('order-map'); ?>
 
-            <?php elseif ($active_item == 'calendars'): ?>
-                <!--This should be loaded when calendars tab is clicked-->
-                <?php echo $this->Html->script('fullcalendar.min'); ?>
-                <?php echo $this->Html->script('bootbox.min'); ?>
-                <?php echo $this->Html->script('calendars'); ?>
-                
-            <?php elseif ($active_item == 'maps'): ?>
-                <!--This should be loaded when maps tab is clicked-->
-                <?php echo $this->Html->script('maps'); ?>
-                <?php echo $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyD9mvSGpeyg1gQqLiNr0nTFOstlNhuPx8g&sensor=true', false); ?>
-                
-            <?php elseif ($active_item == 'images'): ?>
-                <!--This should be loaded when orders tab is clicked-->
-                <?php echo $this->Html->script('vanillabox/jquery.vanillabox'); ?>
-                <?php echo $this->Html->script('jquery.jscroll.min'); ?>
-                <?php echo $this->Html->script('images'); ?>
-                
-            <?php endif; ?>
-        <?php endif; ?>
+                echo $this->Html->script('vanillabox/jquery.vanillabox');
+
+
+            } elseif ($active_item == 'settings') {
+
+                //This should be loaded when Settings tab is clicked
+                echo $this->Html->script('settings');
+                echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false);
+
+            } elseif ($active_item == 'visibilities') {
+
+                //This should be loaded when visibilities tab is clicked-->
+                echo $this->Html->script('visibilities');
+                echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false);
+
+            } elseif ($active_item == 'productavailabilities') {
+
+                //This should be loaded when productavailabilities tab is clicked
+                echo $this->Html->script('prodavail');
+                echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false);
+
+            } elseif ($active_item == 'orders') {
+
+                //This should be loaded when orders tab is clicked-->
+                echo $this->Html->script('easy-pie-chart/jquery.easing.min');
+                echo $this->Html->script('easy-pie-chart/jquery.easypiechart.min');
+                echo $this->Html->script('sales');
+                echo $this->Html->script('order-map');
+
+            } elseif ($active_item == 'calendars') {
+                //This should be loaded when calendars tab is clicked
+                echo $this->Html->script('fullcalendar.min');
+                echo $this->Html->script('bootbox.min');
+                echo $this->Html->script('calendars');
+
+            } elseif ($active_item == 'maps') {
+                //This should be loaded when maps tab is clicked
+                echo $this->Html->script('maps');
+                echo $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyD9mvSGpeyg1gQqLiNr0nTFOstlNhuPx8g&sensor=true', false);
+
+            } elseif ($active_item == 'images') {
+                //This should be loaded when orders tab is clicked
+                echo $this->Html->script('vanillabox/jquery.vanillabox');
+                echo $this->Html->script('jquery.jscroll.min');
+                echo $this->Html->script('images');
+
+            }
+        } ?>
                 
         
 
@@ -265,6 +252,8 @@
         <?php echo $this->Html->script('/assets/jquery-minicolors/jquery.minicolors'); ?>
         <?php echo $this->Html->script('jquery.autocomplete.min'); ?>
 
+        <?php echo $this->Html->script('/assets/bootstrap/bootstrap-modal'); ?>
+
 
         <!--This should be loaded when Settings tab is clicked-->
         <?php echo $this->Html->script('fuelux/fuelux.spinner.min'); ?>
@@ -276,6 +265,18 @@
 
         
         <script type="text/javascript">
+
+            $('#pop_table').DataTable({
+                "lengthMenu": [ 25, 50, 75, 100 ]
+            });
+
+            $('#all_users_table').DataTable({
+                "lengthMenu": [25, 50, 75, 100]
+            });
+
+            $('#preview_bulkupload').DataTable({
+                "lengthMenu": [50, 75, 100]
+            });
 
             //Wrap pagination current item with an anchor tag
             $('.pagination .active').wrapInner('<a href="#"></a>');

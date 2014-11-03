@@ -2,8 +2,9 @@
 
 class Outletchannel extends AppModel {
     
-    var $name = 'Outletchannel';
-    var $displayField = 'outletchannelname';
+    public $name = 'Outletchannel';
+    public $useTable = 'outletchannels';
+    public $displayField = 'outletchannelname';
     
     var $hasMany = array(
       'Outlet' => array(

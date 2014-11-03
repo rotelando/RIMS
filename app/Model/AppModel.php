@@ -32,7 +32,9 @@ App::uses('Model', 'Model');
  * @package       app.Model
  */
 class AppModel extends Model {
-    
+
+    public $recursive = -1;
+
     public function beforeFind($query) {
         
         if (!isset($query['conditions']))
@@ -44,7 +46,7 @@ class AppModel extends Model {
         
     }
 
-    protected function _createNowTimeStamp() {
+    public function _createNowTimeStamp() {
         return date('Y-m-d h:m:s');
     }
     

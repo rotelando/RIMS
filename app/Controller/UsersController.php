@@ -4,7 +4,7 @@ class UsersController extends AppController {
 
     public $name = 'Users';
     public $uses = array('User', 'Userrole', 'Outlet');
-    public $components = array('SSP');
+    //public $components = array('SSP');
 
     public function beforeFilter() {
 
@@ -19,74 +19,9 @@ class UsersController extends AppController {
     public function index() {
 
         $this->_getAllUsers();
-        $this->_sendUserrole();
+        //$this->_sendUserrole();
         $this->_setTitleOfPage('User Management');
-        $this->_getAndSetCompanyId();
-    }
-
-    public function loadusers() {
-
-        //Use the al for column names returned after the database is queried in data_output function in SSPComponent
-        $columns = array(
-            array( 
-                'db' => 'users.firstname',
-                'qry' => 'users.firstname as firstname',
-                'al' => 'firstname', 
-                'dt' => '0'),
-            array( 
-                'db' => 'users.username',
-                'qry' => 'users.username as username',
-                'al' => 'username', 
-                'dt' => '1'),
-            array( 
-                'db' => 'userroles.userrolename',
-                'qry' => 'userroles.userrolename as userrolename', 
-                'al' => 'userrolename', 
-                'dt' => '2'),
-            array( 
-                'db' => 'users.active',
-                'qry' => 'users.active as active',
-                'al' => 'active', 
-                'dt' => '4'),
-            array( 
-                'db' => 'users.id',
-                'qry' => 'users.id as id',
-                'al' => 'id', 
-                'dt' => '5'),
-            array( 
-                'db' => 'users.userroleid',
-                'qry' => 'users.userroleid as userroleid',
-                'al' => 'userroleid', 
-                'dt' => 'role_id'),
-            array( 
-                'db' => 'users.lastname',
-                'qry' => 'users.lastname as lastname',
-                'al' => 'lastname', 
-                'dt' => 'lastname')
-        );
-
-        $table_name = "users";
-        $joins = " LEFT JOIN userroles ON userroles.id = users.userroleid ";
-
-        $primaryKey = "users.id";
-
-        // SQL server connection information
-        $dbconfig = get_class_vars('DATABASE_CONFIG');
-        
-        $sql_details = array(
-            'user' => $dbconfig['default']['login'],
-            'pass' => $dbconfig['default']['password'],
-            'db'   => $dbconfig['default']['database'],
-            'host' => $dbconfig['default']['host'],
-        );
-
-        $response = $this->SSP->simple( $_POST , $sql_details, $table_name, $joins, $primaryKey, $columns );
-        $jsonresponse = json_encode($response);
-
-        $this->layout = 'ajax';
-        $this->view = 'ajax_response';
-        $this->set('response', $jsonresponse);
-
+        //$this->_getAndSetCompanyId();
     }
 
     public function login() {
@@ -138,29 +73,29 @@ class UsersController extends AppController {
 
     public function add() {
 
-        $this->_getAndSetCompanyId();
+        //$this->_getAndSetCompanyId();
         $this->_setTitleOfPage('New User');
         $this->_sendUserrole();
-        $this->_getAllLocationGroup();
+
 
         if ($this->request->is('Post') || $this->request->is('Put')) {
             
             //check if user has license to had users
             //get all license keys
-            if($this->isEnoughLicense()) {
+            //if($this->isEnoughLicense()) {
                 if(isset($this->request->data['User']['active']))
                     $this->request->data['User']['active'] = 1;
 
-                $this->request->data['User']['createdat'] = $this->_createNowTimeStamp();    //create now timestamp if not set
+                $this->request->data['User']['created_at'] = $this->_createNowTimeStamp();    //create now timestamp if not set
                 if ($this->User->save($this->request->data)) {
                     $this->Session->setFlash($this->request->data['User']['username'] . ' has been saved', 'page_notification_info');
                     $this->redirect(array('controller' => 'users', 'action' => 'index'));
                 } else {
                     $this->Session->setFlash($this->request->data['User']['username'] . ' cannot be saved. Please, try again', 'page_notification_error');
                 }
-            } else {
-                $this->Session->setFlash('License has been exhaused. Please contact support to buy a new license.', 'page_notification_error');
-            }
+            //} else {
+            //    $this->Session->setFlash('License has been exhaused. Please contact support to buy a new license.', 'page_notification_error');
+            //}
         }
     }
 
@@ -199,7 +134,6 @@ class UsersController extends AppController {
         $this->_setTitleOfPage('Edit User');
         
         $this->_sendUserrole();
-        $this->_getAllLocationGroup();
         $this->User->id = $id;
         
         if (empty($this->request->data)) {
@@ -207,7 +141,7 @@ class UsersController extends AppController {
             $this->set(array('active' => $this->request->data['User']['active'], 'rolename' => $this->data['Userrole']['userrolename']));
         } else {
             if (($this->request->is('post') || $this->request->is('put')) && $this->User->exists()) {
-                $this->request->data['User']['updatedat'] = $this->_createNowTimeStamp();
+                $this->request->data['User']['updated_at'] = $this->_createNowTimeStamp();
                 if ($this->User->save($this->request->data)) {
                     $this->Session->setFlash('User has been updated', 'page_notification_info');
                     $this->redirect(array('controller' => 'users', 'action' => 'index'));
@@ -462,11 +396,78 @@ class UsersController extends AppController {
 
     public function _getAllUsers() {
         
-        $users = $this->User->find('all');
+        $users = $this->User->getAllUsers();
         $this->set('users', $users);
     }
     
     public function _setSidebarActiveItem($topMenu) {
         $this->set(array('active_item' => $topMenu));
+    }
+
+
+    //===================================== Helper methods
+    public function loadusers() {
+
+        //Use the al for column names returned after the database is queried in data_output function in SSPComponent
+        $columns = array(
+            array(
+                'db' => 'users.firstname',
+                'qry' => 'users.firstname as firstname',
+                'al' => 'firstname',
+                'dt' => '0'),
+            array(
+                'db' => 'users.username',
+                'qry' => 'users.username as username',
+                'al' => 'username',
+                'dt' => '1'),
+            array(
+                'db' => 'userroles.userrolename',
+                'qry' => 'userroles.userrolename as userrolename',
+                'al' => 'userrolename',
+                'dt' => '2'),
+            array(
+                'db' => 'users.active',
+                'qry' => 'users.active as active',
+                'al' => 'active',
+                'dt' => '4'),
+            array(
+                'db' => 'users.id',
+                'qry' => 'users.id as id',
+                'al' => 'id',
+                'dt' => '5'),
+            array(
+                'db' => 'users.userroleid',
+                'qry' => 'users.userroleid as userroleid',
+                'al' => 'userroleid',
+                'dt' => 'role_id'),
+            array(
+                'db' => 'users.lastname',
+                'qry' => 'users.lastname as lastname',
+                'al' => 'lastname',
+                'dt' => 'lastname')
+        );
+
+        $table_name = "users";
+        $joins = " LEFT JOIN userroles ON userroles.id = users.userroleid ";
+
+        $primaryKey = "users.id";
+
+        // SQL server connection information
+        $dbconfig = get_class_vars('DATABASE_CONFIG');
+
+        $sql_details = array(
+            'user' => $dbconfig['default']['login'],
+            'pass' => $dbconfig['default']['password'],
+            'db'   => $dbconfig['default']['database'],
+            'host' => $dbconfig['default']['host'],
+        );
+
+        $response = $this->SSP->simple( $_POST , $sql_details, $table_name, $joins, $primaryKey, $columns );
+        $jsonresponse = json_encode($response);
+
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $jsonresponse);
+
     }
 }

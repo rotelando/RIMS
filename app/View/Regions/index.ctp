@@ -25,33 +25,7 @@
                 <h3 class="header smaller lighter green">Locations - State Groups (Regions)</h3>
                 
                 <!--Location setup wizard-->
-                <div id="fuelux-wizard" class="row-fluid hide" data-target="#step-container" style="display: block;">
-                    <ul class="wizard-steps">
-                        <li data-target="#step1" class="complete" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">1</span>
-                            <span class="title">Country</span>
-                        </li>
-
-                        <li data-target="#step2" class="complete" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">2</span>
-                            <span class="title">State</span>
-                        </li>
-
-                        <li data-target="#step3" class="active" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">3</span>
-                            <span class="title">State Groups (Regions)</span>
-                        </li>
-
-                        <li data-target="#step4" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">4</span>
-                            <span class="title">Location</span>
-                        </li>
-                        <li data-target="#step5" style="min-width: 20%; max-width: 20%;">
-                            <span class="step">5</span>
-                            <span class="title">Location Groups</span>
-                        </li>
-                    </ul>
-                </div>
+                <?php echo $this->element('_location_setup_progress', array('active' => 'region')); ?>
                 <!--End of Location setup wizard-->
                 
                 <!--Start Main Tab-->
@@ -80,16 +54,21 @@
                                             echo $this->Form->input('regionname', array('label' => 'Region Name', 'required' => true, 'placeholder' => 'Enter name of Region', 'class' => 'span10 left-stripe', 'type' => 'text'));
                                             ?>
 
-                                            <label>Add States to Group (Region)</label>
-                                            <div class="multiple_select_container span10" style="margin-left: 0px;">
-                                                <?php foreach ($states as $state): ?>
-                                                    <input type="checkbox" name="data[Region][stateids][]" 
-                                                           value=<?php echo '"'.$state['State']['id'].'" '; 
-                                                           if(isset($state['Region']['member']) && $state['Region']['member'] == true) { echo "checked"; } ?> />
-                                                           
-                                                        <?php echo $state['State']['statename']; ?> <br />
-                                               <?php endforeach; ?>
+
+                                            <!--<div class="control-group">
+                                                <label class="control-label">Country</label>
+                                                <div class="controls">
+                                                    <?php /*echo $this->Form->input('id', array('type' => 'hidden')); */?>
+                                                </div>
+                                            </div>-->
+
+                                            <div class="control-group">
+                                                <label class="control-label">Country</label>
+                                                <div class="controls">
+                                                    <?php echo $this->Form->select('country_id', $countries, array('class' => 'span10 left-stripe')); ?>
+                                                </div>
                                             </div>
+
                                             <div class="clearfix"></div>
                                             <br />
                                             <?php if (!isset($data['Region']['id'])): ?>
@@ -119,7 +98,7 @@
                                                 <th> S/N </th>
                                                 <th> Region Name</th>
                                                 <th> States </th>
-                                                <th style="text-align: center"> Actions </th>
+                                                <th width="10%" style="text-align: center"> Actions </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -130,7 +109,7 @@
                                                 <tr>
                                                     <td width="5%"> <?php echo++$i ?> </td>
                                                     <td> <?php echo $region['Region']['regionname']; ?>  </td>
-                                                    <td> <?php echo $region['Region']['states']; ?>  </td>
+                                                    <td> <?php echo $region['Country']['countryname']; ?>  </td>
                                                     <td style="text-align: center"> 
                                                             <?php
                                                             echo $this->Html->link(
@@ -161,7 +140,7 @@
                                         <br />
                                         <p class="pull-right">
                                             <?php
-                                            echo $this->Html->link('<i class="icon-chevron-right"></i> Next', array('controller' => 'locations', 'action' => 'index'), array('class' => 'btn btn-success btn-large','escape' => false));
+                                            echo $this->Html->link('<i class="icon-chevron-right"></i> Next', array('controller' => 'subregions', 'action' => 'index'), array('class' => 'btn btn-success btn-large','escape' => false));
                                             ?>
                                         </p>
                                     </div>

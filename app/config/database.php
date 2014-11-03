@@ -4,9 +4,9 @@ class DATABASE_CONFIG {
 	public $default = array(
 		'datasource' => 'Database/Mysql',
 		'persistent' => false,
-		'host' => 'localhost',
-		'login' => 'root',
-		'password' => '',
+		'host' => 'rotelando.local',
+		'login' => 'rotimi',
+		'password' => 'rotimisdp',
 		'database' => 'rims',
 		'encoding' => 'utf8'
 	);

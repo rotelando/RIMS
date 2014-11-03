@@ -2,7 +2,7 @@
 
 class BrandelementsController extends AppController {
 
-    var $name = 'Brandelements';
+    var $name = 'merchandize';
     var $uses = array('Brandelement');
     
     public function beforeFilter() {

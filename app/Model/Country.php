@@ -16,4 +16,10 @@ class Country extends AppModel {
             'dependent' => true
         )
     );
+
+    public function getCountryList() {
+
+        $country = $this->find('list');
+        return $country;
+    }
 }

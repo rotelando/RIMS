@@ -82,13 +82,13 @@
                             ?>
                         </div>
                     </div>
-                    <div class="control-group">
+                    <!--<div class="control-group">
                         <label class="control-label">Location Group</label>
                         <div class="controls">
-                            <?php echo $this->Form->select('locationgroupid', $locationgroups, array('class' => 'span3 left-stripe'));
-                            ?>
+                            <?php /*echo $this->Form->select('locationgroupid', $locationgroups, array('class' => 'span3 left-stripe'));
+                            */?>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="form-actions span10">
                         <button type="submit" class="btn btn-success">&nbsp;&nbsp;Save&nbsp;&nbsp;</button>
                     </div>

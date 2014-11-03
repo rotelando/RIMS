@@ -3,17 +3,10 @@
 class LocationsController extends AppController {
 
     var $name = 'Locations';
-    var $uses = array('Location', 'State', 'Region', 'Locationmaps');
+    var $uses = array('Location', 'Region', 'Subregion', 'State', 'Territory', 'Lga');
 
     public function beforeFilter() {
         parent::beforeFilter();
-
-//        $allowed = $this->UserAccessRight->isAllowedSetupModule($this->_getCurrentUserId(), 'view');
-//        if(!$allowed) {
-//            $this->Session->setFlash('You are not authorized to view that page!', 'page_notification_error');
-//            $this->redirect(array('controller' => 'dashboard', 'action' => 'index'));
-//        }
-
         $this->_setViewVariables();
     }
 
@@ -28,59 +21,35 @@ class LocationsController extends AppController {
 //        debug($this->request->data);
 
         if ($this->request->is('Post') || $this->request->is('Put')) {
-            if (isset($this->request->data['Location']['usestate'])) {
-                $allmylocation = array();
-                $$mylocation = array();
-                $stateid = $this->request->data['Location']['stateid'];
-                $regionid = $this->request->data['Location']['regionid'];
-                $locations = $this->Locationmaps->find('all', array("conditions" => array('stateid' => $stateid)));
-//             debug($locations);
-                foreach ($locations as $location) {
-                    $mylocation['Location']['id'] = $location['Locationmaps']['id'];
-                    $mylocation['Location']['locationname'] = $location['Locationmaps']['locationmapname'];
-                    $mylocation['Location']['stateid'] = $stateid;
-//                    $mylocation['Location']['regionid'] = $regionid;
-                    $mylocation['Location']['createdat'] = $this->_createNowTimeStamp();
-                    $allmylocation[] = $mylocation;
-                }
 
-//            debug($mylocation);
-                if ($this->Location->saveAll($allmylocation)) {
-                    $this->Session->setFlash("All locations in state have been added", 'page_notification_info');
-                    $this->redirect(array('controller' => 'locations', 'action' => 'index'));
-                } else {
-                    $this->Session->setFlash('problem adding locations. Please, try again', 'page_notification_error');
-                    $this->_setViewVariables();
-                }
-            }
-         else {
-
-            $this->request->data['Location']['createdat'] = $this->_createNowTimeStamp();    //create now timestamp if not set
+            $this->request->data['Location']['created_at'] = $this->_createNowTimeStamp();
             if ($this->Location->save($this->request->data)) {
-                $this->Session->setFlash($this->request->data['Location']['locationname'] . ' has been added', 'page_notification_info');
+                $this->Session->setFlash("POP {$this->request->data['Location']['locationname']} has been successfully created!", 'page_notification_info');
                 $this->redirect(array('controller' => 'locations', 'action' => 'index'));
             } else {
-                $this->Session->setFlash('problem adding location. Please, try again', 'page_notification_error');
+                $this->Session->setFlash('problem adding POP. Please, try again', 'page_notification_error');
                 $this->_setViewVariables();
             }
-        }
+
         }
     }
 
     public function delete($id = null) {
+
         if (!$id) {
 
-            $this->Session->setFlash('Invalid location selected', 'page_notification_error');
+            $this->Session->setFlash('Invalid POP selected', 'page_notification_error');
             $this->redirect(array('controller' => 'locations', 'action' => 'index'));
         }
 
         $this->Location->id = $id;
+        $locationname = $this->Location->locationname;
 
-        if ($this->Location->saveField('deletedat', "{$this->_createNowTimeStamp()}")) {
-            $this->Session->setFlash('Location has been deleted', 'page_notification_info');
+        if ($this->Location->saveField('deleted_at', "{$this->_createNowTimeStamp()}")) {
+            $this->Session->setFlash("POP {$locationname} has been deleted", 'page_notification_info');
             $this->redirect(array('controller' => 'locations', 'action' => 'index'));
         } else {
-            $this->Session->setFlash('Unable to delete Location. Please, try again', 'page_notification_error');
+            $this->Session->setFlash("Unable to delete POP {$locationname}. Please, try again", 'page_notification_error');
         }
     }
 
@@ -94,62 +63,31 @@ class LocationsController extends AppController {
 
             $this->request->data = $this->Location->read();
             $this->set('data', $this->request->data);
-            $this->_getAllLocations();
             $this->_setViewVariables();
         }
 
         $this->add($id);
     }
 
-    private function _getAllLocations() {
-        $options['fields'] = array(
-            'Location.id',
-            'Location.locationname',
-            'Location.lga_id',
-            'Lga.lganame'
-        );
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'lgas',
-                'alias' => 'Lga',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Lga.id = Location.id'
-                )
-            )
-//            ,
-//            array(
-//                'table' => 'regions',
-//                'alias' => 'Region',
-//                'type' => 'LEFT',
-//                'conditions' => array(
-//                    'Region.id = State.regionid'
-//                )
-//            )
-        );
 
-        $locations = $this->Location->find('all', $options);
-//        debug($locations);
-        $this->set(array('locations' => $locations));
-    }
 
     private function _setViewVariables() {
         $this->_setSidebarActiveItem('setup');
         $this->_setSidebarActiveSubItem('locations');
         $this->_setTitleOfPage('Location');
 
-        $this->_getAllRegions();
-        $this->_getAllStates();
-        $this->_getAllLocations();
+        $locations = $this->Location->getLocations();
+        $lgalist = $this->Lga->getLgaAsList();
+
+        $this->set(array(
+           'locations' => $locations,
+            'lgalist' => $lgalist
+        ));
     }
 
     public function states() {
         $this->layout = 'ajax';
         $this->view = 'ajax_response';
-
-//        $result = $this->Location->find('all', 
-//                array('fields'=>array('DISTINCT (Location.state)')));
 
         $result = $this->State->find('all', array('fields' => array('DISTINCT (State.statename)'), 'recursive' => -1));
 
@@ -170,18 +108,6 @@ class LocationsController extends AppController {
         $regions['regions'] = $result;
         $response = json_encode($regions);
         $this->set('response', $response);
-    }
-
-    private function _getAllRegions() {
-        $regions = $this->Region->find('all');
-        $regionlist = $this->Region->find('list');
-        $this->set(array('regions' => $regions, 'regionlist' => $regionlist));
-    }
-
-    private function _getAllStates() {
-        $states = $this->State->find('all');
-        $statelist = $this->State->find('list');
-        $this->set(array('states' => $states, 'statelist' => $statelist));
     }
 
 }

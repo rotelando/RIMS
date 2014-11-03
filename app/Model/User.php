@@ -89,6 +89,18 @@ class User extends AppModel {
         )
     );
 
+    public function getAllUsers() {
+
+        $options['fields'] = array(
+            'User.*',
+            'Userrole.*'
+        );
+        $options['recursive'] = 0;
+        $users = $this->find('all', $options);
+
+        return $users;
+    }
+
     public function matchPassword($data) {
         
 //        debug($data);

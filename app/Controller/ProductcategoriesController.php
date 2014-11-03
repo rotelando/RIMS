@@ -78,7 +78,7 @@ class ProductcategoriesController extends AppController {
     
     private function _getAllProducts() {
 
-        $products = $this->Product->find('all');
+        $products = $this->Product->getAllProducts();
         $brandlist = $this->Brand->find('list');
         $options['joins'] = array(
                     array(
