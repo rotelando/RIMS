@@ -4,7 +4,7 @@ class Outletclass extends AppModel {
 
     public $name = 'Outletclass';
     public $useTable = 'outletclasses';
-    public $displayField = 'outletclass';
+    public $displayField = 'outletclassname';
     
     var $hasMany = array(
       'Outlet' => array(
@@ -12,4 +12,10 @@ class Outletclass extends AppModel {
           'foreignKey' => 'outletclass_id'
       )
     );
+
+    public function getClassAsList() {
+
+        $classes = $this->find('list');
+        return $classes;
+    }
 }

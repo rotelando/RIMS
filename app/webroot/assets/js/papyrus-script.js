@@ -296,8 +296,9 @@ $(function() {
 
     mapStateFunction('');
     var stateurl = config.URL + 'states/mapdata';
-    $("#statesMapContainer").insertFusionCharts({
-        swfUrl: "/assets/Maps/FCMap_Nigeria.swf",
+    var mapurl = config.URL + "assets/Maps/FCMap_Nigeria.swf";
+        $("#statesMapContainer").insertFusionCharts({
+        swfUrl: mapurl,
         dataSource: stateurl,
         dataFormat: "jsonurl",
         width: "100%",

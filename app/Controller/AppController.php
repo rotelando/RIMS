@@ -35,7 +35,7 @@ App::uses('Controller', 'Controller', 'Utility');
  */
 class AppController extends Controller {
 
-    var $uses = array('Setting', 'Outlet', 'Location', 'User', 'Rolemodule', 'Country', 'State', 'Region');
+    var $uses = array('Setting', 'Outlet', 'User', 'Rolemodule', 'Country', 'State', 'Region', 'Subregion', 'Territory', 'Lga', 'Location');
     var $helper = array('RoleAccess');
     var $components = array(
         'DebugKit.Toolbar',
@@ -285,7 +285,7 @@ class AppController extends Controller {
         
         //Nationals
 
-        /*$nationals = $this->Country->find('list');
+        $nationals = $this->Country->find('list');
         if(isset($nationals)) {
             foreach ($nationals as $key => $value) {
                 $key = 'nat_' . $key;
@@ -303,6 +303,15 @@ class AppController extends Controller {
             $outputlocation['Regions'] = $new_regions;
         }
 
+        $subregions = $this->Subregion->find('list');
+        if(isset($subregions)) {
+            foreach ($regions as $key => $value) {
+                $key = 'sub_' . $key;
+                $new_subregions[$key] = $value;
+            }
+            $outputlocation['Subregions'] = $new_subregions;
+        }
+
         $state = $this->State->find('list');
         if(isset($state)) {
             foreach ($state as $key => $value) {
@@ -312,12 +321,32 @@ class AppController extends Controller {
             $outputlocation['States'] = $new_state;
         }
 
+        $new_territory = array();
+        $territory = $this->Territory->find('list');
+        if(isset($territory)) {
+            foreach ($territory as $key => $value) {
+                $key = 'ter_' . $key;
+                $new_territory[$key] = $value;
+            }
+            $outputlocation['Territories'] = $new_territory;
+        }
+
+        $new_lga = array();
+        $lga = $this->Location->find('list');
+        if(isset($lga)) {
+            foreach ($lga as $key => $value) {
+                $key = 'loc_' . $key;
+                $new_lga[$key] = $value;
+            }
+            $outputlocation['Lgas'] = $new_lga;
+        }
+
         $new_location = array();
         $location = $this->Location->find('list');
         if(isset($location)) {
             foreach ($location as $key => $value) {
                 $key = 'loc_' . $key;
-                $new_location[$key] = $value; 
+                $new_location[$key] = $value;
             }
             $outputlocation['Locations'] = $new_location;
         }
@@ -328,7 +357,7 @@ class AppController extends Controller {
             $this->set(array('locations' => $outputlocation));
         } else {
             return $outputlocation;
-        }*/
+        }
     }
 
     public function _datePickerList() {

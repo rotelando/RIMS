@@ -3,7 +3,7 @@
 class MapsController extends AppController {
 
     var $name = 'Maps';
-    var $uses = array('Visit', 'Schedule', 'Outlet', 'Location', 'User', 'Outlettype', 'Outletchannel', 'Brand', 'Order', 'Product', 'Productavailability', 'Visibilityevaluation', 'Brandelement');
+    var $uses = array('Visit', 'Schedule', 'Outlet', 'Location', 'User', 'Retailtype', 'Outletchannel', 'Brand', 'Order', 'Product', 'Productavailability', 'Visibilityevaluation', 'Brandelement');
     var $helpers = array('Time', 'MyLink');
     var $components = array('Filter');
     var $options;
@@ -33,8 +33,8 @@ class MapsController extends AppController {
     }
     
     private function _getOutletTypes() {
-        $outlettypes = $this->Outlettype->find('list');
-        return $outlettypes;
+        $retailtypes = $this->Retailtype->find('list');
+        return $retailtypes;
     }
     
     private function _getOutletDetails($options) {
@@ -48,14 +48,14 @@ class MapsController extends AppController {
             'Outlet.streetname',
             'Outlet.town',
             'Outlet.geolocation',
-            'Outlet.outlettypeid',
+            'Outlet.retailtype_id',
             'Location.locationname',
-            'Outlettype.outlettypename',
+            'Retailtype.retailtypename',
             'User.id',
             'User.firstname',
             'User.lastname'
         );
-        $options['order'] = array('Outlet.createdat desc');
+        $options['order'] = array('Outlet.created_at desc');
         $options['recursive'] = -1;
         $options['joins'] = array(
             array(
@@ -63,15 +63,7 @@ class MapsController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -79,15 +71,15 @@ class MapsController extends AppController {
                 'alias' => 'User',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'User.id = Outlet.userid'
+                    'User.id = Outlet.user_id'
                 )
             ),
             array(
-                'table' => 'outlettypes',
-                'alias' => 'Outlettype',
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outlettype.id = Outlet.outlettypeid'
+                    'Retailtype.id = Outlet.retailtype_id'
                 )
             ),
             array(
@@ -95,7 +87,7 @@ class MapsController extends AppController {
                 'alias' => 'Outletchannel',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outletchannel.id = Outlet.outletchannelid'
+                    'Outletchannel.id = Outlet.outletchannel_id'
                 )
             )
         );
@@ -141,11 +133,11 @@ class MapsController extends AppController {
 
         $iconUrl = 'assets/js/custommarkers/';
         
-        $outlettypes = $this->_getOutletTypes();
+        $retailtypes = $this->_getOutletTypes();
         
         $markerIndex = array();
         $i = 0;
-        foreach ($outlettypes as $key => $value) {
+        foreach ($retailtypes as $key => $value) {
             $markerIndex[$key] = $i++;
         }
         
@@ -154,11 +146,11 @@ class MapsController extends AppController {
         
         if (isset($this->params['url']['cls'])) {
             $chan = $this->params['url']['cls'];
-            $options['conditions']['Outlet.outlettypeid'] = $chan;
+            $options['conditions']['Outlet.retailtype_id'] = $chan;
         }
         if (isset($this->params['url']['chan'])) {
             $chan = $this->params['url']['chan'];
-            $options['conditions']['Outlet.outletchannelid'] = $chan;
+            $options['conditions']['Outlet.outletchannel_id'] = $chan;
         }
 
         if (isset($this->params['url']['loc'])) {
@@ -192,17 +184,17 @@ class MapsController extends AppController {
             $item['latitude'] = floatval($arrLatLng[1]);
             $item['phonenumber'] = $outlet['Outlet']['phonenumber'];
             $item['location'] = $outlet['Location']['locationname'];
-            $item['outlettype'] = $outlet['Outlettype']['outlettypename'];
+            $item['retailtype'] = $outlet['Retailtype']['retailtypename'];
             $item['contactname'] = $outlet['User']['firstname'] . ' ' .$outlet['User']['lastname'];
             $item['address'] = $outlet['Outlet']['streetnumber'] . ', ' .$outlet['Outlet']['streetname']
                     . ', ' .$outlet['Outlet']['town'] . '.';
-            $typeid = $outlet['Outlet']['outlettypeid'];
+            $typeid = $outlet['Outlet']['retailtype_id'];
             $item['iconUrl'] = $iconUrl . $markers[$markerIndex[$typeid]];
             $response['outlets_location'][] = $item;
         }
         
         //Get outlet classifications
-        $types = $this->Outlettype->find('list');
+        $types = $this->Retailtype->find('list');
         $response['outlets_class'][] = array('id' => 0, 'name' => "**Class**");
         foreach ($types as $key => $value) {
             $type['id'] = $key;
@@ -237,14 +229,14 @@ class MapsController extends AppController {
             'Outlet.id',
             'Outlet.outletname',
             'Outlet.geolocation',
-            'Outlet.outlettypeid',
+            'Outlet.retailtype_id',
             'Location.locationname',
-            'Outlettype.outlettypename',
+            'Retailtype.retailtypename',
             'Product.id',
             'Product.productname',
             'SUM( Order.quantity * ( Order.unitprice - Order.discount * Order.unitprice ) ) as totalordervalue'
         );
-        $options['order'] = array('Order.createdat desc');
+        $options['order'] = array('Order.created_at desc');
         $options['group'] = array('Outlet.id');
         $options['recursive'] = -1;
         $options['joins'] = array(
@@ -269,7 +261,7 @@ class MapsController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -281,19 +273,11 @@ class MapsController extends AppController {
                 )
             ),
             array(
-                'table' => 'outlettypes',
-                'alias' => 'Outlettype',
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outlettype.id = Outlet.outlettypeid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Retailtype.id = Outlet.retailtype_id'
                 )
             )
         );
@@ -325,11 +309,11 @@ class MapsController extends AppController {
         );
         $iconUrl = 'assets/js/custommarkers/';
         
-        $outlettypes = $this->_getOutletTypes();
+        $retailtypes = $this->_getOutletTypes();
         
         $markerIndex = array();
         $i = 0;
-        foreach ($outlettypes as $key => $value) {
+        foreach ($retailtypes as $key => $value) {
             $markerIndex[$key] = $i++;
         }
         
@@ -362,9 +346,9 @@ class MapsController extends AppController {
             
             $item['latitude'] = floatval($arrLatLng[1]);
             $item['location'] = $outlet['Location']['locationname'];
-            $item['outlettype'] = $outlet['Outlettype']['outlettypename'];
+            $item['retailtype'] = $outlet['Retailtype']['retailtypename'];
             $item['totalsalesvalue'] = 'N' . $outlet[0]['totalordervalue'];
-            $typeid = $outlet['Outlet']['outlettypeid'];
+            $typeid = $outlet['Outlet']['retailtype_id'];
             $item['iconUrl'] = $iconUrl . $markers[$markerIndex[$typeid]];
             $response['sales_location'][] = $item;
         }
@@ -445,16 +429,16 @@ class MapsController extends AppController {
             'Outlet.id',
             'Outlet.outletname',
             'Outlet.geolocation',
-            'Outlet.outlettypeid',
+            'Outlet.retailtype_id',
             'Location.locationname',
-            'Outlettype.outlettypename',
+            'Retailtype.retailtypename',
             'Brand.id',
             'Brand.brandname',
             'Brandelement.id',
             'Brandelement.brandelementname',
             'SUM( Visibilityevaluation.elementcount ) as totalcount'
         );
-        $options['order'] = array('Visibilityevaluation.createdat desc');
+        $options['order'] = array('Visibilityevaluation.created_at desc');
         $options['group'] = array('Outlet.id');
         $options['recursive'] = -1;
         $options['joins'] = array(
@@ -479,7 +463,7 @@ class MapsController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -499,19 +483,11 @@ class MapsController extends AppController {
                 )
             ),
             array(
-                'table' => 'outlettypes',
-                'alias' => 'Outlettype',
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outlettype.id = Outlet.outlettypeid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Retailtype.id = Outlet.retailtype_id'
                 )
             )
         );
@@ -543,11 +519,11 @@ class MapsController extends AppController {
         );
         $iconUrl = 'assets/js/custommarkers/';
         
-        $outlettypes = $this->_getOutletTypes();
+        $retailtypes = $this->_getOutletTypes();
         
         $markerIndex = array();
         $i = 0;
-        foreach ($outlettypes as $key => $value) {
+        foreach ($retailtypes as $key => $value) {
             $markerIndex[$key] = $i++;
         }
         
@@ -584,11 +560,11 @@ class MapsController extends AppController {
             
             $item['latitude'] = floatval($arrLatLng[1]);
             $item['location'] = $outlet['Location']['locationname'];
-            $item['outlettype'] = $outlet['Outlettype']['outlettypename'];
+            $item['retailtype'] = $outlet['Retailtype']['retailtypename'];
             $item['brandname'] = $outlet['Brand']['brandname'];
             $item['brandelementname'] = $outlet['Brandelement']['brandelementname'];
             $item['totalcount'] = $outlet[0]['totalcount'];
-            $typeid = $outlet['Outlet']['outlettypeid'];
+            $typeid = $outlet['Outlet']['retailtype_id'];
             $item['iconUrl'] = $iconUrl . $markers[$markerIndex[$typeid]];
             $response['merchandize_location'][] = $item;
         }
@@ -643,14 +619,14 @@ class MapsController extends AppController {
             'Outlet.id',
             'Outlet.outletname',
             'Outlet.geolocation',
-            'Outlet.outlettypeid',
+            'Outlet.retailtype_id',
             'Location.locationname',
-            'Outlettype.outlettypename',
+            'Retailtype.retailtypename',
             'Product.id',
             'Product.productname',
             'SUM( Productavailability.quantityavailable * Productavailability.unitprice) as totalvalue'
         );
-        $options['order'] = array('Productavailability.createdat desc');
+        $options['order'] = array('Productavailability.created_at desc');
         $options['group'] = array('Outlet.id');
         $options['recursive'] = -1;
         $options['joins'] = array(
@@ -675,7 +651,7 @@ class MapsController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -687,19 +663,11 @@ class MapsController extends AppController {
                 )
             ),
             array(
-                'table' => 'outlettypes',
-                'alias' => 'Outlettype',
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outlettype.id = Outlet.outlettypeid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Retailtype.id = Outlet.retailtype_id'
                 )
             )
         );
@@ -731,11 +699,11 @@ class MapsController extends AppController {
         );
         $iconUrl = 'assets/js/custommarkers/';
         
-        $outlettypes = $this->_getOutletTypes();
+        $retailtypes = $this->_getOutletTypes();
         
         $markerIndex = array();
         $i = 0;
-        foreach ($outlettypes as $key => $value) {
+        foreach ($retailtypes as $key => $value) {
             $markerIndex[$key] = $i++;
         }
         
@@ -768,9 +736,9 @@ class MapsController extends AppController {
             
             $item['latitude'] = floatval($arrLatLng[1]);
             $item['location'] = $outlet['Location']['locationname'];
-            $item['outlettype'] = $outlet['Outlettype']['outlettypename'];
+            $item['retailtype'] = $outlet['Retailtype']['retailtypename'];
             $item['totalvalue'] = 'N' . $outlet[0]['totalvalue'];
-            $typeid = $outlet['Outlet']['outlettypeid'];
+            $typeid = $outlet['Outlet']['retailtype_id'];
             $item['iconUrl'] = $iconUrl . $markers[$markerIndex[$typeid]];
             $response['pavail_location'][] = $item;
         }
@@ -804,16 +772,16 @@ class MapsController extends AppController {
             'Outlet.streetname',
             'Outlet.town',
             'Outlet.geolocation',
-            'Outlet.outlettypeid',
+            'Outlet.retailtype_id',
             'Location.locationname',
-            'Outlettype.outlettypename',
+            'Retailtype.retailtypename',
             'User.id',
             'User.firstname',
             'User.lastname',
             'Schedule.scheduledate',
             'Schedule.visited'
         );
-        $options['order'] = array('Outlet.createdat desc');
+        $options['order'] = array('Outlet.created_at desc');
         $options['recursive'] = -1;
 
         //condition set
@@ -837,7 +805,7 @@ class MapsController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -845,23 +813,15 @@ class MapsController extends AppController {
                 'alias' => 'User',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'User.id = Outlet.userid'
+                    'User.id = Outlet.user_id'
                 )
             ),
             array(
-                'table' => 'outlettypes',
-                'alias' => 'Outlettype',
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outlettype.id = Outlet.outlettypeid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Retailtype.id = Outlet.retailtype_id'
                 )
             )
         );
@@ -879,16 +839,16 @@ class MapsController extends AppController {
             'Outlet.streetname',
             'Outlet.town',
             'Outlet.geolocation',
-            'Outlet.outlettypeid',
+            'Outlet.retailtype_id',
             'Location.locationname',
-            'Outlettype.outlettypename',
+            'Retailtype.retailtypename',
             'User.id',
             'User.firstname',
             'User.lastname',
             'Schedule.scheduledate',
             'Schedule.visited'
         );
-        $options['order'] = array('Schedule.createdat desc');
+        $options['order'] = array('Schedule.created_at desc');
         $options['recursive'] = -1;
         
         //condition set
@@ -912,7 +872,7 @@ class MapsController extends AppController {
                 'alias' => 'Location',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.locationid'
+                    'Location.id = Outlet.location_id'
                 )
             ),
             array(
@@ -920,23 +880,15 @@ class MapsController extends AppController {
                 'alias' => 'User',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'User.id = Outlet.userid'
+                    'User.id = Outlet.user_id'
                 )
             ),
             array(
-                'table' => 'outlettypes',
-                'alias' => 'Outlettype',
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outlettype.id = Outlet.outlettypeid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Retailtype.id = Outlet.retailtype_id'
                 )
             )
         );
@@ -979,11 +931,11 @@ class MapsController extends AppController {
         $unvisitedIconUrl = 'assets/js/custommarkers/dot-red.png';
         $visitedIconUrl = 'assets/js/custommarkers/dot-green.png';
         
-//        $outlettypes = $this->_getOutletTypes();
+//        $retailtypes = $this->_getOutletTypes();
         
 //        $markerIndex = array();
 //        $i = 0;
-//        foreach ($outlettypes as $key => $value) {
+//        foreach ($retailtypes as $key => $value) {
 //            if($i > count($unvisited_markers)) { $i = 0; }
 //            
 //            $markerIndex[$key] = $i++;
@@ -1023,11 +975,11 @@ class MapsController extends AppController {
             $item['latitude'] = floatval($arrLatLng[1]);
             $item['phonenumber'] = $alocation['Outlet']['phonenumber'];
             $item['location'] = $alocation['Location']['locationname'];
-            $item['outlettype'] = $alocation['Outlettype']['outlettypename'];
+            $item['retailtype'] = $alocation['Retailtype']['retailtypename'];
             $item['contactname'] = $alocation['User']['firstname'] . ' ' .$alocation['User']['lastname'];
             $item['address'] = $alocation['Outlet']['streetnumber'] . ', ' .$alocation['Outlet']['streetname']
                     . ', ' .$alocation['Outlet']['town'] . '.';
-//            $typeid = $alocation['Outlet']['outlettypeid'];
+//            $typeid = $alocation['Outlet']['retailtype_id'];
             $item['scheduledate'] = $alocation['Schedule']['scheduledate'];
             $item['visited'] = $alocation['Schedule']['visited'];
             if($item['visited']) {

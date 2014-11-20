@@ -23,7 +23,7 @@ $(function() {
     $('.pagination .active').wrapInner('<a href="#"></a>');
     
     //Outlet Distribution Data
-    var url =  config.URL + 'outlets/outletdistribution';
+    var url =  config.URL + 'outlets/outletclassdistribution';
     function get_outlet_distribution() {
         return $.ajax({
             url: url,
@@ -42,7 +42,7 @@ $(function() {
                 plotShadow: false
             },
             title: {
-                text: 'Advocacy Class'
+                text: 'Outlet Type'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
@@ -61,7 +61,7 @@ $(function() {
             },
             series: [{
                 type: 'pie',
-                name: 'Advocacy Class',
+                name: 'Outlet Type',
                 data: distribution_data
             }]
         });
@@ -80,7 +80,7 @@ $(function() {
     var outlet_channel_distribution = get_outlet_channel_distribution();
     
     outlet_channel_distribution.success(function(distribution_data) {
-    $('#outlet_channels').highcharts({
+        /*$('#outlet_channels').highcharts({
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -108,18 +108,18 @@ $(function() {
             series: [{
                 type: 'pie',
                 name: 'Channel',
-                data: distribution_data.channel_dist
+                data: distribution_data
             }]
-        });
+        });*/
         
-        $('#outlet_retail').highcharts({
+        /*$('#outlet_retail').highcharts({
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false
             },
             title: {
-                text: 'Retail Type'
+                text: 'Retail Classification'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
@@ -139,8 +139,54 @@ $(function() {
             },
             series: [{
                 type: 'pie',
-                name: 'Retail Type',
+                name: 'Retail Classification',
                 data: distribution_data.retailer_dist
+            }]
+        });*/
+    });
+
+    //Retail Distribution Data
+    url =  config.URL + 'outlets/retailtypedistribution';
+    function get_retailtype_distribution() {
+        return $.ajax({
+            url: url,
+            data: param,
+            dataType: 'JSON'
+        });
+    }
+
+    var outlet_retailtype_distribution = get_retailtype_distribution();
+    outlet_retailtype_distribution.success(function(distribution_data) {
+
+        $('#outlet_retail').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Retail Classification'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        distance: -30,
+                        color: '#ffffff',
+                        connectorColor: '#000000',
+                        format: '{point.percentage:.1f} %'
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Retail Classification',
+                data: distribution_data
             }]
         });
     });
@@ -277,7 +323,7 @@ $(function() {
                         var link = '<div class="hidden-phone visible-desktop action-buttons">';
                         link += '<a href="/outlets/view/' + full[7] + '" class="blue" data-rel="tooltip" data-placement="top" data-original-title="View"><i class="icon-zoom-in bigger-130"></i> </a> | ';
                         link += '<a href="/outlets/delete/' + full[7] + '" class="red" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i> </a>';                                      
-                        link +=  '</div>'
+                        link +=  '</div>';
                       return link;
                     }
                 },
@@ -363,7 +409,6 @@ $(function() {
         outletDataTable.columns(11).search( '' ).draw();
         
     });
-
 });
 
 //range search

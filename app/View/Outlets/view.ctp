@@ -1,6 +1,6 @@
 <div class="main-content">
 
-    <?php echo $this->element('breadcrumb'); ?>
+    <?php /*echo $this->element('breadcrumb'); */?>
     
     <div class="page-content">
         <!--.page-header-->
@@ -10,7 +10,7 @@
                 <?php echo $outlet['Outlet']['outletname']; ?>
                 <small>
                     <i class="icon-double-angle-right"></i>
-                    <?php echo $outlet['Outlettype']['outlettypename']; ?>
+                    <?php echo $outlet['Retailtype']['retailtypename']; ?>
                 </small>
             </h1>
 
@@ -42,32 +42,43 @@
                         </li>
 
                         <li>
-                            <a data-toggle="tab" href="#images">
+                            <a data-toggle="tab" href="#oimages">
                                 <i class="green icon-picture bigger-110"></i>
                                 Images
-                                <span class="badge badge-important"><?php //echo count($images); ?>1</span>
+                                <span class="badge badge-important"><?php echo count($outletimages); ?></span>
                             </a>
                         </li>
 
                         <li>
-                            <a data-toggle="tab" href="#prodsourcedistrib">
-                                <i class="green icon-share bigger-110"></i>
-                                Product Sourcing & Distribution
-                                <span class="badge badge-important">7</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a data-toggle="tab" href="#visibility">
+                            <a data-toggle="tab" href="#oproducts">
                                 <i class="green icon-bookmark bigger-110"></i>
-                                Merchandising
-                                <span class="badge badge-important"><?php echo count($merchandising); ?></span>
+                                Products
+                                <span class="badge badge-important"><?php echo count($outletproducts); ?></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#omerchandize">
+                                <i class="green icon-bookmark bigger-110"></i>
+                                Merchandize
+                                <span class="badge badge-important"><?php echo count($outletmerchandize); ?></span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a data-toggle="tab" href="#oprodsourcedistrib">
+                                <i class="green icon-share bigger-110"></i>
+                                Product Sourcing
+                                <span class="badge badge-important"><?php echo count($productsources); ?></span>
                             </a>
                         </li>
                     </ul>
 
                     <div class="tab-content">
                         <div id="details" class="tab-pane active">
+
+                            <h3 class="span12 header smaller lighter green"> Basic Information.
+                                <a href="#outlet-dialog" class="btn btn-mini btn-primary pull-right" id="edit-outlet" data-toggle="modal" class="green addBtn">Edit</a>
+                            </h3>
 
                             <!--Content of #Details tab-->
                             <div class="span7">
@@ -95,15 +106,6 @@
                                     </div>
 
                                     <div class="profile-info-row">
-                                        <div class="profile-info-name"> Phone Number </div>
-
-                                        <div class="profile-info-value">
-                                            <i class="icon-phone light-orange bigger-110"></i>
-                                            <span><?php echo $outlet['Outlet']['phonenumber']; ?>&nbsp;&nbsp; </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="profile-info-row">
                                         <div class="profile-info-name"> Contact Name </div>
 
                                         <div class="profile-info-value">
@@ -116,10 +118,30 @@
                                     </div>
 
                                     <div class="profile-info-row">
-                                        <div class="profile-info-name"> Contact Phone Number </div>
+                                        <div class="profile-info-name"> Phone Number </div>
 
                                         <div class="profile-info-value">
+                                            <i class="icon-phone light-orange bigger-110"></i>
                                             <span><?php echo $outlet['Outlet']['contactphonenumber']; ?>&nbsp;&nbsp;<br /><br /></span>
+                                            <!--<span><?php /*echo $outlet['Outlet']['phonenumber']; */?>&nbsp;&nbsp; </span>-->
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name">Alternate Number </div>
+
+                                        <div class="profile-info-value">
+                                            <i class="icon-phone light-orange bigger-110"></i>
+                                            <span><?php echo $outlet['Outlet']['contactalternatenumber']; ?>&nbsp;&nbsp;<br /><br /></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-row">
+                                        <i class="icon-phone light-orange bigger-110"></i>
+                                        <div class="profile-info-name"> VTU Number </div>
+
+                                        <div class="profile-info-value">
+                                            <span><?php echo $outlet['Outlet']['vtunumber']; ?>&nbsp;&nbsp;<br /><br /></span>
                                         </div>
                                     </div>
                                     
@@ -127,21 +149,23 @@
                                         <div class="profile-info-name"> Advocacy Class </div>
 
                                         <div class="profile-info-value">
-                                            <span><?php 
-                                            $channel = array('Communication', 'Visibility', 'Availability');
-                                            echo $channel[rand(0,2)];
-                                            ?>&nbsp;&nbsp;</span>
+                                            <span><?php echo $outlet['Outletclass']['outletclassname']; ?>&nbsp;&nbsp;</span>
                                         </div>
                                     </div>
 
-                                    <div class="profile-info-row">
+                                    <!--<div class="profile-info-row">
                                         <div class="profile-info-name"> Channel </div>
 
                                         <div class="profile-info-value">
-                                            <span><?php 
-                                            $channel = array('Trade Partner', 'Sub-trade Partner', 'Pay & Go (Retailer)', 'Shop and Browse (Retailer)', 'Entertainment (Retailer)');
-                                            echo $channel[rand(0,4)];
-                                            ?>&nbsp;&nbsp;</span>
+                                            <span><?php /*echo $outlet['Outletchannel']['outletchannelname']; */?>&nbsp;&nbsp;</span>
+                                        </div>
+                                    </div>-->
+
+                                    <div class="profile-info-row">
+                                        <div class="profile-info-name"> Retailtype </div>
+
+                                        <div class="profile-info-value">
+                                            <span><?php echo $outlet['Retailtype']['retailtypename']; ?>&nbsp;&nbsp;</span>
                                         </div>
                                     </div>
 
@@ -162,8 +186,8 @@
 
                                         <div class="profile-info-value">
                                             <span> <?php
-                                                if (isset($outlet['Outlet']['createdat']))
-                                                    echo $outlet['Outlet']['createdat'];
+                                                if (isset($outlet['Outlet']['created_at']))
+                                                    echo $outlet['Outlet']['created_at'];
                                                 else
                                                     echo "NA";
                                                 ?></span>
@@ -180,8 +204,8 @@
 
                                 <?php
                                 $arr_geo = $this->TextFormater->latLongFormatter($outlet['Outlet']['geolocation']);
-                                $lat = $arr_geo[0];
-                                $lon = $arr_geo[1];
+                                $lon = $arr_geo[0];
+                                $lat = $arr_geo[1];
                                 ?>
 
                                 <img src="http://maps.googleapis.com/maps/api/staticmap?center=
@@ -190,40 +214,40 @@
                                      &sensor=false" />
                             </div><!--/.span-->
                             <!--<a data-toggle="modal" href="#signin">Sign In</a>-->
-
                         </div>
+
                         <!--End the content of #Details tab-->
 
                         <!--The content of #Images tab-->
-                        <div id="images" class="tab-pane">
+                        <div id="oimages" class="tab-pane">
 
                             <div class="row-fluid">
                                 <div class="span12">
                                     <div class="span12">
 
-                                        <div class="span3">
+                                        <!--<div class="span3">
                                             <img src="/assets/images/outlet_3.jpg" />
-                                        </div>
-                                        <!-- <h3 class="span12 header smaller lighter green">Images</h3> -->
+                                        </div>-->
+                                         <h3 class="span12 header smaller lighter green">Images</h3>
                                         
-                                        <?php //if (count($images) != 0): ?>
+                                        <?php if (count($outletimages) != 0): ?>
                                         <?php
 
-                                                // for ($i = 0; $i < count($images); $i++) {
+                                                 for ($i = 0; $i < count($outletimages); $i++) {
 
-                                                //     if($i == 0): 
+                                                     if($i == 0):
                                                 ?>
 
-                                                        <!-- <ul class="thumbnails image-list jscroll" id="grouped-image-list"> -->
+                                                         <ul class="thumbnails image-list jscroll" id="grouped-image-list">
 
-                                            <?php //elseif(($i % 6) == 0): ?>
+                                            <?php elseif(($i % 6) == 0): ?>
 
-                                                        <!-- </ul>
-                                                        <ul class="thumbnails image-list jscroll" id="grouped-image-list"> -->
+                                                         </ul>
+                                                        <ul class="thumbnails image-list jscroll" id="grouped-image-list">
 
-                                            <?php //endif; ?>
+                                            <?php endif; ?>
 
-                                                            <!-- <li 
+                                                             <li
                                                                 class="span2"
                                                                 data-animation="true" 
                                                                 data-rel="popover"
@@ -232,112 +256,42 @@
                                                                 data-placement="top"  
                                                                 data-original-title="Image details"
                                                                 data-content="
-                                                                    <?php 
-                                                                        // echo '<strong>Outet Name:</strong> ' .$images[$i]['Outlet']['outletname'].'<br />'; 
-                                                                        // echo '<strong>Location:</strong> ' .$images[$i]['Location']['locationname'].'<br />'; 
-                                                                        // echo '<strong>Staff:</strong> ' .ucfirst($images[$i][0]['fullname']).'<br />'; 
-                                                                        // echo '<strong>Date:</strong> ' .$images[$i]['Image']['createdat'].'<br />'; 
+                                                                    <?php
+                                                                         echo '<strong>Outet Name:</strong> ' .$outletimages[$i]['Outlet']['outletname'].'<br />';
+                                                                         echo '<strong>Location:</strong> ' .$outletimages[$i]['Location']['locationname'].'<br />';
+                                                                         echo '<strong>Staff:</strong> ' .ucfirst($outletimages[$i][0]['fullname']).'<br />';
+                                                                         echo '<strong>Date:</strong> ' .$outletimages[$i]['Outletimage']['created_at'].'<br />';
                                                                     ?>"
-                                                            > -->
-<!-- 
-                                                                <a href="<?php //echo $this->MyLink->getImageUrlPath($images[$i]['Image']['filename']); ?>" 
-                                                                    title="<?php //echo $images[$i]['Outlet']['outletname'] . ' at ' . $images[$i]['Location']['locationname'] . " on " . $images[$i]['Image']['createdat'] ?>" 
-                                                                    class="thumbnail">
-                                                                    <img src="<?php //echo $this->MyLink->getImageUrlPath($images[$i]['Image']['filename']); ?>" width="600" height="450" alt="">
-                                                                </a>
-                                                            </li> -->
+                                                            >
 
-                                                <?php //} ?>
-                                                <!-- </ul> -->
-                                                <?php //else: ?>
-                                                    <!-- <p>No images taken for this outlet.</p> -->
-                                                <?php //endif; ?>
+                                                                <a href="<?php echo $this->MyLink->getImageUrlPath($outletimages[$i]['Outletimage']['url']); ?>"
+                                                                    title="<?php echo $outletimages[$i]['Outlet']['outletname'] . ' at ' . $outletimages[$i]['Location']['locationname'] . " on " . $outletimages[$i]['Outletimage']['created_at'] ?>"
+                                                                    class="thumbnail">
+                                                                    <img src="<?php echo $this->MyLink->getImageUrlPath($outletimages[$i]['Outletimage']['url']); ?>" width="600" height="450" alt="">
+                                                                </a>
+                                                            </li>
+
+                                                <?php } ?>
+                                                 </ul>
+                                                <?php else: ?>
+                                                     <p>No images taken for this outlet.</p>
+                                                <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!--End the content of #Imagess tab-->
 
-                        <!--End the content of #Product Sourcing tab-->
-                        <div id="prodsourcedistrib" class="tab-pane">
-                            <div class="span4">
-                            <h3 class="span12 header smaller lighter green"> Product Sourcing</h3>
-                            
-                            
-                                <table id="tbl-merch" class="table table-striped table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="10%"> S/N </th>
-                                            <th> Source </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th> 1 </th>
-                                            <th> Benson Ventures </th>
-                                        </tr>
-                                        <tr>
-                                            <th> 2 </th>
-                                            <th> Toyosi Business Center </th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="span4 offset1">
-                            <h3 class="span12 header smaller lighter green"> Product Distribution</h3>
-                                <table id="tbl-merch" class="table table-striped table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="10%"> S/N </th>
-                                            <th> Distributions </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th> 1 </th>
-                                            <th> Chuks Communication Limited </th>
-                                        </tr>
-                                        <tr>
-                                            <th> 2 </th>
-                                            <th> Damilare Communications </th>
-                                        </tr>
-                                        <tr>
-                                            <th> 3 </th>
-                                            <th> Mba Recharge Center </th>
-                                        </tr>
-                                        <tr>
-                                            <th> 4 </th>
-                                            <th> God's Favour Ventures </th>
-                                        </tr>
-                                        <tr>
-                                            <th> 5 </th>
-                                            <th> Best Brains Cyber Cafe </th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <?php //if (isset($prodsources) && count($prodsources) != 0): ?>
-                                <!-- <table id="sample-table-1" class="table table-striped table-bordered table-hover" style="margin-left: 0px;">
-                                </table> -->
-                            <?php ///else: ?>
-                                <!-- <p>No Product Sourcing and Distribution details available for this outlet.</p> -->
-                            <?php //endif; ?>
-                            
-                        </div>
-                        <!--End the content of #Product Sourcing tab-->
-
                         <!--End the content of #Visibility tab-->
-                        <div id="visibility" class="tab-pane">
+                        <div id="oproducts" class="tab-pane">
                             <div class="span12">
 
-                            <h3 class="span12 header smaller lighter green"> Merchandise Elements Counts 
-                            <a href="#mer-dialog" class="btn btn-mini btn-primary pull-right" id="add-merch" data-toggle="modal" class="green addBtn">Add</a>
+                            <h3 class="span12 header smaller lighter green"> Products
+                            <a href="#prod-dialog" class="btn btn-mini btn-primary pull-right green addBtn" id="add-prod" data-toggle="modal">Add</a>
                             </h3>
                             <div class="clearfix"></div>
 
-                            <?php if (isset($merchandising) && count($merchandising) != 0): ?>
+                            <?php if (isset($outletproducts) && count($outletproducts) != 0): ?>
                             <div id="merch-not">
                             </div>
 
@@ -347,28 +301,28 @@
                                         <tr>
                                             <th width="3%"> S/N </th>
                                             <th width="20%"> Brand </th>
-                                            <th> Merchandise Element </th>
-                                            <th width="20%"> Element Count </th>                                
+                                            <th> Product </th>
+                                            <th width="20%"> Date Created </th>
                                             <th width="20%" style="text-align: center"> Actions </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
                                         $i = 0;
-                                        foreach ($merchandising as $visibilityevaluation):
+                                        foreach ($outletproducts as $outletproduct):
                                             ?>
-                                            <tr data-id="<?php echo $visibilityevaluation['Visibilityevaluation']['id']; ?>">
+                                            <tr data-id="<?php echo $outletproduct['Outletproduct']['id']; ?>">
                                                 <td width="5%"> <?php echo ++$i ?> </td>
-                                                <td> <?php echo $visibilityevaluation['Brand']['brandname']; ?> </td>
-                                                <td> <?php echo $visibilityevaluation['Brandelement']['brandelementname']; ?> </td>
-                                                <td> <?php echo $visibilityevaluation['Visibilityevaluation']['elementcount']; ?> </td>
+                                                <td> <?php echo $outletproduct['Brand']['brandname']; ?> </td>
+                                                <td> <?php echo $outletproduct['Product']['productname']; ?> </td>
+                                                <td> <?php echo $outletproduct['Outletproduct']['created_at']; ?> </td>
                                                 <td style="text-align: center">
                                                     <div class="hidden-phone visible-desktop action-buttons">
                                                         <?php
-                                                            echo $this->Html->link('<i class="icon-zoom-in bigger-130"></i>', array('controller' => 'visits', 'action' => 'view', $visibilityevaluation['Visibilityevaluation']['visitid']), array('class' => 'blue', 'escape' => false, "data-rel" => "tooltip",  "data-placement" => "top", "data-original-title" => "Visit Details"));
-                                                        ?> | 
-                                                        <a href="#mer-dialog" data-id="<?php echo $visibilityevaluation['Visibilityevaluation']['id']; ?>" data-toggle="modal" class="green edit-merch"><i class="icon-pencil bigger-130"></i></a> | 
-                                                        <a href="#mer-dialog-del" data-id="<?php echo $visibilityevaluation['Visibilityevaluation']['id']; ?>" data-toggle="modal" class="red mer-delete" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i></a>
+                                                            //echo $this->Html->link('<i class="icon-zoom-in bigger-130"></i>', array('controller' => 'products', 'action' => 'view', $outletproduct['Product']['id']), array('class' => 'blue', 'escape' => false, "data-rel" => "tooltip",  "data-placement" => "top", "data-original-title" => "Visit Details"));
+                                                        ?><!-- | -->
+                                                        <a href="#mer-dialog" data-id="<?php echo $outletproduct['Outletproduct']['id']; ?>" data-toggle="modal" class="green edit-merch"><i class="icon-pencil bigger-130"></i></a> |
+                                                        <a href="#mer-dialog-del" data-id="<?php echo $outletproduct['Outletproduct']['id']; ?>" data-toggle="modal" class="red mer-delete" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i></a>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -378,11 +332,11 @@
                                 </table>
                             <?php else: ?>
                                 <!-- No table-bordered. It will be added using js -->
-                                <div id="merch-not">
-                                    <p>No Merchandise counts taken for this outlet.</p>
+                                <div id="prod-not">
+                                    <p>No product counts taken for this outlet.</p>
                                 </div>
                                 
-                                <table id="tbl-merch" class="table table-striped table-bordered table-hover">
+                                <!--<table id="tbl-merch" class="table table-striped table-bordered table-hover">
                                     <thead>
                                         <tr>
                                             <th width="3%"> S/N </th>
@@ -395,12 +349,139 @@
                                     <tbody>
 
                                     </tbody>
-                                </table>
+                                </table>-->
                                 
                             <?php endif; ?>
                             </div>
                         </div>
                         <!--End the content of #Visibility tab-->
+
+
+                        <div id="omerchandize" class="tab-pane">
+                            <div class="span12">
+
+                            <h3 class="span12 header smaller lighter green"> Merchandise Elements Counts
+                            <a href="#mer-dialog" class="btn btn-mini btn-primary pull-right green addBtn" id="add-merch" data-toggle="modal">Add</a>
+                            </h3>
+                            <div class="clearfix"></div>
+
+                            <?php if (isset($outletmerchandize) && count($outletmerchandize) != 0): ?>
+                            <div id="omerch-not"></div>
+
+
+                                <table id="tbl-merch" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th width="3%"> S/N </th>
+                                            <th width="20%"> Brand </th>
+                                            <th> Merchandize Element </th>
+                                            <th width="10%"> Element Count </th>
+                                            <th width="10%"> Appropriately Deployed </th>
+                                            <th width="20%" style="text-align: center"> Actions </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $i = 0;
+                                        foreach ($outletmerchandize as $merchandize):
+                                            ?>
+                                            <tr data-id="<?php echo $merchandize['Outletmerchandize']['id']; ?>">
+                                                <td width="5%"> <?php echo ++$i ?> </td>
+                                                <td> <?php echo $merchandize['Brand']['brandname']; ?> </td>
+                                                <td> <?php echo $merchandize['Merchandize']['name']; ?> </td>
+                                                <td> <?php echo $merchandize['Outletmerchandize']['elementcount']; ?> </td>
+                                                <td> <?php echo $merchandize['Outletmerchandize']['appropriatelydeployed']; ?> </td>
+                                                <td style="text-align: center">
+                                                    <div class="hidden-phone visible-desktop action-buttons">
+                                                        <?php
+                                                            //echo $this->Html->link('<i class="icon-zoom-in bigger-130"></i>', array('controller' => 'merchandize', 'action' => 'view', $merchandize['merchandize']['id']), array('class' => 'blue', 'escape' => false, "data-rel" => "tooltip",  "data-placement" => "top", "data-original-title" => "Visit Details"));
+                                                        ?> <!--|-->
+                                                        <a href="#mer-dialog" data-id="<?php echo $merchandize['Outletmerchandize']['id']; ?>" data-toggle="modal" class="green edit-merch"><i class="icon-pencil bigger-130"></i></a> |
+                                                        <a href="#dialog-del" data-id="<?php echo $merchandize['Outletmerchandize']['id']; ?>" data-toggle="modal" class="red mer-delete" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+
+                                    </tbody>
+                                </table>
+                            <?php else: ?>
+                                <!-- No table-bordered. It will be added using js -->
+                                <div id="merch-not">
+                                    <p>No Merchandise counts taken for this outlet.</p>
+                                </div>
+
+                                <!--<table id="tbl-merch" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th width="3%"> S/N </th>
+                                            <th width="20%"> Brand </th>
+                                            <th> Visibility Element </th>
+                                            <th width="20%"> Element Count </th>
+                                            <th width="20%" style="text-align: center"> Actions </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>-->
+
+                            <?php endif; ?>
+                            </div>
+                        </div>
+                        <!--End the content of #Visibility tab-->
+
+                        <!--End the content of #Product Sourcing tab-->
+                        <div id="oprodsourcedistrib" class="tab-pane">
+                            <div class="span12">
+                                <h3 class="span12 header smaller lighter green"> Product Sourcing</h3>
+
+                            <?php if (isset($productsources) && count($productsources) != 0): ?>
+
+                                <table id="tbl-merch" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th width="3%"> S/N </th>
+                                        <th width="20%"> Source Name </th>
+                                        <th> Phone Number  </th>
+                                        <th width="10%"> Alternate Number  </th>
+                                        <th width="20%" style="text-align: center"> Actions </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    $i = 0;
+                                    foreach ($productsources as $productsource):
+                                        ?>
+                                        <tr data-id="<?php echo $productsource['Productsource']['id']; ?>">
+                                            <td width="5%"> <?php echo ++$i ?> </td>
+                                            <td> <?php echo $productsource['Productsource']['productsourcename']; ?> </td>
+                                            <td> <?php echo $productsource['Productsource']['phonenumber']; ?> </td>
+                                            <td> <?php echo $productsource['Productsource']['alternatenumber']; ?> </td>
+                                            <td style="text-align: center">
+                                                <div class="hidden-phone visible-desktop action-buttons">
+                                                    <?php
+                                                    //echo $this->Html->link('<i class="icon-zoom-in bigger-130"></i>', array('controller' => 'merchandize', 'action' => 'view', $merchandize['merchandize']['id']), array('class' => 'blue', 'escape' => false, "data-rel" => "tooltip",  "data-placement" => "top", "data-original-title" => "Visit Details"));
+                                                    ?> <!--|-->
+                                                    <a href="#mer-dialog" data-id="<?php echo $productsource['Productsource']['id']; ?>" data-toggle="modal" class="green edit-merch"><i class="icon-pencil bigger-130"></i></a> |
+                                                    <a href="#mer-dialog-del" data-id="<?php echo $productsource['Productsource']['id']; ?>" data-toggle="modal" class="red mer-delete" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+
+                                    </tbody>
+                                </table>
+                            <?php else: ?>
+                                <!-- No table-bordered. It will be added using js -->
+                                <div id="prods-not">
+                                    <p>No Product Source not taken for this outlet.</p>
+                                </div>
+
+                            <?php endif; ?>
+
+                        </div>
+                        <!--End the content of #Product Sourcing tab-->
 
                     </div>
                 </div>
@@ -417,7 +498,7 @@
 </div><!--/.main-content-->
 
 
-<div id="mer-dialog-del" class="modal hide fade" style="width: 400px; margin-left: -125px;" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="dialog-del" class="modal hide fade" style="width: 400px; margin-left: -125px;" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel"> Delete</h3>
@@ -436,87 +517,12 @@
     </div>
 </div>
 
-<div id="mer-dialog" class="modal hide fade" style="width: 400px; margin-left: -125px;" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"> Edit Visibility Evaluation Details </h3>
-    </div>
-    <!-- Start Modal Body -->
-    <div class="modal-body">
-        <input type="hidden" name="id" id="id" />
+<?php echo $this->element('_outlet_dialog', array('outlet' => $outlet)); ?>
 
-        <label>Visit</label>
-        <input name="visitid" require="1" placeholder="Visit Id" class="span4" type="text" id="visitid"
-        value="<?php if(isset($merchandising[0]['Visibilityevaluation']['visitid'])) echo $merchandising[0]['Visibilityevaluation']['visitid']; ?>"
-        >
+<?php echo $this->element('_outletmerchandize_dialog', array('outletmerchandize' => $outletmerchandize)); ?>
 
-        <br />
-        <label>Brand</label>
-        <select name="brandid" id="brands" class="span4">
-            <option value="">MTN</option>
-        </select>
+<?php echo $this->element('_outletproduct_dialog', array('outletmerchandize' => $outletmerchandize)); ?>
 
-        <br />
-        <label>Visibility Element</label>
-        <select name="brandelementid" id="brandelements" class="span4">
-            <option value="">Umbrella</option>
-        </select>
-
-        <br />
-        <label>Element Count</label>
-        <input name="element_count" require="1" placeholder="Element Count" class="span4" type="text" id="element_count">
-    </div>  
-    <!-- End Modal Body -->
-
-    <div class="modal-footer">
-        <a href="#" class="btn btn-success saveBtn"> Save </a>
-        <a href="#" data-dismiss="modal" class="btn btn-danger pull-left cancelBtn"> Cancel </a>
-    </div>
-</div>
-
-<!-- Start Product availability dialog box -->
-<div id="pa-dialog" class="modal hide fade" style="width: 400px; margin-left: -125px;" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">Edit Product Availability</h3>
-    </div>
-    <!-- Start Modal Body -->
-    <div class="modal-body">
-        <input type="hidden" name="pa-id" id="pa-id" />
-
-        <label>Visit ID</label>
-        <input name="pa-visitid" require="1" placeholder="Visit" class="span4" type="text" id="pa-visits"
-        value="<?php if(isset($prodavail[0]['Productavailability']['visitid'])) echo $prodavail[0]['Productavailability']['visitid']; ?>"
-        >
-
-        <br />
-        <label>Brand</label>
-        <select name="pa-brands" id="pa-brands" class="span4">            
-        </select>
-
-        <br />
-        <label>Product</label>
-        <select name="pa-product" id="pa-product" class="span4">
-        </select>
-
-        <br />
-        <label>Quantity</label>
-        <input name="pa-quantity" require="1" placeholder="Quantity" class="span4" type="text" id="pa-quantity">
-
-        <br />
-        <label>Unit Price</label>
-        <input name="pa-unitprice" require="1" placeholder="Unit Price" class="span4" type="text" id="pa-unitprice">
-
-        <br />
-        <label>Purchase Point</label>
-        <input name="pa-purchase-point" require="1" placeholder="Purchase Point" class="span4" type="text" id="pa-purchase-point">
-    </div>  
-
-    <div class="modal-footer">
-        <a href="#" class="btn btn-success pa-saveBtn"> Save </a>
-        <a href="#" data-dismiss="modal" class="btn btn-danger pull-left pa-cancelBtn"> Cancel </a>
-    </div>
-    <!-- End Modal Body -->
-</div>
+<?php echo $this->element('_productsource_dialog', array('outletmerchandize' => $outletmerchandize)); ?>
 
 <?php echo $this->Html->script('/assets/bootstrap/bootstrap-modal'); ?>

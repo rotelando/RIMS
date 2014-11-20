@@ -1,7 +1,7 @@
 <div class="main-content">
 
 
-    <?php echo $this->element('breadcrumb'); ?>
+    <?php //echo $this->element('breadcrumb'); ?>
 
 
     <div class="page-content">
@@ -182,7 +182,7 @@
                                 <th width="10%"> Location </th>
                                 <th width="10%"> Phone Number </th>
                                 <th width="10%"> Type </th>
-                                <th width="17%"> Channel </th>                         
+                                <th width="17%"> Retailtype </th>
                                 <th width="13%"> Date Added </th>
                                 <th width="10%" style="text-align: center"> Actions </th>
                             </tr>

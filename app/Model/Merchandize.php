@@ -4,7 +4,7 @@ class Merchandize extends AppModel {
 
     public $name = 'Merchandize';
     public $useTable = 'merchandize';
-    public $displayField = 'merchandizename';
+    public $displayField = 'name';
     public $validate = array(
         'merchandizename' => array(
             'Must be unique' => array(

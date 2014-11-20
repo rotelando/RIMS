@@ -8,7 +8,7 @@
                 Setup
                 <small>
                     <i class="icon-double-angle-right"></i>
-                    Brands, Outlet Classificaitons, Merchandize, Products & Locations
+                    Brands, Outlet Classifications, Merchandize, Products & Locations
                 </small>
             </h1>
         </div>
@@ -90,8 +90,8 @@
                             <thead>
                             <tr>
                                 <th width="10%"> S/N </th>
-                                <th> Local Government Areas </th>
                                 <th> Territory </th>
+                                <th> State </th>
                                 <!--<th> Region </th>-->
                                 <th style="text-align: center" width="10%"> Actions </th>
                             </tr>

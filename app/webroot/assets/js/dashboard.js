@@ -1,5 +1,9 @@
 $(document).ready(function() {
 
+    try {
+        $('.image-list a').vanillabox();
+    } catch (e) {};
+
     //Query Parameter for filter box
     var floc = $('#filter-location option:selected').val();
     var fuser = $('#filter-user option:selected').val();
@@ -54,7 +58,85 @@ $(document).ready(function() {
     });
 
 
-    $('#performance').highcharts({
+    var oUrl =  config.URL + 'outlets/outletperformance';
+    //Outlet Performance Data
+    function get_outlet_performance() {
+        return $.ajax({
+            url: oUrl,
+            data: param,
+            dataType: 'JSON'
+        });
+    }
+
+    var outlet_performance = get_outlet_performance();
+
+    outlet_performance.success(function(outlet_performance_data) {
+
+        $('#outlet_perfomance').highcharts({
+            chart: {
+                zoomType: 'x',
+                spacingRight: 20
+            },
+            title: {
+                text: 'Performance by outlet additions for last 2 weeks'
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                    'Click and drag in the plot area to zoom in' :
+                    'Pinch the chart to zoom in'
+            },
+            xAxis: {
+                type: 'datetime',
+                maxZoom: 7 * 24 * 3600000, // fourteen days
+                title: {
+                    text: null
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Total Number of Outlets'
+                },
+                min: 0
+            },
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    lineWidth: 1,
+                    marker: {
+                        enabled: false
+                    },
+                    shadow: false,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+
+            series: [ outlet_performance_data ]
+        });
+    });
+
+    /*$('#performance').highcharts({
         chart: {
             type: 'spline'
         },
@@ -110,7 +192,7 @@ data: [
         color: "#dc3813"
         }
       ]
-    });
+    });*/
 
     mapDashboardFunction('');
     var mapurl = config.URL + 'dashboard/mapdata';
@@ -122,6 +204,144 @@ data: [
         width: "100%",
         height: "650",
         id: "myMapId"
+    });
+
+    //Outlet Distribution Data
+    //Outlet Distribution Data
+    var url =  config.URL + 'dashboard/outletmerchandizedistribution';
+    function get_merchandize_distribution() {
+        return $.ajax({
+            url: url,
+            data: param,
+            dataType: 'JSON'
+        });
+    }
+
+    var merchandize_distribution = get_merchandize_distribution();
+
+    merchandize_distribution.success(function(distribution_data) {
+        $('#outlet_merchandize').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Brand Merchandize Share'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        distance: -30,
+                        color: 'white',
+                        format: '{point.percentage:.1f} %'
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Merchandize Share',
+                data: distribution_data
+            }]
+        });
+    });
+
+    //Retail Distribution Data
+    url =  config.URL + 'outlets/retailtypedistribution';
+    function get_retailtype_distribution() {
+        return $.ajax({
+            url: url,
+            data: param,
+            dataType: 'JSON'
+        });
+    }
+
+    var outlet_retailtype_distribution = get_retailtype_distribution();
+    outlet_retailtype_distribution.success(function(distribution_data) {
+
+        $('#outlet_retail').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Retail Classification'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        distance: -30,
+                        color: '#ffffff',
+                        connectorColor: '#000000',
+                        format: '{point.percentage:.1f} %'
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Retail Classification',
+                data: distribution_data
+            }]
+        });
+    });
+
+    //Retail Distribution Data
+    url =  config.URL + 'dashboard/outletproductdistribution';
+    function get_outletproduct_distribution() {
+        return $.ajax({
+            url: url,
+            data: param,
+            dataType: 'JSON'
+        });
+    }
+
+    var outletproduct_distribution = get_outletproduct_distribution();
+    outletproduct_distribution.success(function(distribution_data) {
+
+        $('#outlet_product').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Product Share'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        distance: -30,
+                        color: '#ffffff',
+                        connectorColor: '#000000',
+                        format: '{point.percentage:.1f} %'
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Product Share',
+                data: distribution_data
+            }]
+        });
     });
 
 });

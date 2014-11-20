@@ -6,7 +6,8 @@ class MyLinkHelper extends AppHelper {
 
 //        return "http://papyrusapi.alexanderharing.com/files/images/" . $filename;
 //        return "http://staging-api.fieldmaxpro.com/files/images/"  . $filename;
-        return "http://rims.local/assets/images/" . $filename;
+        //return "http://api.rims.local/assets/images/" . $filename;
+        return "http://api.rims.local/image_uploads/" . $filename;
     }
     
     public function getLastVisitedUrl() {

@@ -1,6 +1,6 @@
 <div class="main-content">
 
-    <?php echo $this->element('breadcrumb'); ?>
+    <?php /*echo $this->element('breadcrumb'); */?>
 
 
     <div class="page-content">
@@ -68,95 +68,95 @@
 
         <?php echo $this->element('filter_bar_outlet'); ?>
 
-        <div class="row-fluid">
-            <div class="span3">
-                <div class="visit-accuracy">
-                    <a href="outlets/all">
-                    <div class="border">
-                        <span class="visit-value"><?php echo $outlet_count; ?></span>
-                        <span class="visit-name">Total Outlets</span>
+            <div class="row-fluid">
+                <div class="span3" style="margin: 0px">
+                    <div class="visit-accuracy">
+                        <a href="outlets/all">
+                            <div class="border">
+                                <span class="visit-value"><?php echo $outlet_count; ?></span>
+                                <span class="visit-name">Total Outlets</span>
+                            </div>
+                        </a>
                     </div>
-                    </a>
                 </div>
-            </div>
-            <div class="span3">
-                <div class="statitem distribution border">
-                        <div class="stattitle title-d">Retailers per Products</div>
+                <div class="span3">
+                    <div class="statitem distribution border">
+                        <div class="stattitle title-d">Retail Classification</div>
                         <?php
-                            $i = 0;
-                            foreach ($distributions as $distribution): ?>
-                                <div class="statvalue distrib"><?php echo $distribution[0]['count'] ?></div> 
-                                    <?php echo $this->Html->link($distribution['Outlettype']['outlettypename'], 
-                                            array('action' => 'all', '?' => array('otype' => $distribution['Outlettype']['id']))) ?> 
-                                <?php if($i == count($distribution)): ?>
-                                    <div class="clr"></div>
-                                <?php else: ?>
-                                    <div class="clr border-d"></div>
-                                <?php endif; 
-                                $i++
-                                ?>
-                         <?php endforeach; ?>   
-                            
-                    </div>
-            </div>
-
-            <div class="span3">
-                <div id="statcontainer">
-                    <div class="statitem high">
-                        <div class="stattitle title-h">Most crowded Territories</div>
-                        <?php if (isset($most_location[0])): ?>
-                            <div class="statvalue"><?php echo $most_location[0][0]['count']; ?></div> Outlets in 
-                            <span class="statloc"><?php echo $most_location[0]['Location']['locationname']; ?></span>
-                            <div class="clr border-h"></div>
-                        <?php endif; ?>
-                        <?php if (isset($most_location[1])): ?>
-                            <div class="statvalue"><?php echo $most_location[1][0]['count']; ?></div> Outlets in 
-                            <span class="statloc"><?php echo $most_location[1]['Location']['locationname']; ?></span>
-                            <div class="clr border-h"></div>
-                        <?php endif; ?>
-                        <?php if (isset($most_location[2])): ?>
-                            <div class="statvalue"><?php echo $most_location[2][0]['count']; ?></div> Outlets in 
-                            <span class="statloc"><?php echo $most_location[2]['Location']['locationname']; ?></span>
-                            <div class="clr"></div>
-                        <?php endif; ?>
+                        $i = 0;
+                        foreach ($distributions as $distribution): ?>
+                            <div class="statvalue distrib"><?php echo $distribution[0]['count'] ?></div>
+                            <?php echo $this->Html->link($distribution['Retailtype']['retailtypename'],
+                                array('action' => 'all', '?' => array('otype' => $distribution['Retailtype']['id']))) ?>
+                            <?php if($i == count($distribution)): ?>
+                                <div class="clr"></div>
+                            <?php else: ?>
+                                <div class="clr border-d"></div>
+                            <?php endif;
+                            $i++
+                            ?>
+                        <?php endforeach; ?>
 
                     </div>
                 </div>
-            </div>
-            <div class="span3">
-                <div id="statcontainer">
-                    <div class="statitem low">
-                        <div class="stattitle title-l">Least crowded Territories</div>
-                        <?php if (isset($least_location[0])): ?>
-                        <div class="statvalue"><?php echo $least_location[0][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[0]['Location']['locationname']; ?></span>
-                        <div class="clr border-l"></div>
-                        <?php endif; ?>
-                        <?php if (isset($least_location[1])): ?>
-                        <div class="statvalue"><?php echo $least_location[1][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[1]['Location']['locationname']; ?></span>
-                        <div class="clr border-l"></div>
-                        <?php endif; ?>
-                        <?php if (isset($least_location[2])): ?>
-                        <div class="statvalue"><?php echo $least_location[2][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[2]['Location']['locationname']; ?></span>
-                        <div class="clr"></div>
-                        <?php endif; ?>
+
+                <div class="span3">
+                    <div id="statcontainer">
+                        <div class="statitem high">
+                            <div class="stattitle title-h">Most crowded Territories</div>
+                            <?php if (isset($most_location[0])): ?>
+                                <div class="statvalue"><?php echo $most_location[0][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $most_location[0]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-h"></div>
+                            <?php endif; ?>
+                            <?php if (isset($most_location[1])): ?>
+                                <div class="statvalue"><?php echo $most_location[1][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $most_location[1]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-h"></div>
+                            <?php endif; ?>
+                            <?php if (isset($most_location[2])): ?>
+                                <div class="statvalue"><?php echo $most_location[2][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $most_location[2]['Territory']['territoryname']; ?></span>
+                                <div class="clr"></div>
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="span3">
+                    <div id="statcontainer">
+                        <div class="statitem low">
+                            <div class="stattitle title-l">Least crowded Territories</div>
+                            <?php if (isset($least_location[0])): ?>
+                                <div class="statvalue"><?php echo $least_location[0][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $least_location[0]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-l"></div>
+                            <?php endif; ?>
+                            <?php if (isset($least_location[1])): ?>
+                                <div class="statvalue"><?php echo $least_location[1][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $least_location[1]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-l"></div>
+                            <?php endif; ?>
+                            <?php if (isset($least_location[2])): ?>
+                                <div class="statvalue"><?php echo $least_location[2][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $least_location[2]['Territory']['territoryname']; ?></span>
+                                <div class="clr"></div>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
             <div class="row-fluid">
                 <!--Customer Distribution-->
                 <h3 class="header smaller lighter green">Outlet Distribution</h3>
-                <div class="span4" style="margin-left: 0px;">
+                <div class="span6" style="margin-left: 0px;">
                     <div id="advocacy_class" style="min-width: 250px; height: 350px; margin: 0 auto;"></div>
                 </div>
-                <div class="span4" style="margin-left: 0px;">
+                <!--<div class="span4" style="margin-left: 0px;">
                     <div id="outlet_channels" style="min-width: 250px; height: 350px; margin: 0 auto;"></div>
-                </div>
-                <div class="span4" style="margin-left: 0px;">
+                </div>-->
+                <div class="span6" style="margin-left: 0px;">
                     <div id="outlet_retail" style="min-width: 250px; height: 350px; margin: 0 auto;"></div>
                 </div>
             </div>        
@@ -189,8 +189,9 @@
                                 <th> Name</th>
                                 <th> Contact First Name</th>
                                 <th> Contact Phone Number</th>
-                                <th> Advocacy Class</th>
+                                <th> Retailtype </th>
                                 <th> Location </th>
+                                <th> Added By </th>
                                 <th width="10%" style="text-align: center"> Actions </th>
                             </tr>
                         </thead>
@@ -203,10 +204,11 @@
                                     <td width="5%"> <?php echo++$i ?> </td>
                                     <td> <?php echo $outlet['Outlet']['outletname']; ?>  </td>
                                     <td> <?php echo $outlet['Outlet']['contactfirstname']; ?>  </td>
-                                    <td> <?php echo $outlet['Outlet']['phonenumber']; ?>  </td>
-                                    <td> <?php echo $outlet['Outlettype']['outlettypename']; ?>  </td>
+                                    <td> <?php echo $outlet['Outlet']['contactphonenumber']; ?>  </td>
+                                    <td> <?php echo $outlet['Retailtype']['retailtypename']; ?>  </td>
                                     <td> <?php echo $outlet['Location']['locationname']; ?> </td>
-                                    
+                                    <td> <?php echo $outlet['0']['fullname']; ?> </td>
+
                                     <td style="text-align: center"> 
                                         <div class="hidden-phone visible-desktop action-buttons">
                                             <?php
@@ -253,9 +255,9 @@
                     <?php foreach ($markerIndex as $key => $value) { ?> 
                         <div class="span2">
                         <img src="<?php echo 'assets/js/custommarkers/'. $markers[$value]; ?>" />    
-                         <br />
+                         <!--<br />-->
                         <?php
-                             echo $outlettypes[$key];
+                             echo $retailtypes[$key];
                         ?> 
                         </div>
                     <?php } ?>

@@ -12,4 +12,10 @@ class Retailtype extends AppModel {
         )
     );
 
+    public function getRetailtypeAsList() {
+
+        $retailtypes = $this->find('list');
+        return $retailtypes;
+    }
+
 }

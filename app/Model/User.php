@@ -101,6 +101,12 @@ class User extends AppModel {
         return $users;
     }
 
+    public function getUsersAsList() {
+
+        $userlist = $this->find('list');
+        return $userlist;
+    }
+
     public function matchPassword($data) {
         
 //        debug($data);

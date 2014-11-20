@@ -84,17 +84,17 @@
 									</li>
 									<li>
                                         <?php echo $this->Html->link('<i class="icon-globe"></i> Territories ',
-                                            array('controller'=>'territories'),
+                                            array('controller'=>'territories', 'action' => 'index'),
                                                 array('escape'=>false)); ?>
 									</li>
 									<li>
                                         <?php echo $this->Html->link('<i class="icon-globe"></i> LGAs ',
-                                            array('controller'=>'lgas'),
+                                            array('controller'=>'lgas', 'action' => 'index'),
                                                 array('escape'=>false)); ?>
 									</li>
                                     <li>
                                         <?php echo $this->Html->link('<i class="icon-globe"></i> POPs ',
-                                            array('controller'=>'locations'),
+                                            array('controller'=>'locations', 'action' => 'index'),
                                             array('escape'=>false)); ?>
                                     </li>
 								</ul>
@@ -169,19 +169,63 @@
                         array('escape'=>false)); ?>
         </li>
 
+        <li <?php if(isset($active_item) && $active_item == 'products') echo 'class="active"'; ?>>
+            <?php echo $this->Html->link('<i class="icon-briefcase"></i>
+                <span class="menu-text"> Products <span class="badge badge-primary">'. '0' .'</span></span>',
+                array('#'=>'#'),
+                        array('escape'=>false)); ?>
+        </li>
+
         <li <?php if(isset($active_item) && $active_item == 'visibilities') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-bookmark"></i>
-                <span class="menu-text"> Merchandising </span>',
-                    array('controller'=>'visibilityevaluations','action'=>'index'),
+                <span class="menu-text"> Merchandizing </span>',
+                array('#'=>'#'),
                         array('escape'=>false)); ?>
+        </li>
+
+        <li <?php if(isset($active_item) && $active_item == 'phonebook') echo 'class="active"'; ?>>
+            <?php echo $this->Html->link('<i class="icon-mobile-phone"></i>
+                <span class="menu-text"> Phone Book </span>',
+                array('#'=>'#'),
+                array('escape'=>false)); ?>
         </li>
 
         <li <?php if(isset($active_item) && $active_item == 'images') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-picture"></i>
                 <span class="menu-text"> Images </span>',
-                    array('controller'=>'images','action'=>'index'),
+                    array('#'=>'#'),
                         array('escape'=>false)); ?>
         </li>
+
+        <!--
+
+        <li <?php /*if(isset($active_item) && $active_item == 'products') echo 'class="active"'; */?>>
+            <?php /*echo $this->Html->link('<i class="icon-briefcase"></i>
+                <span class="menu-text"> Products <span class="badge badge-primary">'. '0' .'</span></span>',
+                    array('controller'=>'products','action'=>'index'),
+                        array('escape'=>false)); */?>
+        </li>
+
+        <li <?php /*if(isset($active_item) && $active_item == 'visibilities') echo 'class="active"'; */?>>
+            <?php /*echo $this->Html->link('<i class="icon-bookmark"></i>
+                <span class="menu-text"> Merchandizing </span>',
+                    array('controller'=>'visibilityevaluations','action'=>'index'),
+                        array('escape'=>false)); */?>
+        </li>
+
+        <li <?php /*if(isset($active_item) && $active_item == 'phonebook') echo 'class="active"'; */?>>
+            <?php /*echo $this->Html->link('<i class="icon-mobile-phone"></i>
+                <span class="menu-text"> Phone Book </span>',
+                array('controller'=>'phonebook','action'=>'index'),
+                array('escape'=>false)); */?>
+        </li>
+
+        <li <?php /*if(isset($active_item) && $active_item == 'images') echo 'class="active"'; */?>>
+            <?php /*echo $this->Html->link('<i class="icon-picture"></i>
+                <span class="menu-text"> Images </span>',
+                    array('controller'=>'images','action'=>'index'),
+                        array('escape'=>false)); */?>
+        </li>-->
 
         <li <?php if(isset($active_item) && $active_item == 'maps') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-globe"></i>

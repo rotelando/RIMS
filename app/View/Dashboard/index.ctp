@@ -77,13 +77,13 @@
             </div>
             <div class="span3">
                 <div class="statitem distribution border">
-                        <div class="stattitle title-d">Retailers per Products</div>
+                        <div class="stattitle title-d">Retail Classification</div>
                         <?php
                             $i = 0;
                             foreach ($distributions as $distribution): ?>
                                 <div class="statvalue distrib"><?php echo $distribution[0]['count'] ?></div> 
-                                    <?php echo $this->Html->link($distribution['Outlettype']['outlettypename'], 
-                                            array('action' => 'all', '?' => array('otype' => $distribution['Outlettype']['id']))) ?> 
+                                    <?php echo $this->Html->link($distribution['Retailtype']['retailtypename'],
+                                            array('action' => 'all', '?' => array('otype' => $distribution['Retailtype']['id']))) ?>
                                 <?php if($i == count($distribution)): ?>
                                     <div class="clr"></div>
                                 <?php else: ?>
@@ -101,18 +101,18 @@
                     <div class="statitem high">
                         <div class="stattitle title-h">Most crowded Territories</div>
                         <?php if (isset($most_location[0])): ?>
-                            <div class="statvalue"><?php echo $most_location[0][0]['count']; ?></div> Outlets in 
-                            <span class="statloc"><?php echo $most_location[0]['Location']['locationname']; ?></span>
+                            <div class="statvalue"><?php echo $most_location[0][0]['count']; ?></div> Outlets in
+                            <span class="statloc"><?php echo $most_location[0]['Territory']['territoryname']; ?></span>
                             <div class="clr border-h"></div>
                         <?php endif; ?>
                         <?php if (isset($most_location[1])): ?>
-                            <div class="statvalue"><?php echo $most_location[1][0]['count']; ?></div> Outlets in 
-                            <span class="statloc"><?php echo $most_location[1]['Location']['locationname']; ?></span>
+                            <div class="statvalue"><?php echo $most_location[1][0]['count']; ?></div> Outlets in
+                            <span class="statloc"><?php echo $most_location[1]['Territory']['territoryname']; ?></span>
                             <div class="clr border-h"></div>
                         <?php endif; ?>
                         <?php if (isset($most_location[2])): ?>
-                            <div class="statvalue"><?php echo $most_location[2][0]['count']; ?></div> Outlets in 
-                            <span class="statloc"><?php echo $most_location[2]['Location']['locationname']; ?></span>
+                            <div class="statvalue"><?php echo $most_location[2][0]['count']; ?></div> Outlets in
+                            <span class="statloc"><?php echo $most_location[2]['Territory']['territoryname']; ?></span>
                             <div class="clr"></div>
                         <?php endif; ?>
 
@@ -125,17 +125,17 @@
                         <div class="stattitle title-l">Least crowded Territories</div>
                         <?php if (isset($least_location[0])): ?>
                         <div class="statvalue"><?php echo $least_location[0][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[0]['Location']['locationname']; ?></span>
+                        <span class="statloc"><?php echo $least_location[0]['Territory']['territoryname']; ?></span>
                         <div class="clr border-l"></div>
                         <?php endif; ?>
                         <?php if (isset($least_location[1])): ?>
                         <div class="statvalue"><?php echo $least_location[1][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[1]['Location']['locationname']; ?></span>
+                        <span class="statloc"><?php echo $least_location[1]['Territory']['territoryname']; ?></span>
                         <div class="clr border-l"></div>
                         <?php endif; ?>
                         <?php if (isset($least_location[2])): ?>
                         <div class="statvalue"><?php echo $least_location[2][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[2]['Location']['locationname']; ?></span>
+                        <span class="statloc"><?php echo $least_location[2]['Territory']['territoryname']; ?></span>
                         <div class="clr"></div>
                         <?php endif; ?>
                     </div>
@@ -143,10 +143,84 @@
             </div>
         </div>
 
-
         <div class="row-fluid">
+            <!--Customer Distribution-->
+            <h3 class="header smaller lighter green">Outlet Distribution</h3>
+            <div class="span4" style="margin-left: 0px;">
+                <div id="outlet_retail" style="min-width: 250px; height: 350px; margin: 0 auto;"></div>
+            </div>
+            <div class="span4" style="margin-left: 0px;">
+                <div id="outlet_product" style="min-width: 250px; height: 350px; margin: 0 auto;"></div>
+            </div>
+            <div class="span4" style="margin-left: 0px;">
+                <div id="outlet_merchandize" style="min-width: 250px; height: 350px; margin: 0 auto;"></div>
+            </div>
+        </div>
+
+        <!--<div class="row-fluid">
             <h3 class="span12 header smaller lighter green">Outlet Distribution Chart</h3>
             <div id="performance" height="400px" min-width="350px"></div>
+        </div>-->
+        <div class="row-fluid">
+            <div class="row-fluid">
+                <div class="span12" style="height: auto">
+                    <h3 class="span12 header smaller lighter green">Outlet Growth</h3>
+                    <div id="outlet_perfomance" style="min-width: 310px; min-height: 400px; margin: 0 auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid" style="height: auto">
+                    <h3 class="span12 header smaller lighter green">Recently Captured Images
+                        <?php
+                        echo $this->Html->link('<i class="icon-list"></i> More', array('controller' => 'images', 'action' => 'index'), array('class' => 'btn btn-mini btn-success pull-right', 'escape' => false));
+                        ?>
+                    </h3>
+                    <?php
+
+                    for ($i = 0; $i < count($oimages); $i++) {
+
+                        if($i == 0) {
+                            echo '<ul class="thumbnails image-list jscroll" id="grouped-image-list">';
+                        } elseif(($i % 6) == 0) {
+                            echo '</ul><ul class="thumbnails image-list jscroll" id="grouped-image-list">';
+                        }
+
+                        ?>
+
+                        <li
+                            class="span2"
+                            data-animation="true"
+                            data-rel="popover"
+                            data-html="true"
+                            data-trigger="hover"
+                            data-placement="top"
+                            data-original-title="Image details"
+                            data-content="
+                                    <?php
+                            echo '<strong>Outet Name:</strong> ' .$oimages[$i]['Outlet']['outletname'].'<br />';
+                            echo '<strong>Location:</strong> ' .$oimages[$i]['Location']['locationname'].'<br />';
+                            echo '<strong>Staff:</strong> ' .ucfirst($oimages[$i][0]['fullname']).'<br />';
+                            echo '<strong>Date:</strong> ' .$oimages[$i]['Outletimage']['created_at'].'<br />';
+                            ?>"
+                            >
+
+                            <a href="<?php echo $this->MyLink->getImageUrlPath($oimages[$i]['Outletimage']['url']); ?>"
+                               title="<?php echo $oimages[$i]['Outlet']['outletname'] . ' at ' . $oimages[$i]['Location']['locationname'] . " on " . $oimages[$i]['Outletimage']['created_at'] ?>"
+                               class="thumbnail">
+                                <!--<a href="<?php // echo $this->base . '/images/index/' . $images[$i]['Image']['id']; ?>" class="thumbnail">-->
+                                <!--<img src="http://placehold.it/300x300" alt="">-->
+                                <?php // echo $this->Html->image($images[$i]['Image']['filename'], array('width' => '600', 'height' => '450')); ?>
+                                <img src="<?php echo $this->MyLink->getImageUrlPath($oimages[$i]['Outletimage']['url']); ?>" alt="">
+                            </a>
+                        </li>
+
+                        <?php } ?>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="row-fluid">
@@ -185,41 +259,11 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>Outlet Count</strong></td>
-                                    <td id="outletcount"></td>
+                                    <td><strong style="font-weight: bolder;">Outlet Count</strong></td>
+                                    <td id="outletcount"><?php echo $outlet_count; ?></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><strong>Advocacy Classification</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>Communications</td>
-                                    <td id="planned">34,000</td>
-                                </tr>
-                                <tr>
-                                    <td>Visibility</td>
-                                    <td id="actual">78,059</td>
-                                </tr>
-                                <tr>
-                                    <td>Availability</td>
-                                    <td id="target">46,543</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"><strong>Channel Classification</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>Trade Partners</td>
-                                    <td id="visitperday">546</td>
-                                </tr>
-                                <tr>
-                                    <td>Sub-Trade Partners</td>
-                                    <td id="visitperday">123</td>
-                                </tr>
-                                <tr>
-                                    <td>Retailers</td>
-                                    <td id="visitperday">98,664</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"><strong>Retail Classification</strong></td>
+                                    <td colspan="2" style="font-weight: bolder;"><strong>Retail Classification</strong></td>
                                 </tr>
                                 <tr>
                                     <td>Pay & Go</td>

@@ -33,8 +33,8 @@
                     <div class="control-group">
                         <label class="control-label">Firstname</label>
                         <div class="controls">
-                            <?php echo $this->Form->input('firstname', array('label' => false, 'placeholder' => 'Firstname', 'class' => 'span3 left-stripe', 'type' => 'text'));
-                            ?>
+                                <?php echo $this->Form->input('firstname', array('label' => false, 'placeholder' => 'Firstname', 'class' => 'span3 left-stripe', 'type' => 'text'));
+                                ?>
                             <!--<input type="text" name="firstname" placeholder="Firstname" class="span5 left-stripe">-->
                         </div>
                     </div>

@@ -175,13 +175,11 @@
                 //This should be loaded when Outlets tab is clicked
                 if ($this->params['action'] == 'view') {
                     echo $this->Html->script('outlet-view');
+                    echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min');
                 } else {
                     echo $this->Html->script('outlet-map');
                     echo $this->Html->script('outlets');
                 }
-
-                echo $this->Html->script('vanillabox/jquery.vanillabox');
-
 
             } elseif ($active_item == 'settings') {
 

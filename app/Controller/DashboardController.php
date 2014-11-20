@@ -4,7 +4,8 @@ class DashboardController extends AppController {
 
     public $name = 'dashboard';
     //The first item is assumed to be the Model!
-    public $uses = array('Brand', 'Product', 'Image', 'User', 'Location', 'State', 'Brief');
+    public $uses = array('Outlet', 'Brand', 'Product', 'Image', 'User', 'Location', 'State', 'Brief', 'Outletproduct',
+        'Outletmerchandize', 'Outletimage');
     public $components = array('Paginator', 'Filter');
     public $helpers = array('MyLink');
 
@@ -13,14 +14,24 @@ class DashboardController extends AppController {
     
     function index() {
 
-        //$recentImages = $this->_getResentImages(16);
+        $outlet_count = $this->Outlet->countOutlet();
 
-        //$this->set('images', $recentImages);
+        $recentImages = $this->Outletimage->recentImages(6);
+        $this->set(array('oimages' => $recentImages));
 
-        //$distrib = $this->_outletdistribution(true);
-        //$least = $this->_leastCrowdedLocations();
-        //$most = $this->_mostCrowdedLocations();
-        //$this->set(array('least_location' => $least, 'most_location' => $most, 'distributions' => $distrib));
+        $distrib = $this->Outlet->retailTypeDistribution();
+        $least = $this->Outlet->leastCrowdedLocations();
+        $most = $this->Outlet->mostCrowdedLocations();
+
+        $this->set(
+            array(
+                'outlet_count' => $outlet_count,
+                'least_location' => $least,
+                'most_location' => $most,
+                'distributions' => $distrib
+
+            )
+        );
     }
 
     public function beforeFilter() {
@@ -32,91 +43,6 @@ class DashboardController extends AppController {
        
     }
 
-    private function _outletdistribution($postdata = false) {
-        
-        if($postdata) {
-            $options = $this->postoptions;
-        } else {
-            $options = $this->urloptions;
-        }
-        
-        $options['fields'] = array(
-            'Outlettype.outlettypename', 
-            'Outlettype.id', 
-            'Count(Outlet.outlettypeid) as count'
-        );
-        $options['group'] = array('outlettypeid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'outlettypes',
-                'alias' => 'Outlettype',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.outlettypeid = Outlettype.id'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        $rs = $this->Outlet->find('all', $options);
-        return $rs;
-    }
-    
-    private function _leastCrowdedLocations($number = 3) {
-        $result = $this->Outlet->find('all', array(
-            'fields' => array('Outlet.location_id', 'Location.locationname', 'COUNT(Outlet.location_id) as count'),
-            'group' => array('Outlet.location_id'),
-            'limit' => $number,
-            'recursive' => -1,
-            'order' => array('count asc'),
-            'joins' => array(
-                array(
-                    'table' => 'locations',
-                    'alias' => 'Location',
-                    'type' => 'LEFT',
-                    'conditions' => array(
-                        'Location.id = Outlet.location_id'
-                    )
-                ))
-        ));
-        return $result;
-    }
-
-    private function _mostCrowdedLocations($number = 3) {
-        $result = $this->Outlet->find('all', array(
-            'fields' => array('Outlet.location_id', 'Location.locationname', 'COUNT(Outlet.location_id) as count'),
-            'group' => array('Outlet.location_id'),
-            'limit' => $number,
-            'recursive' => -1,
-            'order' => array('count desc'),
-            'joins' => array(
-                array(
-                    'table' => 'locations',
-                    'alias' => 'Location',
-                    'type' => 'LEFT',
-                    'conditions' => array(
-                        'Location.id = Outlet.location_id'
-                    )
-                ))
-        ));
-        return $result;
-    }
-
     private function _setViewVariables() {
         $this->_setSidebarActiveItem('dashboard');
         $this->_setTitleOfPage('Dashboard');
@@ -124,6 +50,54 @@ class DashboardController extends AppController {
 
     public function _setSidebarActiveItem($topMenu) {
         $this->set(array('active_item' => $topMenu));
+    }
+
+    public function outletProductDistribution() {
+
+        $resp = [];
+        $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
+
+        $outletproducts = $this->Outletproduct->outletProductDistribution();
+
+        $i = 0;
+
+        foreach ($outletproducts as $value) {
+            $data['name'] = $value['Productcategory']['productcategoryname'];
+            $data['y'] = intval($value[0]["count"]);
+            $data['color'] = $colors[$i];
+            $resp[] = $data;
+            $i++;
+        }
+
+        $response = json_encode($resp);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+
+    }
+
+    public function outletMerchandizeDistribution() {
+
+        $resp = [];
+        $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
+
+        $outletmerchandize = $this->Outletmerchandize->outletMerchandizeDistribution();
+
+        $i = 0;
+
+        foreach ($outletmerchandize as $value) {
+            $data['name'] = $value['Brand']['brandname'];
+            $data['y'] = intval($value[0]["count"]);
+            $data['color'] = $value['Brand']['brandcolor'];
+            $resp[] = $data;
+            $i++;
+        }
+
+        $response = json_encode($resp);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+
     }
 
     //All visit in the visit table are completed!
@@ -542,7 +516,7 @@ class DashboardController extends AppController {
 //        }
 //EOF;
         //outlet count by locations
-        $outletbylocation = $this->_outletCountByLocation();
+        $outletbylocation = $this->Outlet->getOutletCountByLocation();
         foreach ($outletbylocation as $outletdetail) {
             $id = $outletdetail['State']['internalid'];
             $value = $outletdetail[0]['outletcount'];
@@ -561,7 +535,45 @@ class DashboardController extends AppController {
             );
         }
 
+        //Merchandize count by locations
+        $outletmerchandizebylocation = $this->Outletmerchandize->OutletMerchandizeByLocation();
+        foreach ($outletmerchandizebylocation as $omcount) {
+            $id = $omcount['State']['internalid'];
+            $value = $omcount[0]['merchandizecount'];
+            $tooltext = '';
+            if (isset($mapdata['data'][$id]['toolText'])) {
+                $tooltext = $mapdata['data'][$id]['toolText'] . '{br}';
+            }
+            $tooltext .= 'Weighted Merchandize: ' . $value;
+
+            $mapdata['data'][$id] = array(
+                'id' => $id,
+                'value' => $value,
+                'toolText' => $tooltext,
+                'link' => 'JavaScript:mapDashboardFunction("' . $id . '")'
+            );
+        }
+
         //Scheduled visit count by locations
+        $outletproductbylocation = $this->Outletproduct->OutletProductByLocation();
+        foreach ($outletproductbylocation as $opcount) {
+            $id = $opcount['State']['internalid'];
+            $value = $opcount[0]['productcount'];
+            $tooltext = '';
+            if (isset($mapdata['data'][$id]['toolText'])) {
+                $tooltext = $mapdata['data'][$id]['toolText'] . '{br}';
+            }
+            $tooltext .= 'Product Count: ' . $value;
+
+            $mapdata['data'][$id] = array(
+                'id' => $id,
+                'value' => $value,
+                'toolText' => $tooltext,
+                'link' => 'JavaScript:mapDashboardFunction("' . $id . '")'
+            );
+        }
+
+        /*//Scheduled visit count by locations
         $schedulevisitbylocation = $this->_scheduleVisitCountByLocation();
         foreach ($schedulevisitbylocation as $visitdetail) {
             $id = $visitdetail['State']['internalid'];
@@ -616,7 +628,7 @@ class DashboardController extends AppController {
                 'toolText' => $tooltext,
                 'link' => 'JavaScript:mapDashboardFunction("' . $id . '")'
             );
-        }
+        }*/
 
         $mapdata['data'] = array_values($mapdata['data']);
         $response = json_encode($mapdata);
@@ -666,43 +678,6 @@ class DashboardController extends AppController {
         $orderbylocation = $this->Order->find('all', $options);
 
         return $orderbylocation;
-    }
-
-    private function _outletCountByLocation() {
-        //outlet count by locations
-        $options['fields'] = array('State.internalid, COUNT(State.internalid) as outletcount');
-        $options['group'] = array('State.internalid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-        $outletbylocation = $this->Outlet->find('all', $options);
-
-        return $outletbylocation;
-        //End outlet count by locations
     }
 
     private function _actualVisitCountByLocation() {

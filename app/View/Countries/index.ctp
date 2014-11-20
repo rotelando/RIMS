@@ -82,7 +82,7 @@
                     </div>
                     <div class="span2">
                         <div class="visit-accuracy">
-                            <a href="/setup/locations/locations">
+                            <a href="/setup/locations/pop">
                                 <div class="border">
                                     <span class="visit-value"><?php echo $popCount; ?></span>
                                     <span class="visit-name">POPs</span>

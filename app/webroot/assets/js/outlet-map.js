@@ -100,7 +100,7 @@ function outletdisplay(url, check) {
     $.ajax({
         url: url,
         dataType: 'JSON',
-        data: param,
+        //data: param,
         success: function(outlet_data) {
             var data = outlet_data.outlets_location;
             buildResponseMarker(data);
@@ -114,8 +114,8 @@ function buildResponseMarker(data) {
 
         var contentString = '<h5 class="text-info">Outlet Name:</h5>'
             + '<p style="margin-top: 0px; padding: 0px;">' + data[i].outletname + '</p>'
-            + '<h5 class="text-info">Outlet Type:</h5>'
-            + '<p style="margin-top: 0px; padding: 0px;">' + data[i].outlettype + '</p>'
+            + '<h5 class="text-info">Retail Type:</h5>'
+            + '<p style="margin-top: 0px; padding: 0px;">' + data[i].retailtype + '</p>'
             + '<h5 class="text-info">Contact Name:</h5>'
             + '<p style="margin-top: 0px; padding: 0px;">' + data[i].contactname + '</p>'
             + '<h5 class="text-info">Address:</h5>'

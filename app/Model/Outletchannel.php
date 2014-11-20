@@ -12,4 +12,10 @@ class Outletchannel extends AppModel {
           'foreignKey' => 'outletchannel_id'
       )  
     );
+
+    public function getChannelAsList() {
+
+        $channels = $this->find('list');
+        return $channels;
+    }
 }
