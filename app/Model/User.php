@@ -134,5 +134,30 @@ class User extends AppModel {
 
         return true;
     }
+
+
+    public function countUser($options = null) {
+
+        return $this->find('count', $options);
+    }
+
+    public function fieldRepLists($count = false) {
+
+        //$currentUserSettings = $this->setCurrentUserSettings();
+        if (!isset($currentUserSettings['Setting']['fieldrepid'])) {
+            $fieldrepid = 3;
+        } else {
+            $fieldrepid = $currentUserSettings['Setting']['fieldrepid'];
+        }
+
+        $options['conditions']['User.userroleid'] = $fieldrepid;
+
+        if($count) {
+            $fieldreps = $this->find('count', $options);
+        } else {
+            $fieldreps = $this->find('list', $options);
+        }
+        return $fieldreps;
+    }
     
 }

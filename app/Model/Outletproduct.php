@@ -64,7 +64,7 @@ class Outletproduct extends AppModel {
         return $products;
     }
 
-    public function outletProductDistribution() {
+    public function outletProductDistribution($options = null) {
 
         $options['fields'] = array(
             'Brand.id',
@@ -76,16 +76,8 @@ class Outletproduct extends AppModel {
         $options['order'] = array('Outletproduct.id DESC');
         $options['recursive'] = -1;
         $options['group'] = array('Outletproduct.product_id HAVING count > 0');
-        $options['joins'] = array(
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Brand.id = Outletproduct.brand_id'
-                )
-            ),
-            array(
+        //move the joins to the beginning of the array to allow proper flow
+        array_unshift($options['joins'], array(
                 'table' => 'productcategories',
                 'alias' => 'Productcategory',
                 'type' => 'INNER',
@@ -94,12 +86,30 @@ class Outletproduct extends AppModel {
                 )
             )
         );
+        array_unshift($options['joins'], array(
+                'table' => 'brands',
+                'alias' => 'Brand',
+                'type' => 'INNER',
+                'conditions' => array(
+                    'Brand.id = Outletproduct.brand_id'
+                )
+            )
+        );
+        array_unshift($options['joins'], array(
+                'table' => 'outlets',
+                'alias' => 'Outlet',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'Outlet.id = Outletproduct.outlet_id'
+                )
+            )
+        );
 
         $outletproducts = $this->find('all', $options);
         return $outletproducts;
     }
 
-    public function OutletProductByLocation() {
+    public function OutletProductByLocation($options = null) {
 
         //merchandize count by locations
         $options['fields'] = array(
@@ -109,47 +119,8 @@ class Outletproduct extends AppModel {
         //$options['conditions'] = array('brand_id' => '2');
         $options['group'] = array('State.internalid HAVING productcount > 0');
         $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Outletproduct.outlet_id'
-                )
-            ),array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'lgas',
-                'alias' => 'Lga',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Lga.id = Location.lga_id'
-                )
-            ),
-            array(
-                'table' => 'territories',
-                'alias' => 'Territory',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Territory.id = Lga.territory_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Territory.state_id'
-                )
-            ),
-            array(
+        //move the joins to the beginning of the array to allow proper flow
+        array_unshift($options['joins'], array(
                 'table' => 'productcategories',
                 'alias' => 'Productcategory',
                 'type' => 'LEFT',
@@ -158,6 +129,16 @@ class Outletproduct extends AppModel {
                 )
             )
         );
+        array_unshift($options['joins'], array(
+                'table' => 'outlets',
+                'alias' => 'Outlet',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'Outlet.id = Outletproduct.outlet_id'
+                )
+            )
+        );
+
         $productbylocation = $this->find('all', $options);
 
         return $productbylocation;

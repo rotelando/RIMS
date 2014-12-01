@@ -137,10 +137,11 @@
                                     </div>
 
                                     <div class="profile-info-row">
-                                        <i class="icon-phone light-orange bigger-110"></i>
+
                                         <div class="profile-info-name"> VTU Number </div>
 
                                         <div class="profile-info-value">
+                                            <i class="icon-phone light-orange bigger-110"></i>
                                             <span><?php echo $outlet['Outlet']['vtunumber']; ?>&nbsp;&nbsp;<br /><br /></span>
                                         </div>
                                     </div>

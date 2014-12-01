@@ -18,7 +18,7 @@
         <?php echo $this->Html->css('bootstrap-responsive.min'); ?>
         <?php echo $this->Html->css('font-awesome.min'); ?>
 
-        <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
+        <!--<link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />-->
 
         <?php echo $this->Html->css('ace-responsive.min'); ?>
         <?php echo $this->Html->css('ace-skins.min'); ?>
@@ -35,15 +35,16 @@
         <?php echo $this->Html->css('/assets/jquery-minicolors/jquery.minicolors') ?>
         
 
-        <?php echo $this->Html->css('/assets/js/minimalect/jquery.minimalect.min'); ?>
+        <?php //echo $this->Html->css('/assets/js/minimalect/jquery.minimalect.min'); ?>
+        <?php //echo $this->Html->css('/assets/js/multiple-select/multiple-select'); ?>
+        <?php echo $this->Html->css('/assets/js/chosen_v1.2.0/chosen.min'); ?>
 
-        <?php echo $this->Html->css('/assets/daterangepicker/daterangepicker-bs3'); ?>
+        <?php //echo $this->Html->css('/assets/daterangepicker/daterangepicker-bs3'); ?>
 
         <?php echo $this->Html->css('/assets/datepicker/css/datepicker'); ?>
         <?php echo $this->Html->script('ace-extra.min'); ?>
 
         <?php echo $this->Html->css('ace.min'); ?>
-        <?php echo $this->Html->css('multi-select'); ?>
 
         <?php echo $this->Html->css('mystyle'); ?>
 
@@ -84,9 +85,9 @@
                 <span class="menu-text"></span>
             </a>
 
-
+            <div class="sidebar" id="sidebar">
             <?php echo $this->element('sidebar'); ?>
-
+            </div>
 
             <?php echo $this->fetch('content'); ?>
 
@@ -99,6 +100,22 @@
         <div id="footer">
             <div class="footercontent">
                 <p class="muted credit">&copy; 2013. <a href="http://www.fieldmaxpro.com">All Right Reserved, 2013 &copy; Retail Information Management System (RIMS).</a></p>
+            </div>
+        </div>
+
+        <div class="modal fade rims-loader" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <div class="center">
+                            <h4 class="modal-title rims-loader-title">Loading...</h4>
+                        </div>
+                    </div>
+                    <div class="modal-body rims-loader-body center">
+                        <img src="/assets/images/ajax-loader.gif" />
+                    </div>
+                </div>
             </div>
         </div>
         <!--basic scripts-->
@@ -149,6 +166,42 @@
         
         <?php echo $this->Html->script('init'); ?>
 
+
+
+        <?php //echo $this->Html->script('select2-3.4.8/select2'); ?>
+        <?php //echo $this->Html->script('multiple-select/jquery.multiple.select'); ?>
+        <?php echo $this->Html->script('chosen_v1.2.0/chosen.jquery.min'); ?>
+        <?php echo $this->Html->script('jquery-ui-1.10.3.custom.min'); ?>
+
+        <?php echo $this->Html->script('jquery.ui.touch-punch.min'); ?>
+        <?php echo $this->Html->script('jquery.slimscroll.min'); ?>
+
+        <?php //echo $this->Html->script('jquery.sparkline.min'); ?>
+        <?php //echo $this->Html->script('chosen.jquery.min'); ?>
+
+        <?php echo $this->Html->script('date-time/bootstrap-datepicker.min'); ?>
+        <?php echo $this->Html->script('date-time/bootstrap-timepicker.min'); ?>
+        <?php echo $this->Html->script('date-time/moment.min'); ?>
+        <?php echo $this->Html->script('date-time/daterangepicker.min'); ?>
+
+        <?php echo $this->Html->script('/assets/datepicker/js/bootstrap-datepicker'); ?>
+
+        <?php echo $this->Html->script('minimalect/jquery.minimalect.min'); ?>
+        <?php echo $this->Html->script('papyrus-script'); ?>
+        <?php echo $this->Html->script('/assets/jquery-minicolors/jquery.minicolors'); ?>
+        <?php echo $this->Html->script('jquery.autocomplete.min'); ?>
+
+        <?php //echo $this->Html->script('/assets/bootstrap/bootstrap-modal'); ?>
+
+
+        <!--This should be loaded when Settings tab is clicked-->
+        <?php echo $this->Html->script('fuelux/fuelux.spinner.min'); ?>
+
+        <?php //echo $this->Html->script('jquery.multi-select'); ?>
+
+        <?php echo $this->Html->script('jquery.dataTables.min'); ?>
+        <?php //echo $this->Html->script('jquery.dataTables.bootstrap'); ?>
+
         <?php
         // echo $this->Html->script('highchart/modules/exporting');
         if (isset($active_item)) {
@@ -176,6 +229,8 @@
                 if ($this->params['action'] == 'view') {
                     echo $this->Html->script('outlet-view');
                     echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min');
+                } else if($this->params['action'] == 'all') {
+                    echo $this->Html->script('outlets');
                 } else {
                     echo $this->Html->script('outlet-map');
                     echo $this->Html->script('outlets');
@@ -226,40 +281,6 @@
 
             }
         } ?>
-                
-        
-
-        <?php echo $this->Html->script('select2-3.4.8/select2'); ?>
-        <?php echo $this->Html->script('jquery-ui-1.10.3.custom.min'); ?>
-
-        <?php echo $this->Html->script('jquery.ui.touch-punch.min'); ?>
-        <?php echo $this->Html->script('jquery.slimscroll.min'); ?>
-
-        <?php echo $this->Html->script('jquery.sparkline.min'); ?>
-        <?php echo $this->Html->script('chosen.jquery.min'); ?>
-
-        <?php echo $this->Html->script('date-time/bootstrap-datepicker.min'); ?>
-        <?php echo $this->Html->script('date-time/bootstrap-timepicker.min'); ?>
-        <?php echo $this->Html->script('date-time/moment.min'); ?>
-        <?php echo $this->Html->script('date-time/daterangepicker.min'); ?>
-
-        <?php echo $this->Html->script('/assets/datepicker/js/bootstrap-datepicker'); ?>
-
-        <?php echo $this->Html->script('minimalect/jquery.minimalect.min'); ?>
-        <?php echo $this->Html->script('papyrus-script'); ?>
-        <?php echo $this->Html->script('/assets/jquery-minicolors/jquery.minicolors'); ?>
-        <?php echo $this->Html->script('jquery.autocomplete.min'); ?>
-
-        <?php echo $this->Html->script('/assets/bootstrap/bootstrap-modal'); ?>
-
-
-        <!--This should be loaded when Settings tab is clicked-->
-        <?php echo $this->Html->script('fuelux/fuelux.spinner.min'); ?>
-
-        <?php //echo $this->Html->script('jquery.multi-select'); ?>
-
-        <?php echo $this->Html->script('jquery.dataTables.min'); ?>
-        <?php echo $this->Html->script('jquery.dataTables.bootstrap'); ?>
 
         
         <script type="text/javascript">
@@ -297,7 +318,6 @@
                 }
             });
 
-            $("#locationfilter").select2();
 
             //Map Toggle button
             $('#toggleMap').attr('checked', false);
@@ -313,55 +333,32 @@
                 }
             });
 
-            //This function is used to reset the filter values for another round of filtering
-            //It uses the change function of the minimalect selection plugin
-            $('#btnreset').on('click', function() {
-                console.log('BtnReset');
-                $("#filter-user").val("").change();
-                $("#filter-location").val("").change();
-                $("#filter-date").val("").change();
-            });
 
-            //Create new link when filter select inputs + dates are clicked
-            function createNewLink(pKey, value) {
-                var btnlink = $('#btnfilter').attr('href');
-                if (btnlink.indexOf('?') == -1)
-                    btnlink += '?' + pKey + '=' + value;
-                else if (btnlink.indexOf(pKey) == -1) {
-                    btnlink += '&' + pKey + '=' + value;
-                } else {
-                    var lPos = btnlink.indexOf(pKey);
-                    var amper = btnlink.indexOf('&', lPos + 1);
-                    var fullstr = '';
-                    if (amper == -1) {
-                        fullstr = btnlink.substr(lPos, btnlink.length - 1);
-                        btnlink = btnlink.replace(fullstr, '');
-                        btnlink += pKey + '=' + value;
-                    }
-                    else {
-                        fullstr = btnlink.substr(lPos, amper - lPos + 1);
-                        btnlink = btnlink.replace(fullstr, '');
-                        btnlink += '&' + pKey + '=' + value;
-                    }
-                }
-                $('#btnfilter').attr('href', btnlink);
-            }
-
-            $("#filter-user").minimalect({
+            /*$("#filter-user").minimalect({
                 // theme: "bubble", 
-                placeholder: "Select a staff",
+                placeholder: "Choose a staff",
                 onchange: function(value) {
                     createNewLink('fuid', value);
                     $("#fusr").val(value);
                 }
             });
+            $("#filter-retailtype").minimalect({
+                // theme: "bubble",
+                placeholder: "Choose a Retailtype",
+                onchange: function(value) {
+                    *//*createNewLink('fuid', value);
+                    $("#fusr").val(value);*//*
+                }
+            });
+
             $("#filter-location").minimalect({
-                placeholder: "Select a Location",
+                placeholder: "Choose a Location",
                 onchange: function(value) {
                     createNewLink('floc', value);
                     $("#floc").val(value);
                 }
             });
+
             $("#filter-date").minimalect({
                 placeholder: "Select a Date",
                 onchange: function(value) {
@@ -375,35 +372,6 @@
                     createNewLink('fdate', value);
                 }
             });
-
-            // $("#filter-all-user").minimalect({
-            //     // theme: "bubble", 
-            //     placeholder: "Select a staff",
-            //     onchange: function(value) {
-            //         //createNewLink('fuid', value);
-            //         $("#fusr").val(value);
-            //     }
-            // });
-            // $("#filter-all-location").minimalect({
-            //     placeholder: "Select a Location",
-            //     onchange: function(value) {
-            //         //createNewLink('floc', value);
-            //         $("#floc").val(value);
-            //     }
-            // });
-            // $("#filter-all-date").minimalect({
-            //     placeholder: "Select a Date",
-            //     onchange: function(value) {
-            //         if (value == 'cust') {
-            //             $('#dateoption').css('display', 'block');
-            //             $('#dateoption').css('visibility', 'visible');
-            //         } else {
-            //             $('#dateoption').css('display', 'none');
-            //             $('#dateoption').css('visibility', 'hidden');
-            //         }
-            //         //createNewLink('fdate', value);
-            //     }
-            // });
 
             var nowTemp = new Date();
             var sdate = nowTemp;
@@ -438,7 +406,7 @@
                             edate = new Date(ev.date);
                         }
                         $('#edate').datepicker('hide');
-                    });
+                    });*/
 
         </script> 
 

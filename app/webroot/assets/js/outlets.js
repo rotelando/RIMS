@@ -1,24 +1,42 @@
 
+//Query Parameter for filter box
+/*var floc = $('#filter-location option:selected').val();
+var fuser = $('#filter-user option:selected').val();
+var optionvalues = $.map( $('#filter-retailtype option:selected'),
+    function(e) {
+        return $(e).val();
+    });
+var fret = optionvalues.join(',');
+var fdate = $('#filter-date option:selected').val();
+var sdate = '';
+var edate = '';
+
+$('input[name=custdate]').on('apply.daterangepicker', function(ev, picker) {
+    sdate = picker.startDate.format('YYYY-MM-DD');
+    edate = picker.endDate.format('YYYY-MM-DD');
+});
+
+if(fdate !== 'cust') {
+    sdate = '';
+    edate = '';
+}
+
+var param = buildQueryParam(floc, fuser, fret, fdate, sdate, edate);
+console.log(param);*/
+
+
 $(function() {
 
     try {
     $('.image-list a').vanillabox();
     } catch (e) {};
-    
-    //Query Parameter for filter box
-    var floc = ''//$('#filter-location option:selected').val();
-    var fuser = ''//$('#filter-user option:selected').val();
-    var fdate = ''//$('#filter-date option:selected').val();
-    var sdate = '';
-    var edate = '';
-    
-    if(fdate === 'cust') {
-        sdate = $('#sdate').val();
-        edate = $('#edate').val();
+
+    var param = $('#getparam').val();
+    if(typeof param == 'undefined') {
+        param = '';
     }
-    
-    var param = buildQueryParam(floc, fuser, fdate, sdate, edate);
-    
+    console.log(param);
+
     //Wrap pagination current item with an anchor tag
     $('.pagination .active').wrapInner('<a href="#"></a>');
     
@@ -76,74 +94,6 @@ $(function() {
             dataType: 'JSON'
         });
     }
-        
-    var outlet_channel_distribution = get_outlet_channel_distribution();
-    
-    outlet_channel_distribution.success(function(distribution_data) {
-        /*$('#outlet_channels').highcharts({
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false
-            },
-            title: {
-                text: 'Channel Classification'
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        distance: -30,
-                        color: '#ffffff',
-                        connectorColor: '#000000',
-                        format: '{point.percentage:.1f} %'
-                    },
-                    showInLegend: true
-                }
-            },
-            series: [{
-                type: 'pie',
-                name: 'Channel',
-                data: distribution_data
-            }]
-        });*/
-        
-        /*$('#outlet_retail').highcharts({
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false
-            },
-            title: {
-                text: 'Retail Classification'
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        distance: -30,
-                        color: '#ffffff',
-                        connectorColor: '#000000',
-                        format: '{point.percentage:.1f} %'
-                    },
-                    showInLegend: true
-                }
-            },
-            series: [{
-                type: 'pie',
-                name: 'Retail Classification',
-                data: distribution_data.retailer_dist
-            }]
-        });*/
-    });
 
     //Retail Distribution Data
     url =  config.URL + 'outlets/retailtypedistribution';
@@ -268,10 +218,6 @@ $(function() {
             series: [ outlet_performance_data ]
         });
     });
-    
-    
-    //data tables
-    var oTable1 = $('#sample-table-2').dataTable();
 
     $('table th input:checkbox').on('click' , function(){
         var that = this;
@@ -286,7 +232,7 @@ $(function() {
     $('[data-rel="tooltip"]').tooltip({placement: tooltip_placement});
     function tooltip_placement(context, source) {
             var $source = $(source);
-            var $parent = $source.closest('table')
+            var $parent = $source.closest('table');
             var off1 = $parent.offset();
             var w1 = $parent.width();
 
@@ -298,93 +244,254 @@ $(function() {
     }
 
 
-    var outletDataTable = initializeOutletDataTables();
+    showLoader();
+    getOutlets(param);
 
+    function getOutlets(param) {
 
-    function initializeOutletDataTables() {
-        var all_outlets_url = config.URL + "outlets/loadall";
+        var all_outlets_url = config.URL + "outlets/paginatedoutlets";
 
-        var outletTables = $('#outlet_all_table').DataTable( {
-            "lengthMenu": [ 25, 50, 75, 100 ],
-            //"pagingType": "full_numbers",
-            "order": [[ 6, "desc" ]],
-            "processing": true,
-            "serverSide": true,
-            "ajax": {
-                "url": all_outlets_url,
-               "type": "POST"
-            },
-            "columnDefs": [ 
-                {
-                    "targets": 7,
-                    "data": "id",
-                    "render": function ( data, type, full, meta ) {
-                        
-                        var link = '<div class="hidden-phone visible-desktop action-buttons">';
-                        link += '<a href="/outlets/view/' + full[7] + '" class="blue" data-rel="tooltip" data-placement="top" data-original-title="View"><i class="icon-zoom-in bigger-130"></i> </a> | ';
-                        link += '<a href="/outlets/delete/' + full[7] + '" class="red" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i> </a>';                                      
-                        link +=  '</div>';
-                      return link;
-                    }
-                },
-                {
-                    "targets": [ 8, 9, 10, 11 ],
-                    "visible": false,
-                    "searchable": true
-                }
-            ]
+        showLoader();
+        $.ajax({
+
+            url: all_outlets_url,
+            type: 'GET',
+            data: param,
+            dataType: 'JSON',
+            success: function(data){
+
+                console.log(data);
+                createTableFromResponse(data);
+
+            }
         });
 
-        return outletTables;
     }
 
-    $("#filter-all-user").minimalect({
-            // theme: "bubble", 
-        placeholder: "Select a staff",
-        onchange: function(value, text) {
-            
-            outletDataTable.columns(1).search( text, false, false ).draw();
-            console.log('value:' + value + ' text:' + text);
+    function createTableFromResponse(data) {
+
+        $('#all_outlet_table').html('');
+
+        createTableHead();
+
+        createTableBody(data.outlets);
+
+        createPaginationLinks(data.pagination);
+
+        hideLoader();
+    }
+
+    function createTableHead () {
+
+        var thead = '<thead>';
+        thead += '<tr>';
+        thead += '<th> Name</th>';
+        thead += '<th width="10%"> Added by</th>';
+        thead += '<th width="10%"> Location </th>';
+        thead += '<th width="10%"> Phone Number </th>';
+        thead += '<th width="10%"> Type </th>';
+        thead += '<th width="17%"> Retailtype </th>';
+        thead += '<th width="13%"> Date Added </th>';
+        thead += '<th width="10%" style="text-align: center"> Actions </th>';
+        thead += '</tr>';
+        thead += '</thead>';
+
+        $('#all_outlet_table').append(thead);
+    }
+
+    function createTableBody (data) {
+
+        var tbody = '<tbody>';
+        for(var i = 0; i < data.length; i++) {
+            tbody += '<tr>';
+            tbody += '<td>' + data[i].Outlet.outletname + '</td>';
+            tbody += '<td>' + data[i].User.username + '</td>';
+            tbody += '<td>' + data[i].Location.locationname + '</td>';
+            tbody += '<td>' + data[i].Outlet.contactphonenumber + '</td>';
+            tbody += '<td>' + data[i].Outletclass.outletclassname + '</td>';
+            tbody += '<td>' + data[i].Retailtype.retailtypename + '</td>';
+            tbody += '<td>' + data[i].Outlet.created_at + '</td>';
+            var link = '<div class="hidden-phone visible-desktop action-buttons">';
+            link += '<a href="/outlets/view/' + data[i].Outlet.id + '" class="blue" data-rel="tooltip" data-placement="top" data-original-title="View"><i class="icon-zoom-in bigger-130"></i> </a> | ';
+            link += '<a href="/outlets/delete/' + data[i].Outlet.id + '" class="red" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i> </a>';
+            link +=  '</div>';
+            tbody += '<td>' + link + '</td>';
+            tbody += '</tr>';
+            console.log('got here' + data[i].Outlet['outletname']);
         }
-    });
-    $("#filter-all-location").minimalect({
-        placeholder: "Select a Location",
-        onchange: function(value, text) {
-            
-            var locType = value.split('_');
-            if(locType[0] === 'nat') {
-                outletDataTable.columns(11).search( text ).draw();                
-            } else if(locType[0] === 'reg') {
-                outletDataTable.columns(10).search( text ).draw();                
-            } else if(locType[0] === 'sta') {
-                outletDataTable.columns(9).search( text ).draw();                
-            } else if(locType[0] === 'loc') {
-                outletDataTable.columns(2).search( text ).draw();                
-            }
+        tbody += '</tbody>';
+        $('#all_outlet_table').append(tbody);
+    }
 
-            console.log('value:' + value + ' text:' + text);
-        }
-    });
-    $("#filter-all-date").minimalect({
-        placeholder: "Select a Date",
-        onchange: function(value) {
-            
+    function isDefined(value) {
 
-            if(value == 'yes') {
-                console.log('OnChange: ' + value)
-                outletDataTable.draw();
+        return (typeof value !== 'undefined');
+    }
 
-            } else if (value == 'cust') {
-                $('#dateoption').css('display', 'block');
-                $('#dateoption').css('visibility', 'visible');
+    //sample data: {"first":0, "last":29, "previous":0, "next":1, "currentPage":0, "links_label":[0,1,2,3,4],"total_items":"292"}}}
+    function createPaginationLinks(pagObject) {
+
+        var pag = {
+            first: 0,
+            last: 0,
+            prev: 0,
+            next: 0,
+            curr: 0,
+            total: 0,
+            links_label: [],
+            html: ''
+        };
+
+
+
+        if(isDefined(pagObject.total_items)) pag.total = parseInt(pagObject.total_items); //only this is returned as a string
+
+        if(isDefined(pagObject.first)) pag.first = pagObject.first;
+
+        if(isDefined(pagObject.previous)) pag.prev = pagObject.previous;
+
+        if(pag.total != 0) {
+
+            if (pag.prev == pag.first) {
+
+                pag.html += '<li class="disabled"><a href="#" data-page="' + pag.first + '">&laquo;</a></li>';
+                pag.html += '<li class="disabled"><a href="#" data-page="' + pag.prev + '">&lsaquo;</a></li>';
+
             } else {
-                $('#dateoption').css('display', 'none');
-                $('#dateoption').css('visibility', 'hidden');
+
+                pag.html += '<li><a href="#" data-page="' + pag.first + '">&laquo;</a></li>';
+                pag.html += '<li><a href="#" data-page="' + pag.prev + '">&lsaquo;</a></li>';
             }
-            
+
+            if (isDefined(pagObject.currentPage)) pag.curr = parseInt(pagObject.currentPage);
+
+            if (isDefined(pagObject.links_label)) pag.links_label = pagObject.links_label;
+
+            var len = pag.links_label.length;
+            var iPageLabel;
+
+            for (var i = 0; i < len; i++) {
+
+                iPageLabel = parseInt(pag.links_label[i]);
+
+                if (iPageLabel == pag.curr) {
+
+                    pag.html += '<li class="active"><a href="#" data-page="' + iPageLabel + '">' + (iPageLabel + 1) + '</a></li>';
+
+                } else {
+
+                    pag.html += '<li><a href="#" data-page="' + iPageLabel + '">' + (iPageLabel + 1) + '</a></li>';
+                }
+            }
+
+
+            if (isDefined(pagObject.last)) pag.last = parseInt(pagObject.last);
+
+            if (isDefined(pagObject.next)) pag.next = parseInt(pagObject.next);
+
+            if (pag.last == pag.next) {
+
+                pag.html += '<li class="disabled"><a href="#" data-page="' + pag.next + '">&rsaquo;</a></li>';
+                pag.html += '<li class="disabled"><a href="#" data-page="' + pag.last + '">&raquo;</a></li>';
+
+            } else {
+
+                pag.html += '<li><a href="#" data-page="' + pag.next + '">&rsaquo;</a></li>';
+                pag.html += '<li><a href="#" data-page="' + pag.last + '">&raquo;</a></li>';
+            }
+        }
+
+        console.log(pag.html);
+
+        $('div.pagination ul').html(pag.html);
+
+        //get page size
+        var pageSize = $('#pgSize').find('option:selected').val();
+
+        pageSize = parseInt(pageSize);
+
+        var pag_text = '';
+
+        if(pag.total == 0) {
+
+            pag_text = "<strong>No Result found!</strong>";
+
+        } else {
+
+            if(pag.total < pageSize) {
+
+                var start = 1;
+                var end = pag.total;
+                var total = pag.total;
+                if(total > 1) {
+                    var item_text = "items";
+                } else {
+                    var item_text = "item";
+                }
+                pag_text = 'Showing <strong>' + 1 + '</strong> to <strong>' + end + '</strong> of <strong>' + total + '</strong> ' + item_text;
+            } else {
+
+                var start = pag.curr * pageSize;
+                var end = start + pageSize;
+                if(end > pag.total) end = pag.total;
+
+                var total = pag.total;
+                if(total > 1) {
+                    var item_text = "items";
+                } else {
+                    var item_text = "item";
+                }
+                pag_text = 'Showing <strong>' + (start+1) + '</strong> to <strong>' + end + '</strong> of <strong>' + total + '</strong> ' + item_text;
+            }
+
+
+        }
+
+        //set the pagination text showing at the top and/or bottom
+        $('h4.text-info').html(pag_text);
+
+        //register the click event for any of the bottom pager links clicked!
+        $('div.pagination ul li a').on('click', function(event) {
+
+            //get the page number from the bottom pager links
+            var pg = $(this).attr('data-page');
+
+            //pass the page number to be fetched to the refresh button and trigger its click event
+            createNewLink('page', pg);
+            var param = $('#getparam').val();
+            getOutlets(param);
+            $("html, body").delay(1000).animate({scrollTop: $('#top_page').offset().top }, 1000);
+            event.preventDefault();
+        });
+    }
+
+    $('#pgSize').on('change', function() {
+
+        var pgSize = $(this).find('option:selected').val();
+        createNewLink('page', 0);
+        createNewLink('pgSize', pgSize);
+        var param = $('#getparam').val();
+        getOutlets(param);
+
+    });
+
+    $('#q').on("keypress", function(e) {
+        if (e.keyCode == 13) {
+            var q = $(this).val();
+            createNewLink('page', 0);
+            createNewLink('q', q);
+            var param = $('#getparam').val();
+            getOutlets(param);
+            return false; // prevent the button click from happening
         }
     });
 
+    $('#btnfilter').on('click', function(){
+        createNewLink('page', 0);
+        var param = $('#getparam').val();
+        getOutlets(param);
+        return false
+    });
 
     function getDateString(now) {
         var yyyy = now.getFullYear();
@@ -395,41 +502,37 @@ $(function() {
         return formatedNowDate;
     }
 
-    //reset the filter values
-    $('#btnallreset').on('click', function() {
-        $("#filter-all-user").val("").change();
-        $("#filter-all-location").val("").change();
-        $("#filter-all-date").val("").change();
-        
-        outletDataTable.columns(1).search( '' ).draw();
-        outletDataTable.columns(2).search( '' ).draw();
-        outletDataTable.columns(6).search( '' ).draw();
-        outletDataTable.columns(9).search( '' ).draw();
-        outletDataTable.columns(10).search( '' ).draw();
-        outletDataTable.columns(11).search( '' ).draw();
-        
-    });
-});
-
-//range search
-$.fn.dataTable.ext.search.push(
-function( settings, data, dataIndex ) {
-        
-        var now = new Date();
-        var endDate = getDateString(now);
-        console.log('Todays date: ' + endDate);
-        now.setDate(now.getDate() - 1);
-        var startDate = getDateString(now);
-        console.log('From date: ' + startDate);
-        var value = $("#filter-all-date option:selected").val();
-        console.log('Value: ' + value);
-        var created = data[6]; // use data for the age column
- 
-        if ( created >= startDate && endDate <= endDate )
-        {
-            return true;
+    //Create new link when filter select inputs + dates are clicked
+    function createNewLink(pKey, value) {
+        var btnlink = $('#getparam').val() || '';
+        if (btnlink == '')
+            btnlink += pKey + '=' + value;
+        else if (btnlink.indexOf(pKey) == -1) {
+            btnlink += '&' + pKey + '=' + value;
+        } else {
+            var lPos = btnlink.indexOf(pKey);
+            var amper = btnlink.indexOf('&', lPos + 1);
+            var fullstr = '';
+            if (amper == -1) {
+                fullstr = btnlink.substr(lPos, btnlink.length);
+                btnlink = btnlink.replace(fullstr, pKey + '=' + value);
+            }
+            else {
+                fullstr = btnlink.substr(lPos, amper - lPos);
+                btnlink = btnlink.replace(fullstr, pKey + '=' + value);
+            }
         }
-
-        return false;
+        $('#getparam').val(btnlink);
+        console.log('getparam: ' + btnlink);
     }
-);
+
+    function showLoader() {
+
+        $('#ajax-loader').html('<img src="/assets/images/ajax-loader.gif" />');
+    }
+
+    function hideLoader() {
+
+        $('#ajax-loader').html('');
+    }
+});

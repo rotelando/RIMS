@@ -6,22 +6,16 @@ class OutletsController extends AppController {
     var $uses = array('Outlet', 'Outletclass', 'Outletchannel', 'Retailtype', 'Product', 'Brand', 'Outletimage',
         'State', 'Subregion', 'Region', 'Lga', 'Territory', 'Location', 'Outletimage', 'Outletproduct', 'Outletmerchandize', 'Productsource');
     var $helpers = array('GoogleMap', 'TextFormater', 'Time');
-    public $components = array('Paginator', 'Filter', 'SSP');
-
-    public $paginate = array(
-        'limit' => 30,
-        'order' => array(
-            'Outlet.created_at' => 'desc'
-        )
-    );
+    public $components = array('Paginator', 'PagerHelper', 'Filter', 'SSP');
 
     public $urloptions = array();
     public $postoptions = array();
     
     public function beforeFilter() {
         parent::beforeFilter();
-
         $this->_setViewVariables();
+        $this->urloptions = $this->Filter->getUrlFilterOptions('Outlet');
+        $this->postoptions = $this->Filter->getPostDataFilterOptions('Outlet');
     }
 
     private function _setViewVariables() {
@@ -40,11 +34,11 @@ class OutletsController extends AppController {
         $subregions = $this->Subregion->find('list');
         $regions = $this->Region->find('list');
 
-        $outlet_count = $this->Outlet->countOutlet();
-        $distrib = $this->Outlet->retailTypeDistribution();
-        $least = $this->Outlet->leastCrowdedLocations();
-        $most = $this->Outlet->mostCrowdedLocations();
-        $outlets = $this->Outlet->getRecentOutlets(10);
+        $outlet_count = $this->Outlet->countOutlet($this->postoptions);
+        $distrib = $this->Outlet->retailTypeDistribution($this->postoptions);
+        $least = $this->Outlet->leastCrowdedLocations($this->postoptions);
+        $most = $this->Outlet->mostCrowdedLocations($this->postoptions);
+        $outlets = $this->Outlet->getRecentOutlets(10, $this->postoptions);
 
         $this->set(
             array(
@@ -195,6 +189,92 @@ class OutletsController extends AppController {
         $this->set('response', $jsonresponse);
     }
 
+    public function paginatedOutlets() {
+
+        $dataResponse = [];
+
+        $options = $this->Filter->getUrlFilterOptions('Outlet');
+        $options['order'] = array('Outlet.created_at' => 'DESC');
+
+
+
+        $pagOptions = $this->getParamOptions($options);
+
+        $paginatedOutlets = $this->Outlet->getPaginatedOutlets($this->Paginator, $options);
+
+        $this->PagerHelper->setParams($pagOptions['count'], $pagOptions['pgSize'], $pagOptions['page']);
+        $pagers = $this->PagerHelper->getPagesForLinks(7);
+
+        $dataResponse['outlets'] = $paginatedOutlets;
+        $dataResponse['pagination'] = $pagers;
+        $jsonresponse = json_encode($dataResponse);
+
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $jsonresponse);
+    }
+
+    private function getParamOptions(&$options) {
+
+        $request = $this->request;
+
+        $page = isset($request['url']['page']) ? $request['url']['page'] : 0;
+        $pgSize = isset($request['url']['pgSize']) ? $request['url']['pgSize'] : 25;
+        if(isset($request['url']['srt'])) {
+            $this->setSortOptions($options, $request['url']['srt']);
+        }
+        if(isset($request['url']['q'])) {
+            $q = $request['url']['q'];
+
+            $options['conditions']['OR'] = array(
+                'Outlet.outletname LIKE' => "%{$q}%",
+                'Location.locationname LIKE' => "%{$q}%"
+            );
+        }
+
+        $count = $this->Outlet->getPaginatedOutlets($this->Paginator, $options, true);
+
+        return $this->setPaginateOptions($options, $page, $pgSize, $count);
+    }
+
+    private function setSortOptions(&$options, $sortString) {
+
+        if(strpos($sortString, ':') != -1) {
+            $arrSort = explode(':', $sortString);
+            $srtColumn = $arrSort[0];
+            $srtDirection = isset($arrSort[1]) ? $arrSort[1] : 'ASC';
+
+            $options['order'] = array($srtColumn => $srtDirection);
+        }
+    }
+
+    private function setPaginateOptions(&$options, $page, $pageSize, $count)
+    {
+        //if the page number requested for is more than the last page number
+        //serve the last page
+        $lastPage = intval(ceil($count / $pageSize)) - 1;
+
+        if ($lastPage < $page) {
+            $page = $lastPage;
+        }
+
+        //if the page number requested for is less than the first page number
+        //serve the first page
+        if ($page < 0) {
+            $page = 0;
+        }
+
+        $offset = $page * $pageSize;
+        $limit = $pageSize;
+
+        $options['limit'] = $limit;
+        $options['offset'] = $offset;
+
+        return array('page' => $page, 'pgSize' => $pageSize, 'count' => $count);
+    }
+    //End pagination for outlet display all
+
+
     public function view($id = null) {
 
         $outlet = [];
@@ -272,110 +352,6 @@ class OutletsController extends AppController {
         }
     }
 
-    public function _getMerchandingForVisit($visitId) {
-        $VE_options['fields'] = array(
-            'Visibilityevaluation.id',
-            'Visibilityevaluation.visitid',
-            'Brand.brandname',
-            'Brandelement.brandelementname',
-            'Visibilityevaluation.elementcount'
-        );
-        $VE_options['order'] = array('Visibilityevaluation.createdat DESC');
-        $VE_options['recursive'] = -1;
-        $VE_options['joins'] = array(
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Brandelement.id = Visibilityevaluation.visibilityelementid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Brand.id = Visibilityevaluation.brandid'
-                )
-            )
-        );
-        
-        $VE_options['conditions'] = array('visitid' => $visitId);
-        $merchandising = $this->Visibilityevaluation->find("all", $VE_options);
-        return $merchandising;
-    }
-
-    public function _getSalesForVisit($visitId) {
-        $OD_options['fields'] = array(
-            'Order.id',
-            'Order.visitid',
-            'Order.quantity',
-            'Order.discount',
-            'Orderstatus.id',
-            'Orderstatus.orderstatusname',
-            'Outlet.id',
-            'Outlet.outletname',
-            'Product.id',
-            'Product.productname'
-        );
-        $OD_options['order'] = array('Order.createdat DESC');
-        $OD_options['recursive'] = -1;
-        $OD_options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Order.visitid'
-                )
-            ),
-            array(
-                'table' => 'products',
-                'alias' => 'Product',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Product.id = Order.productid'
-                )
-            ),
-            array(
-                'table' => 'orderstatuses',
-                'alias' => 'Orderstatus',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Orderstatus.id = Order.orderstatusid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-
-        $OD_options['conditions'] = array('visitid' => $visitId);
-        $sales = $this->Order->find("all", $OD_options);
-        return $sales;
-    }
 
     public function delete($id = null) {
         if (!$id) {
@@ -398,7 +374,8 @@ class OutletsController extends AppController {
 
 
         $locations = [];
-        $outletsLocation = $this->Outlet->outletGeolocations();
+        $options = $this->urloptions;
+        $outletsLocation = $this->Outlet->outletGeolocations($options);
 
         foreach ($outletsLocation as $loc) {
             $name = $loc['Outlet']['outletname'];
@@ -422,14 +399,11 @@ class OutletsController extends AppController {
     public function outletclassdistribution() {
 
         $resp = [];
+        $i = 0;
         $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
 
-        $rs = $this->Outlet->outletClassDistribution();
-
-        $total = $this->Outlet->countOutlet();
-
-        $i = 0;
-
+        $options = $this->urloptions;
+        $rs = $this->Outlet->outletClassDistribution($options);
         foreach ($rs as $value) {
             $data['name'] = $value['Outletclass']['outletclassname'];
             $data['y'] = intval($value[0]["count"]);
@@ -454,11 +428,11 @@ class OutletsController extends AppController {
     public function outletchanneldistribution() {
 
         $resp = [];
-        $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
-        $rs = $this->Outlet->outletChannelDistribution();
-        $total = $this->Outlet->countOutlet();
         $i = 0;
+        $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
 
+        $options = $this->urloptions;
+        $rs = $this->Outlet->outletChannelDistribution($options);
         foreach ($rs as $value) {
             $data['name'] = $value['Outletchannel']['outletchannelname'];
             $data['y'] = intval($value[0]["count"]);
@@ -477,10 +451,10 @@ class OutletsController extends AppController {
 
         $resp = [];
         $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
-        $rs = $this->Outlet->retailTypeDistribution();
-        $total = $this->Outlet->countOutlet();
         $i = 0;
 
+        $options = $this->urloptions;
+        $rs = $this->Outlet->retailTypeDistribution($options);
         foreach ($rs as $value) {
             $data['name'] = $value['Retailtype']['retailtypename'];
             $data['y'] = intval($value[0]["count"]);
@@ -563,6 +537,28 @@ class OutletsController extends AppController {
         }
 //        debug('generated color: ' + $color);
         return $color;
+    }
+
+    public function reversegeolocation() {
+        $outletsGeolocations = $this->Outlet->find('all', array(
+            'fields' => array('id', 'geolocation'),
+            'conditions' => array('id >=' => '4554')
+        ));
+
+        foreach($outletsGeolocations as &$geolocation) {
+            $geolocWithBracket = $geolocation['Outlet']['geolocation'];
+            $geoloc = substr($geolocWithBracket, 1, strlen($geolocWithBracket) - 2);
+            $splitArray = explode(',', $geoloc);
+            $geolocation['Outlet']['geolocation'] = "[{$splitArray[1]},{$splitArray[0]}]";
+        }
+
+        $this->Outlet->saveMany($outletsGeolocations);
+        //var_dump($outletsGeolocations);
+        //$this->Outlet->SaveAll($response);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', json_encode($outletsGeolocations));
+
     }
     
     public function generateoutletsdatedata() {

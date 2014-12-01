@@ -5,65 +5,123 @@
 
 $(function() {
 
+    //$("#filter-user").multipleSelect();
+    //$("#filter-location").multipleSelect();
+    $("#filter-user").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('fuser', value);
+    });
+
+    $("#filter-location").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('floc', value);
+    });
+
+    $("#filter-retailtype").chosen({width: "170px"}).on('change', function() {
+        var optionvalues = $.map( $('#filter-retailtype option:selected'),
+            function(e) { return $(e).val(); } );
+        var value = optionvalues.join(',');
+        createNewLink('fret', value);
+    });
+
+    var $dateFilter = $("#filter-date").chosen({
+        width: "215px",
+        disable_search_threshold: 10
+    }).on('change', function() {
+
+        var value = $(this).find('option:selected').val();
+        if (value === 'cust') {
+            $('#dateoption').show();
+        } else {
+            $('#dateoption').hide();
+        }
+        createNewLink('fdate', value);
+    });
+
+    var $daterange = $('input[name=custdate]').daterangepicker(
+        {
+            format: 'YYYY/MM/DD',
+            'applyClass' : 'btn-sm btn-success',
+            'cancelClass' : 'btn-sm btn-default',
+            locale: {
+                applyLabel: 'Apply',
+                cancelLabel: 'Cancel'
+            }
+        },
+        function(startDate, endDate) {
+            var start = startDate.format('YYYY-MM-DD');
+            var end = endDate.format('YYYY-MM-DD');
+            createNewLink('sdate', start);
+            createNewLink('edate', end);
+        }
+
+    ).prev().on(ace.click_event, function(){
+            $(this).next().focus();
+        });
+
+    $('#dateoption').hide();
+
+    //This function is used to reset the filter values for another round of filtering
+    //It uses the change function of the minimalect selection plugin
+    $('#btnreset').on('click', function() {
+        console.log('BtnReset');
+        $("#filter-user").val("").trigger("chosen:updated");
+        $("#filter-location").val("").trigger("chosen:updated");
+        $("#filter-retailtype").val("").trigger("chosen:updated");
+        $("#filter-date").val("").trigger("chosen:updated");
+        $("#getparam").val("");
+    });
+
+    //Create new link when filter select inputs + dates are clicked
+    /*function createNewLink(pKey, value) {
+        var btnlink = $('#getparam').val() || '';
+        if (btnlink.indexOf('?') == -1)
+            btnlink += '?' + pKey + '=' + value;
+        else if (btnlink.indexOf(pKey) == -1) {
+            btnlink += '&' + pKey + '=' + value;
+        } else {
+            var lPos = btnlink.indexOf(pKey);
+            var amper = btnlink.indexOf('&', lPos + 1);
+            var fullstr = '';
+            if (amper == -1) {
+                fullstr = btnlink.substr(lPos, btnlink.length - 1);
+                btnlink = btnlink.replace(fullstr, '');
+                btnlink += pKey + '=' + value;
+            }
+            else {
+                fullstr = btnlink.substr(lPos, amper - lPos + 1);
+                btnlink = btnlink.replace(fullstr, '');
+                btnlink += '&' + pKey + '=' + value;
+            }
+        }
+        $('#getparam').val(btnlink);
+        console.log('getparam: ' + btnlink);
+    }*/
+    //Create new link when filter select inputs + dates are clicked
+    function createNewLink(pKey, value) {
+        var btnlink = $('#getparam').val() || '';
+        if (btnlink == '')
+            btnlink += pKey + '=' + value;
+        else if (btnlink.indexOf(pKey) == -1) {
+            btnlink += '&' + pKey + '=' + value;
+        } else {
+            var lPos = btnlink.indexOf(pKey);
+            var amper = btnlink.indexOf('&', lPos + 1);
+            var fullstr = '';
+            if (amper == -1) {
+                fullstr = btnlink.substr(lPos, btnlink.length);
+                btnlink = btnlink.replace(fullstr, pKey + '=' + value);
+            }
+            else {
+                fullstr = btnlink.substr(lPos, amper - lPos);
+                btnlink = btnlink.replace(fullstr, pKey + '=' + value);
+            }
+        }
+        $('#getparam').val(btnlink);
+        console.log('getparam: ' + btnlink);
+    }
+
     var all_users_url = config.URL + "users/loadusers";
-
-    //all user's table
-    /*$('#all_users_table').DataTable( {
-        "lengthMenu": [ 25, 50, 75, 100 ],
-        //"pagingType": "full_numbers",
-        "order": [[ 0, "asc" ]],
-        "processing": true,
-        "serverSide": true,
-        *//*"ajax": {
-            "url": all_users_url,
-            "type": "POST"
-        },*//*
-        "columnDefs": [ 
-            {
-                "targets": 0,
-                "data": "out_id",
-                "render": function ( data, type, full, meta ) {
-                    
-                    return full[0].capitalize() + ' ' + full["lastname"].capitalize();
-                }
-            },
-            {
-                "targets": 4,
-                "data": "active",
-                "render": function ( data, type, full, meta ) {
-                    var render4 = '';
-                    if(full[4] === '1')
-                        render4 = '<span class="label label-success">Active</span>';
-                    else
-                        render4 = '<span class="label">Inactive</span>';
-
-                    return render4;
-                }
-            },
-            {
-                "targets": 5,
-                "data": "id",
-                "render": function ( data, type, full, meta ) {
-                    
-                    var link = '<div class="hidden-phone visible-desktop action-buttons">';
-                    link += '<a href="/users/view/' + full[5] + '" class="blue" data-rel="tooltip" data-placement="top" data-original-title="View"><i class="icon-zoom-in bigger-130"></i> </a> | ';
-                    link += '<a href="/users/edit/' + full[5] + '" class="green" data-rel="tooltip" data-placement="top" data-original-title="Edit"><i class="icon-pencil bigger-130"></i> </a> | ';
-
-                    if(full["role_id"] !== '1') {
-                        if(full[4] === '1')
-                            link += '<a href="/users/deactivate/' + full[5] + '" class="orange deactivateuser" onclick="return false" data-rel="tooltip" data-placement="top" data-original-title="Deactivate"><i class="icon-lock bigger-130"></i> </a> | ';
-                        else
-                            link += '<a href="/users/activate/' + full[5] + '" class="orange" data-rel="tooltip" data-placement="top" data-original-title="Activate"><i class="icon-unlock bigger-130"></i> </a> | ';
-                    }
-                    link += '<a href="/users/passwordreset/' + full[5] + '" class="grey" data-rel="tooltip" data-placement="top" data-original-title="Reset Password"><i class="icon-key"></i> </a>';
-                    link +=  '</div>'
-
-                    deactivateUser();
-                  return link;
-                }
-            } 
-        ]
-    });*/
 
     //open the add license dialog modal
     $('#addlicence').on('click', function() {
@@ -231,51 +289,6 @@ $(function() {
         container: 'body'
     });
 
-//    //Role Module
-//    $('#addusertogroup').multiSelect({
-//        selectableHeader: "<div class='custom-header'>All Users</div>",
-//        selectionHeader: "<div class='custom-header'>Selected Members</div>",
-//        keepOrder: true,
-//        afterSelect: function(value){
-//            var btnlink = $('#saveselectedmembers').attr('href');
-//            var qIndex = btnlink.indexOf('?');
-//            var baseUrl = '';
-//            if(qIndex != -1) {
-//                baseUrl = btnlink.substr(0, qIndex);
-//            } else {
-//                baseUrl += btnlink
-//            }
-//            var gid = $('#UsergroupGroupid').val();
-//            ids.push(value);
-//            var values = ids.join(',');
-//            var link = baseUrl + '?gid='+gid+'&uids=' + values;
-//            $('#saveselectedmembers').attr('href', link);
-//        },
-//        afterDeselect: function(value){
-//            var btnlink = $('#saveselectedmembers').attr('href');
-//            var qIndex = btnlink.indexOf('?');
-//            var baseUrl = '';
-//            if(qIndex != -1) {
-//                baseUrl = btnlink.substr(0, qIndex);
-//            } else {
-//                baseUrl += btnlink
-//            }
-//
-//            var gid = $('#UsergroupGroupid').val();
-//            var index = ids.indexOf(value);
-//            var values = ids.splice(index, 1);
-//            var link = '';
-//            if(ids.length == 0) {
-//                link = baseUrl;
-//            } else {
-//                link = baseUrl + '?gid='+gid+'&uids=' + values;
-//            }
-//            
-//            $('#saveselectedmembers').attr('href', link);
-//        }
-//    });
-    //End Rolemodule
-
     $('#add_selectall').click(function() {
         var classname = $(this).attr('class');
         var selector = '.' + classname;
@@ -313,7 +326,7 @@ $(function() {
         $.ajax({
             url: deleteurl,
             dataType: 'json',
-            cache: false,
+            cache: false
         });
 
         $(this).parent().parent().remove();
@@ -347,13 +360,13 @@ $(function() {
     /**
      $('#tree1').on('loaded', function (evt, data) {
      });
-     
+
      $('#tree1').on('opened', function (evt, data) {
      });
-     
+
      $('#tree1').on('closed', function (evt, data) {
      });
-     
+
      $('#tree1').on('selected', function (evt, data) {
      });
      */
@@ -393,7 +406,7 @@ function mapStateFunction(id) {
             $.ajax({
                 url: deleteurl,
                 dataType: 'json',
-                cache: false,
+                cache: false
             });
             $(this).parent().parent().remove();
         });
@@ -493,7 +506,7 @@ $('[data-rel=popover]').popover({
 });
 
 //This helps to build the query parameters to be used in ajax calls for graphs etc.
-function buildQueryParam(floc, fuser, fdate, sdate, edate) {
+function buildQueryParam(floc, fuser, fret, fdate, sdate, edate) {
 
     var param = '';
     if (floc !== '') {
@@ -508,6 +521,15 @@ function buildQueryParam(floc, fuser, fdate, sdate, edate) {
         }
         else {
             param += '&fuser=' + fuser;
+        }
+    }
+
+    if (fret !== '') {
+        if (param === '') {
+            param += 'fret=' + fret;
+        }
+        else {
+            param += '&fret=' + fret;
         }
     }
 

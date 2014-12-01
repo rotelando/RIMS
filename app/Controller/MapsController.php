@@ -176,12 +176,12 @@ class MapsController extends AppController {
             $new_pos = str_replace(array('[', ']'), '', $pos);
             $arrLatLng = explode(',', $new_pos);
 
-            $item['longitude'] = floatval($arrLatLng[0]);
+            $item['latitude'] = floatval($arrLatLng[0]);
             if (!isset($arrLatLng[1])) {
                 continue;
             }
             
-            $item['latitude'] = floatval($arrLatLng[1]);
+            $item['longitude'] = floatval($arrLatLng[1]);
             $item['phonenumber'] = $outlet['Outlet']['phonenumber'];
             $item['location'] = $outlet['Location']['locationname'];
             $item['retailtype'] = $outlet['Retailtype']['retailtypename'];

@@ -66,7 +66,7 @@
         <?php echo $this->Session->flash(); ?>
         <?php echo $this->Session->flash('auth'); ?>
 
-        <?php echo $this->element('filter_bar_outlet'); ?>
+        <?php echo $this->element('filter_bar'); ?>
 
             <div class="row-fluid">
                 <div class="span3" style="margin: 0px">

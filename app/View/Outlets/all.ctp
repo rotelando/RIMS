@@ -5,24 +5,6 @@
 
 
     <div class="page-content">
-        <!--.page-header-->
-        <?php //if(count($outlets) == 0): ?>
-            
-        <!-- <div class="page-header position-relative">
-                <h1>
-                    Outlets Management
-                    <small>
-                        <i class="icon-double-angle-right"></i>
-                        analysis, creation and views
-                    </small>
-                </h1>
-            </div>            
-            <div class="row">
-                <h3 class="text-center text-warning">No outlet record available</h3>
-            </div> -->
-            
-
-        <?php //else: ?>
         
         <div class="page-header position-relative">
 
@@ -60,158 +42,59 @@
         <?php echo $this->Session->flash(); ?>
         <?php echo $this->Session->flash('auth'); ?>
 
-        <?php //echo $this->element('filter_bar'); ?>
-
-<!-- Beginning of filter bar -->
-
-        <?php echo $this->Form->create(null, 
-                array('method' => 'POST', 
-        //              'controller'=>$this->params['controller'], 
-        //              'action'=>$this->params['action'], 
-                      'class' => 'form-inline', 
-                      'name' => 'filterform')); ?>    
-
-        <div class="filter-bar" id="filter-bar">
-            <h4 class="header smaller lighter green">Filter</h4>
-
-            <div class="span3" id="locationcontainer">
-                <label>Location</label>
-                <?php echo $this->Form->select('locFilter', $locations, 
-                        array('id' => 'filter-all-location')); ?>
-                <!--<input type="hidden" name="floc" id="floc" value="">-->
-                      </div>
-
-            <div class="span3" id="usercontainer">
-                <label>Users</label>
-                <?php echo $this->Form->select('userFilter', $fieldreplist, array('id' => 'filter-all-user')); ?>
-                <!--<input type="hidden" name="fusr" id="fusr" value="">-->
-            </div>
-
-            <div class="span3" id="datecontainer">
-                <label>Date</label>
-                <?php echo $this->Form->select('dateFilter', $datelist, array('id' => 'filter-all-date')); ?>
-
-                <div id="dateoption">
-                    <div class="input-append filter-date-picker">
-                        <?php echo $this->Form->input('sdate', array('placeholder' => 'Start date', 
-                            'class' => 'datepicker input-small input-mask-date',
-                            'id' => 'sdate',
-                            'label' => false,
-                            'type'=>'text', 
-                            'readonly')); 
-                        ?>
-                        
-                        <!--<input name="sdate" placeholder="Start date" class="datepicker input-small input-mask-date" id="sdate" type="text" readonly>-->
-                        <span class="btn btn-small">
-                            <i class="icon-calendar bigger-110"></i>
-                        </span>
-                    </div>
-                    <div class="input-append filter-date-picker">
-                        <?php echo $this->Form->input('edate', array('placeholder' => 'End date', 
-                            'class' => 'datepicker input-small input-mask-date',
-                            'id' => 'edate',
-                            'label' => false,
-                            'type'=>'text', 
-                            'readonly')); ?>
-                        <!--<input name="data[edate]" placeholder="End date" class="datepicker datepicker input-small input-mask-date" id="edate" type="text" readonly>-->
-                        <span class="btn btn-small">
-                            <i class="icon-calendar bigger-110"></i>
-                        </span>
-                    </div>
-                </div>
-
-                <?php // echo $this->Form->input('sdate', array('placeholder' => 'Start date', 'class' => 'datepicker', 'id' => 'sdate')); ?>
-
-                <?php // echo $this->Form->input('edate', array('placeholder' => 'End date', 'class' => 'datepicker', 'id' => 'edate')); ?>
-            </div>
-
-            <div class="span2" style="margin-top: 20px;">
-                <!-- <input type="submit" class="btn btn-small btn-success btnfilter" id="btnallfilter" value="Go" onclick="return false;" /> -->
-                <!--<button href="<?php echo $this->here; ?>" class="btn btn-small btn-success btnfilter" id="btnfilter">-->
-                    <!--<i class="icon-search bigger-160"></i>-->
-                    <!--Go</a>-->
-                <a id="btnallreset" class="btn btn-small btn-inverse btnfilter">Reset</a>
-        <!--            <i class="icon-undo bigger-160"></i>
-                    Reset
-                </a>-->
-            </div>
-            <br /><br />
-            <br /><br />
-            <br /><br />
-            <br /><br />
-            <div class="span1"></div>
-        </div>
-
-        <?php echo $this->Form->end(); ?>
-
-        <!-- End of filter bar -->
+        <?php echo $this->element('filter_bar_outlet'); ?>
 
         <div class="row-fluid">
 
-            <div class="span12">
+            <div class="span12" id="top_page">
                 <div class="row-fluid">
                     <h3 class="span12 header smaller lighter green">All Outlets</h3>
 
-                    <!-- <div style="text-align: center;">
+                    <div>
+                        <label class="pull-left" style="margin-top: 4px; margin-right: 10px;">Page size</label>
+                        <select id="pgSize" class="pull-left span1">
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                        </select>
+                        <div class="push-left" id="ajax-loader" style="display:inline; margin-left: 50px;"><img src="/assets/images/ajax-loader.gif" /></div>
 
-                        <h4 class="text-info">Showing page <?php 
-                        //echo $this->Paginator->counter(); ?></h4>
 
-                        <div class="pagination">
-                            <ul>
-                                <?php
-                                // echo $this->Paginator->numbers(array(
-                                //     'first' => '<<',
-                                //     'separator' => '',
-                                //     'currentClass' => 'active',
-                                //     'tag' => 'li',
-                                //     'last' => '>>'
-                                //));
-                                ?>
-                            </ul>
-                        </div>
-                    </div> -->
+                        <input type="text" name="q" id="q" placeholder="Search by Outletname" class="pull-right" />
+                        <label class="pull-right" style="margin-top: 4px; margin-right: 10px;">Search</label>
+                    </div>
 
-                    <table id="outlet_all_table" class="table table-striped table-bordered table-hover display">
-                        
-                        <thead>
-                            <tr>
-                                <!-- <th width="10px"> S/N </th> -->
-                                <th> Name</th>
-                                <th width="10%"> Added by</th>
-                                <th width="10%"> Location </th>
-                                <th width="10%"> Phone Number </th>
-                                <th width="10%"> Type </th>
-                                <th width="17%"> Retailtype </th>
-                                <th width="13%"> Date Added </th>
-                                <th width="10%" style="text-align: center"> Actions </th>
-                            </tr>
-                        </thead>
-                        
+                    <table id="all_outlet_table" class="table table-striped table-bordered table-hover display">
+
                     </table>
-                    
-                    <!-- <div style="text-align: center;">
+                </div>
+            </div>
 
-                        <h4 class="text-info">Showing page <?php 
-                        //echo $this->Paginator->counter(); ?> Outlets</h4>
+            <div style="text-align: center;">
 
-                        <div class="pagination">
-                            <ul>
-                                <?php
-                                // echo $this->Paginator->numbers(array(
-                                //     'first' => '<<',
-                                //     'separator' => '',
-                                //     'currentClass' => 'active',
-                                //     'tag' => 'li',
-                                //     'last' => '>>'
-                                //));
-                                ?>
-                            </ul>
-                        </div>
-                    </div> -->
+                <h4 class="text-info"></h4>
+
+                <div class="pagination">
+                    <ul>
+                        <!--<li><a href="/images/index/page:0" rel="first">&laquo;</a></li>
+                        <li><a href="/images/index/page:81" rel="previous">&lsaquo;</a></li>
+                        <li class="active"><a href="#">1</a></li>
+                        <li><a href="/images/index/page:2">2</a></li>
+                        <li><a href="/images/index/page:3">3</a></li>
+                        <li><a href="/images/index/page:4">4</a></li>
+                        <li><a href="/images/index/page:5">5</a></li>
+                        <li><a href="/images/index/page:6">6</a></li>
+                        <li><a href="/images/index/page:7">7</a></li>
+                        <li><a href="/images/index/page:8">8</a></li>
+                        <li><a href="/images/index/page:9">9</a></li>
+                        <li><a href="/images/index/page:81" rel="next">&rsaquo;</a></li>
+                        <li><a href="/images/index/page:81" rel="last">&raquo;</a></li>-->
+                    </ul>
                 </div>
             </div>
         </div><!--/.row-fluid-->
+
         <?php //endif; ?>
         
         

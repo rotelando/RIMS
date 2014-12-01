@@ -19,32 +19,24 @@ class Outletimage extends AppModel {
         $options['order'] = array('Outletimage.created_at DESC');
         $options['limit'] = $amount;
         $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Outlet.id = Outletimage.outlet_id'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'User.id = Outlet.user_id'
-                )
+
+        //move the joins to the beginning of the array to allow proper flow
+        array_unshift($options['joins'], array(
+            'table' => 'users',
+            'alias' => 'User',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'User.id = Outlet.user_id'
             )
-        );
+        ));
+        array_unshift($options['joins'], array(
+            'table' => 'outlets',
+            'alias' => 'Outlet',
+            'type' => 'INNER',
+            'conditions' => array(
+                'Outlet.id = Outletimage.outlet_id'
+            )
+        ));
 
         $images = $this->find('all', $options);
         return $images;

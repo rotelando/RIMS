@@ -422,3 +422,12 @@ div.prod_avail {
 .multiple_select_container input{ 
     margin: 10px 0px;
 }
+
+#filter-sidebar {
+    margin: 50px 10px 20px;
+}
+
+.filter-bar select {
+    width: 150px;
+    margin: 10px;
+}

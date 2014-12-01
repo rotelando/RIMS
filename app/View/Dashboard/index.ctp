@@ -265,17 +265,24 @@
                                 <tr>
                                     <td colspan="2" style="font-weight: bolder;"><strong>Retail Classification</strong></td>
                                 </tr>
-                                <tr>
-                                    <td>Pay & Go</td>
-                                    <td id="visitperday">33,434</td>
+                                <?php foreach ($distributions as $distribution) {
+
+                                    echo '<tr>';
+                                    echo "<td>{$distribution['Retailtype']['retailtypename']}</td>";
+                                    echo "<td>{$distribution[0]['count']}</td>";
+                                    echo '</tr>';
+                                }
+                                ?>
+                                <!--<tr>
+                                    <td colspan="2" style="font-weight: bolder;"><strong>Element Summary</strong></td>
                                 </tr>
                                 <tr>
-                                    <td>Shop and Browse</td>
-                                    <td id="visitperday">10,534</td>
+                                    <td>Total Outlet Merchandize</td>
+                                    <td id="total_outlet_products">33,434</td>
                                 </tr>
                                 <tr>
-                                    <td>Entertainment</td>
-                                    <td id="visitperday">19,445</td>
+                                    <td>Total Outlet Products</td>
+                                    <td id="total_outlet_merchandize">10,534</td>-->
                                 </tr>
                             </tbody>
                         </table>

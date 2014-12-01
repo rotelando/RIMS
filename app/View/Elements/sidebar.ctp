@@ -1,37 +1,7 @@
-<div class="sidebar" id="sidebar">
+<div class="menu-sidebar" id="menu-sidebar">
     <script type="text/javascript">
         try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
     </script>
-
-<!--    <div class="sidebar-shortcuts" id="sidebar-shortcuts">
-        <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
-            <button class="btn btn-small btn-success">
-                <i class="icon-signal"></i>
-            </button>
-
-            <button class="btn btn-small btn-info">
-                <i class="icon-pencil"></i>
-            </button>
-
-            <button class="btn btn-small btn-warning">
-                <i class="icon-group"></i>
-            </button>
-
-            <button class="btn btn-small btn-danger">
-                <i class="icon-cogs"></i>
-            </button>
-        </div>
-
-        <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
-            <span class="btn btn-success"></span>
-
-            <span class="btn btn-info"></span>
-
-            <span class="btn btn-warning"></span>
-
-            <span class="btn btn-danger"></span>
-        </div>
-    </div>#sidebar-shortcuts-->
 
     <ul class="nav nav-list">
         
@@ -129,7 +99,7 @@
         <?php // if($current_user['userroleid'] == 1 || $current_user['userroleid'] == 2 || $current_user['userroleid'] == 4): ?>
         <li <?php if(isset($active_item) && $active_item == 'users') echo 'class="active"'; ?> >
             <?php echo $this->Html->link('<i class="icon-group"></i>
-                <span class="menu-text"> Users </span><b class="arrow icon-angle-down"></b>',
+                <span class="menu-text"> Users <span class="badge badge-primary">'. ($user_count != 0 ? $user_count : '').'</span></span><b class="arrow icon-angle-down"></b>',
                     array('controller'=>'users','action'=>'index'),
                         array('escape'=>false, 'class'=>'dropdown-toggle')); ?>
             
@@ -164,14 +134,14 @@
         
         <li <?php if(isset($active_item) && $active_item == 'outlets') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-building"></i>
-                <span class="menu-text"> Outlets <span class="badge badge-primary">'.$outlet_count.'</span></span>',
+                <span class="menu-text"> Outlets <span class="badge badge-primary">'. ($outlet_count != 0 ? $outlet_count : '').'</span></span>',
                     array('controller'=>'outlets','action'=>'index'),
                         array('escape'=>false)); ?>
         </li>
 
         <li <?php if(isset($active_item) && $active_item == 'products') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-briefcase"></i>
-                <span class="menu-text"> Products <span class="badge badge-primary">'. '0' .'</span></span>',
+                <span class="menu-text"> Products </span>',
                 array('#'=>'#'),
                         array('escape'=>false)); ?>
         </li>

@@ -14,14 +14,14 @@ class DashboardController extends AppController {
     
     function index() {
 
-        $outlet_count = $this->Outlet->countOutlet();
+        $outlet_count = $this->Outlet->countOutlet($this->postoptions);
 
-        $recentImages = $this->Outletimage->recentImages(6);
+        $recentImages = $this->Outletimage->recentImages(6, $this->postoptions);
         $this->set(array('oimages' => $recentImages));
 
-        $distrib = $this->Outlet->retailTypeDistribution();
-        $least = $this->Outlet->leastCrowdedLocations();
-        $most = $this->Outlet->mostCrowdedLocations();
+        $distrib = $this->Outlet->retailTypeDistribution($this->postoptions);
+        $least = $this->Outlet->leastCrowdedLocations($this->postoptions);
+        $most = $this->Outlet->mostCrowdedLocations($this->postoptions);
 
         $this->set(
             array(
@@ -40,6 +40,9 @@ class DashboardController extends AppController {
 
         //get current user settings :)
         $this->setCurrentUserSettings();
+
+        $this->urloptions = $this->Filter->getUrlFilterOptions('Outlet');
+        $this->postoptions = $this->Filter->getPostDataFilterOptions('Outlet');
        
     }
 
@@ -57,7 +60,7 @@ class DashboardController extends AppController {
         $resp = [];
         $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
 
-        $outletproducts = $this->Outletproduct->outletProductDistribution();
+        $outletproducts = $this->Outletproduct->outletProductDistribution($this->postoptions);
 
         $i = 0;
 
@@ -79,12 +82,9 @@ class DashboardController extends AppController {
     public function outletMerchandizeDistribution() {
 
         $resp = [];
-        $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
-
-        $outletmerchandize = $this->Outletmerchandize->outletMerchandizeDistribution();
-
         $i = 0;
 
+        $outletmerchandize = $this->Outletmerchandize->outletMerchandizeDistribution($this->urloptions);
         foreach ($outletmerchandize as $value) {
             $data['name'] = $value['Brand']['brandname'];
             $data['y'] = intval($value[0]["count"]);
@@ -98,105 +98,6 @@ class DashboardController extends AppController {
         $this->view = 'ajax_response';
         $this->set('response', $response);
 
-    }
-
-    //All visit in the visit table are completed!
-    private function _fetchAndSetAllVisits($limit) {
-
-        //========================================================================================
-        $options = $this->Filter->getPostDataFilterOptions('Visit');
-        //========================================================================================
-
-        $options['order'] = array('Visit.createdat DESC');
-        $options['limit'] = $limit;
-        $options['recursive'] = -1;
-        $options['fields'] = array(
-            'Visit.id',
-            'Visit.starttimestamp',
-            'Visit.duration',
-            'Visit.distancefromoutlet',
-            'Outlet.id',
-            'Outlet.outletname',
-        );
-        
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-        $visits = $this->Visit->find('all', $options);
-        $this->set(array('visits' => $visits));
-    }
-    
-    private function _getOrderCount($options = null) {
-        
-        $options = $this->Filter->getPostDataFilterOptions('Order');
-        
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Order.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-        
-        $ordercount = $this->Order->find('count', $options);
-        return $ordercount;
-    }
-    
-    private function _getScheduleCount($options = null) {
-        $schedulecount = $this->Schedule->find('count', $options);
-        return $schedulecount;
-    }
-
-    private function _getFieldStaffCount() {        
-        
-        $fieldstaffcount = $this->_fieldrepLists(false, true);
-//        debug($fieldstaffcount);
-        return $fieldstaffcount;
-    }
-
-    private function _getLocationCount() {
-        $locationcount = $this->Location->find('count');
-        return $locationcount;
-    }
-
-    private function _getProductCount() {
-        $productcount = $this->Product->find('count');
-        return $productcount;
     }
 
     private function _getBriefCount() {
@@ -217,45 +118,6 @@ class DashboardController extends AppController {
         return $briefcount;
     }
 
-    //Setting product availabilities
-    private function _setProductAvailability() {
-        
-        //Get All Brand List except Current Order by ProductId => Columns
-        $brands = $this->Brand->find('all', array(
-            'recursive' => -1,
-            'fields' => array('Brand.id', 'Brand.brandname', 'Brand.brandcolor'),
-            'order' => array('Brand.id'),
-//            Comment to Include Brands
-            'conditions' => array('NOT' => array('Brand.current' => array(1)))
-        ));
-        $this->set(array('brands' => $brands));
-
-        //Get the Current Brand
-        $currentbrand = $this->Brand->find('all', array(
-            'recursive' => -1,
-            'fields' => array('Brand.id', 'Brand.brandname'),
-            'conditions' => array('Brand.current' => 1)));
-        $this->set('currentbrand', $currentbrand);
-//        debug($currentbrand);
-        //Get all current brand products
-        if(!isset($currentbrand[0]['Brand']['id'])) {
-            $this->set('prodavails', array());
-            return;
-        }
-        $brandproducts = $this->_getBrandProduct($currentbrand[0]['Brand']['id']);
-//        debug($brandproducts);
-        $this->set(array('brandproducts' => $brandproducts));
-
-        //Get Product Availability Information without current brand details
-        $prodcomps = $this->_getProductAvailabilityWithoutCurrentBrand($currentbrand[0]['Brand']['id']);
-//        debug($prodcomps);
-        $this->set(array('prodcomps' => $prodcomps));
-
-        //Get all product availability list for table
-        $prodavails = $this->_getAllProductAvailabilityList();
-//        debug($prodavails);
-        $this->set(array('prodavails' => $prodavails));
-    }
 
     private function _getBrandProduct($brandId) {
 //        if (isset($this->params['url']['floc'])) {
@@ -327,148 +189,7 @@ class DashboardController extends AppController {
         return $brandproducts;*/
     }
 
-    private function _getProductAvailabilityWithoutCurrentBrand($currentId) {
-        //Get Product Availability data for other Brands apart from the current ordered by how they will be added
-        //to the Matrix - Row => Compareproductid, Column => Brandid
-        if (isset($this->params['url']['floc'])) {
-            $options['conditions']['location_id'] = $this->params['url']['floc'];
-        }
-        //condition for fieldrep filter
-        if (isset($this->params['url']['fuid'])) {
-            $options['conditions']['userid'] = $this->params['url']['fuid'];
-        }
-        
-        $options['fields'] = array(
-            'Brand.id',
-            'Product.id',
-            'Product.productname',
-            'Product.compareproductid',
-            'Productavailability.id',
-            'Productavailability.quantityavailable',
-            'SUM(Productavailability.quantityavailable) AS totalquantity'
-        );
-        $options['order'] = array('Product.compareproductid', 'Brand.id');
-        //Comment to Include Brands
-//        $options['conditions'] = array('NOT' => array('Brand.id' => $currentId));
-        $options['group'] = array('Product.id');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'products',
-                'alias' => 'Product',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Product.id = Productavailability.productid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Product.brandid = Brand.id'
-                )
-            ),
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Productavailability.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
 
-        $prodcomps = $this->Productavailability->find('all', $options);
-        return $prodcomps;
-    }
-
-    private function _getAllProductAvailabilityList() {
-
-        if (isset($this->params['url']['floc'])) {
-            $options['conditions']['location_id'] = $this->params['url']['floc'];
-        }
-        //condition for fieldrep filter
-        if (isset($this->params['url']['fuid'])) {
-            $options['conditions']['userid'] = $this->params['url']['fuid'];
-        }
-        
-        $options['fields'] = array(
-            'Brand.id',
-            'Brand.brandname',
-            'Product.id',
-            'Product.productname',
-            'Productavailability.id',
-            'Productavailability.visitid',
-            'Productavailability.quantityavailable',
-            'Productavailability.unitprice',
-            'Productavailability.purchasepoint'
-        );
-        $options['recursive'] = -1;
-        $options['limit'] = 20;
-        $options['order'] = array('Productavailability.createdat');
-        $options['joins'] = array(
-            array(
-                'table' => 'products',
-                'alias' => 'Product',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Product.id = Productavailability.productid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Product.brandid = Brand.id'
-                )
-            ),
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Productavailability.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-        $this->Paginator->settings = $options;
-        $prodavails = $this->Paginator->Paginate('Productavailability');
-        return $prodavails;
-    }
 
     //        link="j-myJSFunction-China, 90"
 //        animation='0' showShadow='0' showBevel='0' showMarkerLabels='1' fillColor='F1f1f1' 
@@ -516,7 +237,7 @@ class DashboardController extends AppController {
 //        }
 //EOF;
         //outlet count by locations
-        $outletbylocation = $this->Outlet->getOutletCountByLocation();
+        $outletbylocation = $this->Outlet->getOutletCountByLocation($this->urloptions);
         foreach ($outletbylocation as $outletdetail) {
             $id = $outletdetail['State']['internalid'];
             $value = $outletdetail[0]['outletcount'];
@@ -536,7 +257,7 @@ class DashboardController extends AppController {
         }
 
         //Merchandize count by locations
-        $outletmerchandizebylocation = $this->Outletmerchandize->OutletMerchandizeByLocation();
+        $outletmerchandizebylocation = $this->Outletmerchandize->OutletMerchandizeByLocation($this->urloptions);
         foreach ($outletmerchandizebylocation as $omcount) {
             $id = $omcount['State']['internalid'];
             $value = $omcount[0]['merchandizecount'];
@@ -555,7 +276,7 @@ class DashboardController extends AppController {
         }
 
         //Scheduled visit count by locations
-        $outletproductbylocation = $this->Outletproduct->OutletProductByLocation();
+        $outletproductbylocation = $this->Outletproduct->OutletProductByLocation($this->urloptions);
         foreach ($outletproductbylocation as $opcount) {
             $id = $opcount['State']['internalid'];
             $value = $opcount[0]['productcount'];

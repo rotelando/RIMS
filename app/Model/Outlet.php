@@ -62,32 +62,6 @@ class Outlet extends AppModel {
         $options['limit'] = $number;
         $options['recursive'] = -1;
         $options['order'] = array('count asc');
-        $options['joins'] = array(
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'lgas',
-                'alias' => 'Lga',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Location.lga_id = Lga.id'
-                )
-            ),
-            array(
-                'table' => 'territories',
-                'alias' => 'Territory',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Lga.territory_id = Territory.id'
-                )
-            )
-        );
 
         $result = $this->find('all', $options);
 
@@ -101,32 +75,6 @@ class Outlet extends AppModel {
         $options['limit'] = $number;
         $options['recursive'] = -1;
         $options['order'] = array('count desc');
-        $options['joins'] = array(
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'lgas',
-                'alias' => 'Lga',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Location.lga_id = Lga.id'
-                )
-            ),
-            array(
-                'table' => 'territories',
-                'alias' => 'Territory',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Lga.territory_id = Territory.id'
-                )
-            )
-        );
 
         $result = $this->find('all', $options);
 
@@ -149,32 +97,22 @@ class Outlet extends AppModel {
         $options['order'] = array('Outlet.id DESC');
         $options['limit'] = $number;
         $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
+        $options['joins'][] = array(
                 'table' => 'users',
                 'alias' => 'User',
                 'type' => 'LEFT',
                 'conditions' => array(
                     'User.id = Outlet.user_id'
                 )
-            ),
-            array(
+            );
+        $options['joins'][] = array(
                 'table' => 'retailtypes',
                 'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
                     'Retailtype.id = Outlet.retailtype_id'
                 )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            )
-        );
+            );
 
         $outlets = $this->find('all', $options);
 
@@ -192,24 +130,15 @@ class Outlet extends AppModel {
         );
         $options['group'] = array('outletclass_id');
         $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
+        $options['joins'][] = array(
                 'table' => 'outletclasses',
                 'alias' => 'Outletclass',
                 'type' => 'INNER',
                 'conditions' => array(
                     'Outlet.outletclass_id = Outletclass.id'
                 )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            )
-        );
+            );
+
         $result = $this->find('all', $options);
         return $result;
     }
@@ -223,24 +152,15 @@ class Outlet extends AppModel {
         );
         $options['group'] = array('outletchannel_id');
         $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
+        $options['joins'][] = array(
                 'table' => 'outletchannels',
                 'alias' => 'Outletchannel',
                 'type' => 'INNER',
                 'conditions' => array(
                     'Outlet.outletchannel_id = Outletchannel.id'
                 )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            )
-        );
+            );
+
         $result = $this->find('all', $options);
         return $result;
     }
@@ -254,24 +174,15 @@ class Outlet extends AppModel {
         );
         $options['group'] = array('retailtype_id');
         $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
+        $options['joins'][] = array(
                 'table' => 'retailtypes',
                 'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
                     'Outlet.retailtype_id = Retailtype.id'
                 )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            )
-        );
+            );
+
         $result = $this->find('all', $options);
         return $result;
     }
@@ -292,16 +203,6 @@ class Outlet extends AppModel {
         $options['fields'] = array('Outlet.created_at', 'COUNT(Outlet.created_at) as count');
         $options['recursive'] = -1;
         $options['group'] = array("DATE_FORMAT( Outlet.created_at,  '%Y-%m-%d' )");
-        $options['joins'] = array(
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            )
-        );
 
         $result = $this->find('all', $options);
 
@@ -332,31 +233,31 @@ class Outlet extends AppModel {
             array(
                 'table' => 'outletclasses',
                 'alias' => 'Outletclass',
-                'type' => 'INNER',
+                'type' => 'LEFT',
                 'conditions' => array(
                     'Outletclass.id = Outlet.outletclass_id'
                 )
             ),
             array(
-                'table' => 'retailtypes',
-                'alias' => 'Retailtype',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Retailtype.id = Outlet.retailtype_id'
-                )
-            ),
-            array(
                 'table' => 'locations',
                 'alias' => 'Location',
-                'type' => 'INNER',
+                'type' => 'LEFT',
                 'conditions' => array(
                     'Location.id = Outlet.location_id'
                 )
             ),
             array(
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'Retailtype.id = Outlet.retailtype_id'
+                )
+            ),
+            array(
                 'table' => 'users',
                 'alias' => 'User',
-                'type' => 'INNER',
+                'type' => 'LEFT',
                 'conditions' => array(
                     'User.id = Outlet.user_id'
                 )
@@ -369,57 +270,65 @@ class Outlet extends AppModel {
 
     }
 
-    public function getOutletCountByLocation() {
+    public function getOutletCountByLocation($options) {
         //outlet count by locations
         $options['fields'] = array('State.internalid, COUNT(State.internalid) as outletcount');
         $options['group'] = array('State.internalid HAVING outletcount > 0');
         $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
+
+        $outletbylocation = $this->find('all', $options);
+
+        return $outletbylocation;
+        //End outlet count by locations
+    }
+
+
+    public function getPaginatedOutlets($paginator, $options = null, $count = false) {
+
+        $options['fields'] = array(
+            'Outlet.*',
+            'User.id',
+            'User.username',
+            'Location.id',
+            'Location.locationname',
+            'Outletclass.id',
+            'Outletclass.outletclassname',
+            'Retailtype.id',
+            'Retailtype.retailtypename'
+        );
+        $options['joins'][] = array(
+                'table' => 'outletclasses',
+                'alias' => 'Outletclass',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Location.id = Outlet.location_id'
+                    'Outletclass.id = Outlet.outletclass_id'
                 )
-            ),
-            array(
-                'table' => 'lgas',
-                'alias' => 'Lga',
+            );
+        $options['joins'][] = array(
+                'table' => 'retailtypes',
+                'alias' => 'Retailtype',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Lga.id = Location.lga_id'
+                    'Retailtype.id = Outlet.retailtype_id'
                 )
-            ),
-            array(
-                'table' => 'territories',
-                'alias' => 'Territory',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Territory.id = Lga.territory_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Territory.state_id'
-                )
-            ),
-            array(
+            );
+        $options['joins'][] = array(
                 'table' => 'users',
                 'alias' => 'User',
                 'type' => 'LEFT',
                 'conditions' => array(
                     'User.id = Outlet.user_id'
                 )
-            )
-        );
-        $outletbylocation = $this->find('all', $options);
+            );
 
-        return $outletbylocation;
-        //End outlet count by locations
+        $paginator->settings = $options;
+
+        if($count) {
+            $paginatedOutlets = $this->find('count', $options);
+        } else {
+            $paginatedOutlets = $paginator->paginate('Outlet');
+        }
+        return $paginatedOutlets;
     }
 
 }

@@ -35,7 +35,7 @@ App::uses('Controller', 'Controller', 'Utility');
  */
 class AppController extends Controller {
 
-    var $uses = array('Setting', 'Outlet', 'User', 'Rolemodule', 'Country', 'State', 'Region', 'Subregion', 'Territory', 'Lga', 'Location');
+    var $uses = array('Setting', 'Outlet', 'User', 'Rolemodule', 'Country', 'State', 'Region', 'Subregion', 'Territory', 'Lga', 'Location', 'Retailtype');
     var $helper = array('RoleAccess');
     var $components = array(
         'DebugKit.Toolbar',
@@ -66,19 +66,28 @@ class AppController extends Controller {
 
         $this->set('current_user', $current_user);
         
-        $outletcount = $this->_getOutletCount();
+        $outletcount = $this->Outlet->countOutlet();
         $this->set('outlet_count', $outletcount);
+
+        $usercount = $this->User->countUser();
+        $this->set('user_count', $usercount);
         
-        $visitcount = $this->_getVisitCount();
-        $this->set('visit_count', $visitcount);
-        
-        $this->_fieldrepLists();
+        $fieldreplist = $this->User->fieldRepLists();
+        $this->set(array('fieldreplist' => $fieldreplist));
+
+        $retailtypelist = $this->Retailtype->getRetailtypeAsList();
+        $this->set(array('retailtypelist' => $retailtypelist));
         
         $this->_locationLists();
         
         $this->_datePickerList();
 
         $this->setDomainName();
+
+        //This holds and reset the param values to be used in making ajax calls for filters
+        if(isset($this->request->data['Outlet']['getparam'])) {
+            $this->set(array('getparam' => $this->request->data['Outlet']['getparam']));
+        }
         
     }
 
@@ -112,69 +121,6 @@ class AppController extends Controller {
         $this->set(array(
             'title_of_page' => $title
         ));
-    }
-
-    public function _getOutletCount($options = null) {
-        
-        /*$options = $this->Filter->getPostDataFilterOptions('Outlet');
-        // debug($options);
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-
-        $outletcount = $this->Outlet->find('count', $options);
-        return $outletcount;*/
-    }
-
-    public function _getVisitCount($options = null) {
-
-        /*$options = $this->Filter->getPostDataFilterOptions('Outlet');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        
-        $visitcount = $this->Visit->find('count', $options);
-        return $visitcount;*/
     }
 
     public function _setSidebarActiveItem($topMenu) {
@@ -245,40 +191,6 @@ class AppController extends Controller {
         } else {
             return $outletlist;
         }*/
-        
-    }
-    
-    public function _fieldrepLists($setValue = true, $count = false) {
-        /*$currentUserSettings = $this->setCurrentUserSettings();
-        if (!isset($currentUserSettings['Setting']['fieldrepid'])) {
-            $fieldrepid = 3;
-        } else {
-            $fieldrepid = $currentUserSettings['Setting']['fieldrepid'];
-        }
-        
-        $options = array();
-        //check if locationgroupid is null. If null, load all fieldreps
-        if(!is_null($this->_getCurrentUserLocationGroupId())) {
-            $options['conditions']['User.locationgroupid'] = $this->_getCurrentUserLocationGroupId();
-        }
-        
-        $options['conditions']['User.userroleid'] = $fieldrepid;
-        
-        if($setValue) {
-            if($count) {
-                $fieldreps = $this->User->find('count', $options);
-            } else {
-                $fieldreps = $this->User->find('list', $options);
-            }
-            $this->set(array('fieldreplist' => $fieldreps));
-        } else {
-            if($count) {
-                $fieldreps = $this->User->find('count', $options);
-            } else {
-                $fieldreps = $this->User->find('list', $options);
-            }
-            return $fieldreps;
-        }*/
     }
 
     public function _locationLists($setValue = true) {
@@ -335,7 +247,7 @@ class AppController extends Controller {
         $lga = $this->Location->find('list');
         if(isset($lga)) {
             foreach ($lga as $key => $value) {
-                $key = 'loc_' . $key;
+                $key = 'lga_' . $key;
                 $new_lga[$key] = $value;
             }
             $outputlocation['Lgas'] = $new_lga;
