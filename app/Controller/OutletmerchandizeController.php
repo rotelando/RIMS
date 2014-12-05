@@ -15,36 +15,91 @@ class OutletmerchandizeController extends AppController {
       
         $this->_setViewVariables();
         
-        $this->urloptions = $this->Filter->getUrlFilterOptions($this->modelClass);
-        $this->postoptions = $this->Filter->getPostDataFilterOptions($this->modelClass);
+        $this->urloptions = $this->Filter->getUrlFilterOptions('Outletmerchandize');
+        $this->postoptions = $this->Filter->getPostDataFilterOptions('Outletmerchandize');
         $this->_getFilterDisplayText($this->Filter->getFilterText($this->modelClass));
     }
 
     public function index() {
-        
-        
+
+        $options = $this->postoptions;
+
         $outletmerchandize = $this->_getVisibilityEvaluations(10);
         $this->set('visibilities' , $outletmerchandize);
         
         $visibilitycount = $this->Outletmerchandize->find('count');
         $this->set('visibilitycount' , $visibilitycount);
         
-        $merchandizecount = $this->Merchandisecount->find('count');
+        $merchandizecount = $this->Merchandize->find('count');
         $this->set('merchandizecount' , $merchandizecount);
         
-        $brands = $this->_getAllBrands();
+        $brands = $this->Brand->getAllBrands();
         $this->set('brands', $brands);
-        $brandelements = $this->_getAllBrandElements();
-        $this->set('brandelements', $brandelements);
-        $visibilitytable = $this->_getVisibilitySummary();
+        $merchandize = $this->Merchandize->getAllMerchandize();
+        $this->set('merchandize', $merchandize);
+
+        $topten = $this->Outletmerchandize->topTenOutletMerchandize($options, 10);
+        $this->set('toptenmerchandize', $topten);
+
+        $visibilitytable = $this->_getVisibilitySummary($options);
         $this->set('visibilitytable', $visibilitytable);
         
 //        debug($this->request->data);
     }
 
+    public function shares() {
+
+        $outletmerchandizecount = $this->Outletmerchandize->find('count');
+        $this->set('visibilitycount' , $outletmerchandizecount);
+    }
+
+    public function merchandizeshare() {
+
+        $options = $this->postoptions;
+
+
+        $pieData = $this->Outletmerchandize->getShareByMerchandize($options);
+
+        $pieItem = array();
+        $resp = array();
+        $ids = array();
+
+        foreach ($pieData as $key => $value) {
+
+            $elementname = $value['Merchandize']['name'];
+            $beid = intval($value['Merchandize']['id']);
+            if(!in_array($beid, $ids)) {
+                $pieItem[$beid] = [];
+                $ids[] = $beid;
+            }
+
+            $data['name'] = $value['Brand']['brandname'];
+            $data['y'] = intval($value[0]["elementvalue"]);
+            $data['color'] = $value['Brand']['brandcolor'];
+
+            $pieItem[$beid]['elementname'] = $elementname;
+            $pieItem[$beid]['data'][] = $data;
+        }
+
+        $respArray = array();
+        $merchandize = $this->Merchandize->find('all');
+
+        foreach ($merchandize as $key => $value) {
+            $brandelementid = $value['Merchandize']['id'];
+            if(isset($pieItem[$brandelementid])) {
+                $respArray[] = $pieItem[$brandelementid];
+            }
+        }
+
+        $response = json_encode($respArray);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+    }
+
     private function _setViewVariables() {
-        $this->_setSidebarActiveItem('visibilities');
-        $this->_setTitleOfPage('Visibility Evaluations');
+        $this->_setSidebarActiveItem('outletmerchandize');
+        $this->_setTitleOfPage('Outlet Merchandize');
     }
 
     public function save() {
@@ -174,71 +229,10 @@ class OutletmerchandizeController extends AppController {
         $this->set('response', $response);       
     }
 
-    public function visibilityshares() {
+    public function brandshares() {
 
         $options = $this->urloptions;
-//        from visibilityevaluations group by brandid, visibilityelementid'
-        
-        $options['fields'] = array(
-            'Brand.brandname',
-            'Brand.brandcolor', 
-            'Outletmerchandize.brandid',
-            'SUM(Outletmerchandize.elementcount * Brandelement.weight) as elementvalue'
-        );
-        $options['group'] = array('Outletmerchandize.brandid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Outletmerchandize.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.brandid = Brand.id'
-                )
-            ),
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.visibilityelementid = Brandelement.id'
-                )
-            )
-        );
-        
-        $rs = $this->Outletmerchandize->find('all', $options);
+        $rs = $this->Outletmerchandize->OutletMerchandizeBrandShares($options);
 
         //Calculate the total element value share
         $total = 0;
@@ -249,26 +243,15 @@ class OutletmerchandizeController extends AppController {
         $resp = array();
 
         if (isset($rs[0][0]['elementvalue'])) {
-
-            // $max = $rs[0][0]['elementvalue'];
-            // $max_index = 0;
             $i = 0;
             
             foreach ($rs as $value) {
                 $data['name'] = $value['Brand']['brandname'];
                 $data['y'] = intval($value[0]["elementvalue"]);
-//                $data['y'] = round((intval($value[0]["elementvalue"]) / $total) * 100, 2);
-                // if ($data['y'] > $max) {
-                //     $max = $data['y'];
-                //     $max_index = $i;
-                // }
                 $data['color'] = $value['Brand']['brandcolor'];
                 $resp[] = $data;
                 $i++;
             }
-
-            // $resp[$max_index]['selected'] = true;
-            // $resp[$max_index]['sliced'] = true;
         }
 
         $response = json_encode($resp);
@@ -276,104 +259,50 @@ class OutletmerchandizeController extends AppController {
         $this->view = 'ajax_response';
         $this->set('response', $response);
     }
-    public function merchandizegiveoutshare() {
+
+    private function _setTopTenMerchandizeBrand($limit) {
+
+        $options = $this->urloptions;
+        $resp = $this->Outletmerchandize->topTenOutletMerchandize($options, $limit);
+
+        $response = json_encode($resp);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+    }
+
+    public function elementperformance() {
 
         $options = $this->urloptions;
 //        from visibilityevaluations group by brandid, visibilityelementid'
-        
-        $options['fields'] = array(
-            'Brandelement.id',
-            'Brandelement.brandelementname', 
-            'SUM(Merchandisecount.elementcount * Brandelement.weight) as elementvalue'
-        );
-        $options['group'] = array('Brandelement.id');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Merchandisecount.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.userid = User.id'
-                )
-            ),
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Merchandisecount.visibilityelementid = Brandelement.id'
-                )
-            )
-        );
-        
-        $rs = $this->Merchandisecount->find('all', $options);
 
-        $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607', '#8b0607', '#8b0607', '#8b0607'];
-        
-        //Calculate the total element value share
-        $total = 0;
-        foreach ($rs as $value) {
-            $total += intval($value['0']['elementvalue']);
-        }
+        $rs = $this->Outletmerchandize->merchandizePerformance($options);
 
         $resp = array();
+        $categories = array();
+        $series = array();
 
-        if (isset($rs[0][0]['elementvalue'])) {
-            // $max = $rs[0][0]['elementvalue'];
-            // $max_index = 0;
-            $i = 0;
-            
-            foreach ($rs as $value) {
-                $data['name'] = $value['Brandelement']['brandelementname'];
-                $data['y'] = intval($value[0]["elementvalue"]);
-//                $data['y'] = round((intval($value[0]["elementvalue"]) / $total) * 100, 2);
-                // if ($data['y'] > $max) {
-                //     $max = $data['y'];
-                //     $max_index = $i;
-                // }
-                $data['color'] = $colors[$i];
-                $resp[] = $data;
-                $i++;
+        foreach ($rs as $value) {
+
+            $merchandize = $value['Merchandize']['name'];
+            $categories[] = $merchandize;
+
+            $brandname = $value['Brand']['brandname'];
+
+            $series[$brandname]['name'] = $brandname;
+            $series[$brandname]['color'] = $value['Brand']['brandcolor'];
+            if(isset($value[0]['count'])) {
+                $series[$brandname]['data'][] = intval($value[0]['count']);
+            } else {
+                $series[$brandname]['data'][] = 0;
             }
 
-            // $resp[$max_index]['selected'] = true;
-            // $resp[$max_index]['sliced'] = true;
         }
 
+        $resp['categories'] = array_values(array_unique($categories));
+        $resp['series'] = array_values($series);
         $response = json_encode($resp);
+
         $this->layout = 'ajax';
         $this->view = 'ajax_response';
         $this->set('response', $response);
@@ -475,103 +404,6 @@ class OutletmerchandizeController extends AppController {
         $this->set('response', $response);
     }
 
-    public function elementperformance() {
-
-        $options = $this->urloptions;
-//        from visibilityevaluations group by brandid, visibilityelementid'
-        
-        $options['fields'] = array(
-            'Brand.brandname',
-            'Brand.brandcolor',
-            'Brandelement.brandelementname',
-            // 'ISNULL(SUM(Outletmerchandize.elementcount), 0) AS count'
-            'SUM(Outletmerchandize.elementcount * Brandelement.weight) as count'
-        );
-        $options['group'] = array('Outletmerchandize.brandid', 'Outletmerchandize.visibilityelementid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Outletmerchandize.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.brandid = Brand.id'
-                )
-            ),
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.visibilityelementid = Brandelement.id'
-                )
-            )
-        );
-        
-        $rs = $this->Outletmerchandize->find('all', $options);
-
-        $resp = array();
-        $categories = array();
-        $series = array();
-        
-        foreach ($rs as $value) {
-            
-            $brandelementname = $value['Brandelement']['brandelementname'];
-            $categories[] = $brandelementname;
-            
-            $brandname = $value['Brand']['brandname'];
-
-            $series[$brandname]['name'] = $brandname;
-            $series[$brandname]['color'] = $value['Brand']['brandcolor'];
-            if(isset($value[0]['count'])) {
-                $series[$brandname]['data'][] = intval($value[0]['count']);
-            } else {
-                $series[$brandname]['data'][] = 0;
-            }
-            
-        }
-        
-        $resp['categories'] = array_values(array_unique($categories));
-        $resp['series'] = array_values($series);
-        $response = json_encode($resp);
-        
-        $this->layout = 'ajax';
-        $this->view = 'ajax_response';
-        $this->set('response', $response);
-    }
-
     private function _getVisibilityEvaluations($number = null) {
         
         $options = $this->postoptions;
@@ -580,46 +412,22 @@ class OutletmerchandizeController extends AppController {
             'Outlet.id',
             'Outlet.outletname',
             'Brand.brandname',
-            'Brandelement.brandelementname',
+            'Merchandize.name',
             'Outletmerchandize.elementcount',
-            'Outletmerchandize.visitid',
+            'Outletmerchandize.outlet_id',
             'Outletmerchandize.id',
-            '(Outletmerchandize.elementcount * Brandelement.weight) as grandvalue'
+            '(Outletmerchandize.elementcount * Merchandize.weight) as grandvalue'
         );
         $options['order'] = array('Outletmerchandize.createdat DESC');
         $options['limit'] = $number;
         $options['recursive'] = -1;
         $options['joins'] = array(
             array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Outletmerchandize.visitid'
-                )
-            ),
-            array(
                 'table' => 'outlets',
                 'alias' => 'Outlet',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
+                    'Outlet.id = Outletmerchandize.outlet_id'
                 )
             ),
             array(
@@ -627,15 +435,15 @@ class OutletmerchandizeController extends AppController {
                 'alias' => 'Brand',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outletmerchandize.brandid = Brand.id'
+                    'Outletmerchandize.brand_id = Brand.id'
                 )
             ),
             array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
+                'table' => 'merchandize',
+                'alias' => 'Merchandize',
                 'type' => 'LEFT',
                 'conditions' => array(
-                    'Outletmerchandize.visibilityelementid = Brandelement.id'
+                    'Outletmerchandize.merchandize_id = Merchandize.id'
                 )
             )
         );
@@ -649,121 +457,11 @@ class OutletmerchandizeController extends AppController {
         $outletmerchandize = $this->_getVisibilityEvaluations(25);
         $this->set('visibilities' , $outletmerchandize);
     }
-
-    public function shares() {
-        $visibilitycount = $this->Outletmerchandize->find('count');
-        $this->set('visibilitycount' , $visibilitycount);
-    }
-
-    public function brandelementshare() {
-        
-        $options = $this->urloptions;
-
-        $options['fields'] = array(
-            'Brandelement.brandelementname',
-            'Brandelement.id',
-            'Brand.brandname',
-            'Brand.brandcolor', 
-            'Outletmerchandize.brandid',
-            'SUM(Outletmerchandize.elementcount * Brandelement.weight) as elementvalue'
-        );
-        $options['group'] = array('Brandelement.id', 'Outletmerchandize.brandid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Outletmerchandize.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.brandid = Brand.id'
-                )
-            ),
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.visibilityelementid = Brandelement.id'
-                )
-            )
-        );
-        
-        $pieData = $this->Outletmerchandize->find('all', $options);
-
-        $pieItem = array();        
-        $resp = array();
-        $ids = array();
-
-        foreach ($pieData as $key => $value) {
-            
-            $elementname = $value['Brandelement']['brandelementname'];
-            $beid = intval($value['Brandelement']['id']);
-            if(!in_array($beid, $ids)) {
-                $pieItem[$beid] = [];
-                $ids[] = $beid;
-            }
-
-            $data['name'] = $value['Brand']['brandname'];
-            $data['y'] = intval($value[0]["elementvalue"]);
-            $data['color'] = $value['Brand']['brandcolor'];
-
-            $pieItem[$beid]['elementname'] = $elementname;
-            $pieItem[$beid]['data'][] = $data;
-        }
-
-        $respArray = array();
-        $brandelements = $this->Brandelement->find('all');
-
-        foreach ($brandelements as $key => $value) {
-            $brandelementid = $value['Brandelement']['id'];
-            if(isset($pieItem[$brandelementid])) {
-                $respArray[] = $pieItem[$brandelementid];
-            }
-        }
-
-        
-        $response = json_encode($respArray);
-        // $response = json_encode($resp);
-
-
-        $this->layout = 'ajax';
-        $this->view = 'ajax_response';
-        $this->set('response', $response);
-    }
     
     public function mapdata() {
+
+        $options = $this->urloptions;
+
         $mapdata["map"]["fillcolor"] = "ffffff";
         $mapdata["map"]["basefontsize"] = "10";
         $mapdata["map"]["showBevel"] = "0";
@@ -776,7 +474,7 @@ class OutletmerchandizeController extends AppController {
         $mapdata["map"]["showToolTipShadow"] = "1";       
         
         //outlet count by locations
-        $visibility_by_location = $this->_visibilityCountByLocation();
+        $visibility_by_location = $this->Outletmerchandize->getMerchandizeCountByLocation($options);
         foreach ($visibility_by_location as $visibility) {
             
             $id = $visibility['State']['internalid'];
@@ -809,146 +507,13 @@ class OutletmerchandizeController extends AppController {
         $this->view = 'ajax_response';
         $this->set('response', $response);
     }
-    
-    private function _visibilityCountByLocation() {
-        
-        $options = $this->urloptions;
-        
-        $options['fields'] = array(
-            'Brandelement.brandelementname, '
-            . 'Brand.brandname, '
-            . 'Brand.brandcolor, '
-            . 'Outletmerchandize.brandid, '
-            . 'State.internalid, '
-            . 'State.statename, '
-            // . 'SUM(Outletmerchandize.elementcount * Brandelement.weight) as elementvalue'
-            . 'SUM(Outletmerchandize.elementcount) as elementvalue'
-            );
-        $options['group'] = array('State.internalid', 'Brand.id');
-        $options['order'] = array('State.internalid', 'elementvalue DESC');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Brand.id = Outletmerchandize.brandid'
-                )
-            ),
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Brandelement.id = Outletmerchandize.visibilityelementid'
-                )
-            ),
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Outletmerchandize.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        $visibilitybylocation = $this->Outletmerchandize->find('all', $options);
-        
-        return $visibilitybylocation;
-    }
-    
+
+    //get map item info when clicked
     public function mapitemdata($id) {
-        $options['fields'] = array(
-            'Brandelement.brandelementname, '
-            . 'Brand.brandname, '
-            . 'Brand.brandcolor, '
-            . 'Outletmerchandize.brandid, '
-            . 'State.internalid, '
-            . 'State.statename, '
-            . 'SUM(Outletmerchandize.elementcount) as elementvalue'
-            );
-        $options['conditions']['State.internalid'] = $id;
-        $options['group'] = array('State.internalid', 'Brand.id', 'Brandelement.id');
-        $options['order'] = array('Brandelement.id', 'elementvalue DESC');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Brand.id = Outletmerchandize.brandid'
-                )
-            ),
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Brandelement.id = Outletmerchandize.visibilityelementid'
-                )
-            ),
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Outletmerchandize.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        $visibilitybylocation = $this->Outletmerchandize->find('all', $options);
+
+        $visibilitybylocation = $this->Outletmerchandize->getMapInfo($id);
         foreach ($visibilitybylocation as $branditem) {
-            $item['brandelementname'] = $branditem['Brandelement']['brandelementname'];
+            $item['merchandize'] = $branditem['Merchandize']['name'];
             $item['brandname'] = $branditem['Brand']['brandname'];
             $item['brandcolor'] = $branditem['Brand']['brandcolor'];
             $item['stateid'] = $branditem['State']['internalid'];
@@ -963,11 +528,11 @@ class OutletmerchandizeController extends AppController {
         $this->set('response', $response);
     }
     
-    private function _getVisibilitySummary() {
+    private function _getVisibilitySummary($options) {
     
-        $allbrands = $this->_getAllBrands();
-        $allbrandelements = $this->_getAllBrandElements();
-        $brandelementcount = $this->_getBrandElementCountByBrand();
+        $allbrands = $this->Brand->getAllBrands();
+        $allbrandelements = $this->Merchandize->getAllMerchandize();
+        $merchandizecount = $this->Outletmerchandize->getMerchandizeCountByBrand($options);
         
         $tableMatrix = array();
         //Table calculation starts from here
@@ -984,12 +549,12 @@ class OutletmerchandizeController extends AppController {
                 
                 $found = false;
                 
-                for ($k = 0; $k < count($brandelementcount); $k++) {
-                    if($brandelementcount[$k]['Brand']['id'] == $allbrands[$j]['Brand']['id'] &&
-                            $brandelementcount[$k]['Brandelement']['id'] == $allbrandelements[$i]['Brandelement']['id']) {
+                for ($k = 0; $k < count($merchandizecount); $k++) {
+                    if($merchandizecount[$k]['Brand']['id'] == $allbrands[$j]['Brand']['id'] &&
+                            $merchandizecount[$k]['Merchandize']['id'] == $allbrandelements[$i]['Merchandize']['id']) {
                         
-                        $tableMatrix[$i][$j] = $brandelementcount[$k];
-                        $total += intval($brandelementcount[$k][0]['totalquantity']);
+                        $tableMatrix[$i][$j] = $merchandizecount[$k];
+                        $total += intval($merchandizecount[$k][0]['totalquantity']);
                         $found = true;
                         break;
                     }
@@ -1004,107 +569,6 @@ class OutletmerchandizeController extends AppController {
         }
         
         return $tableMatrix;
-    }
-    
-    private function _getAllBrands() {
-        //Get All Brand List except Current Order by ProductId => Columns
-        $options['fields'] = array(
-            'Brand.id',
-            'Brand.brandname',
-            'Brand.brandcolor',
-        );
-        $options['order'] = array('Brand.id');
-        $options['recursive'] = -1;
-
-        $allbrands = $this->Brand->find('all', $options);
-        return $allbrands;
-    }
-    
-    private function _getAllBrandElements() {
-        //Get All Brand Elements
-        $options['fields'] = array(
-            'Brandelement.id',
-            'Brandelement.brandelementname',
-            'Brandelement.weight',
-        );
-        $options['order'] = array('Brandelement.id');
-        $options['recursive'] = -1;
-
-        $allbrandelements = $this->Brandelement->find('all', $options);
-        return $allbrandelements;
-    }
-    
-    private function _getBrandElementCountByBrand() {
-        
-        $options = $this->postoptions;
-        
-        $options['fields'] = array(
-            'Brand.id',
-            'Brand.brandname',
-            'Brandelement.id',
-            'Brandelement.brandelementname',
-            'Brandelement.weight',
-            'Outletmerchandize.id',
-            'SUM(Outletmerchandize.elementcount) AS totalquantity'
-        );
-        $options['recursive'] = -1;
-        $options['order'] = array('Outletmerchandize.visibilityelementid');
-        $options['group'] = array('Outletmerchandize.visibilityelementid, Outletmerchandize.brandid');
-        
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Outletmerchandize.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.locationid'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.brandid = Brand.id'
-                )
-            ),
-            array(
-                'table' => 'brandelements',
-                'alias' => 'Brandelement',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outletmerchandize.visibilityelementid = Brandelement.id'
-                )
-            )
-        );
-        
-        $outletmerchandizetable = $this->Outletmerchandize->find('all', $options);
-        return $outletmerchandizetable;
-        
     }
     
     public function _generateRandomHexadecimalColorCode() {

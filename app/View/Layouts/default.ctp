@@ -214,14 +214,10 @@
                 echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min');
                 echo $this->Html->script('dashboard');
 
-            } elseif ($active_item == 'visits') {
+            } elseif ($active_item == 'phonebook') {
 
-                //This should be loaded when visits tab is clicked
-                echo $this->Html->script('easy-pie-chart/jquery.easing.min');
-                echo $this->Html->script('easy-pie-chart/jquery.easypiechart.min');
-                echo $this->Html->script('vanillabox/jquery.vanillabox-0.1.5.min');
-                echo $this->Html->script('visits');
-                echo $this->Html->script('visit-map');
+                //This should be loaded when phonebook tab is clicked
+                echo $this->Html->script('phonebook');
 
             } elseif ($active_item == 'outlets') {
 
@@ -242,10 +238,10 @@
                 echo $this->Html->script('settings');
                 echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false);
 
-            } elseif ($active_item == 'visibilities') {
+            } elseif ($active_item == 'outletmerchandize') {
 
                 //This should be loaded when visibilities tab is clicked-->
-                echo $this->Html->script('visibilities');
+                echo $this->Html->script('outletmerchandize');
                 echo $this->Html->script('http://maps.google.com/maps/api/js?sensor=true', false);
 
             } elseif ($active_item == 'productavailabilities') {

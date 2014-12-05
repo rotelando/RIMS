@@ -18,4 +18,18 @@ class Brand extends AppModel {
         )
     );
 
+    public function getAllBrands() {
+        //Get All Brand List except Current Order by ProductId => Columns
+        $options['fields'] = array(
+            'Brand.id',
+            'Brand.brandname',
+            'Brand.brandcolor',
+        );
+        $options['order'] = array('Brand.id');
+        $options['recursive'] = -1;
+
+        $allbrands = $this->find('all', $options);
+        return $allbrands;
+    }
+
 }

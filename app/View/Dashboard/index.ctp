@@ -96,10 +96,36 @@
                     </div>
             </div>
 
+            <!--Outlet Types-->
+            <div class="span3">
+                <div class="statitem distribution border">
+                    <div class="stattitle title-d">Outlet Types</div>
+                    <?php
+                    $i = 0;
+                    if(isset($outclass)) {
+                        foreach ($outclass as $outletclass): ?>
+                            <div class="statvalue distrib"><?php echo $outletclass[0]['count'] ?></div>
+                            <?php echo $outletclass['Outletclass']['outletclassname']; ?>
+                            <?php if($i == count($outclass)): ?>
+                                <div class="clr"></div>
+                            <?php else: ?>
+                                <div class="clr border-d"></div>
+                            <?php endif;
+                            $i++
+                            ?>
+                    <?php
+                        endforeach;
+                    }
+                    ?>
+
+                </div>
+            </div>
+
+            <!--Most Crowded Territories-->
             <div class="span3">
                 <div id="statcontainer">
                     <div class="statitem high">
-                        <div class="stattitle title-h">Most crowded Territories</div>
+                        <div class="stattitle title-h">Most covered</div>
                         <?php if (isset($most_location[0])): ?>
                             <div class="statvalue"><?php echo $most_location[0][0]['count']; ?></div> Outlets in
                             <span class="statloc"><?php echo $most_location[0]['Territory']['territoryname']; ?></span>
@@ -119,27 +145,178 @@
                     </div>
                 </div>
             </div>
-            <div class="span3">
-                <div id="statcontainer">
-                    <div class="statitem low">
-                        <div class="stattitle title-l">Least crowded Territories</div>
-                        <?php if (isset($least_location[0])): ?>
-                        <div class="statvalue"><?php echo $least_location[0][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[0]['Territory']['territoryname']; ?></span>
-                        <div class="clr border-l"></div>
-                        <?php endif; ?>
-                        <?php if (isset($least_location[1])): ?>
-                        <div class="statvalue"><?php echo $least_location[1][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[1]['Territory']['territoryname']; ?></span>
-                        <div class="clr border-l"></div>
-                        <?php endif; ?>
-                        <?php if (isset($least_location[2])): ?>
-                        <div class="statvalue"><?php echo $least_location[2][0]['count']; ?></div> Outlets in 
-                        <span class="statloc"><?php echo $least_location[2]['Territory']['territoryname']; ?></span>
-                        <div class="clr"></div>
-                        <?php endif; ?>
+        </div>
+
+            <div class="row-fluid">
+                <!--Total Merchandize-->
+                <div class="span3" style="margin: 0px">
+                    <div class="visit-accuracy">
+                        <a href="#">
+                            <div class="border">
+                                <span class="visit-value"><?php echo $merchandize_count; ?></span>
+                                <span class="visit-name">Total Merchandize</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
+                <!--Least crowded Territories-->
+                <div class="span3">
+                    <div id="statcontainer">
+                        <div class="statitem low">
+                            <div class="stattitle title-l">Least covered</div>
+                            <?php if (isset($least_location[0])): ?>
+                                <div class="statvalue"><?php echo $least_location[0][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $least_location[0]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-l"></div>
+                            <?php endif; ?>
+                            <?php if (isset($least_location[1])): ?>
+                                <div class="statvalue"><?php echo $least_location[1][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $least_location[1]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-l"></div>
+                            <?php endif; ?>
+                            <?php if (isset($least_location[2])): ?>
+                                <div class="statvalue"><?php echo $least_location[2][0]['count']; ?></div> Outlets in
+                                <span class="statloc"><?php echo $least_location[2]['Territory']['territoryname']; ?></span>
+                                <div class="clr"></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Most Visibility Territories-->
+                <div class="span3">
+                    <div id="statcontainer">
+                        <div class="statitem high">
+                            <div class="stattitle title-h">Most Visibility</div>
+                            <?php if (isset($most_visibility[0])): ?>
+                                <div class="statvalue"><?php echo $most_visibility[0][0]['weightedcount']; ?></div> Merchandize in
+                                <span class="statloc"><?php echo $most_visibility[0]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-h"></div>
+                            <?php endif; ?>
+                            <?php if (isset($most_visibility[1])): ?>
+                                <div class="statvalue"><?php echo $most_visibility[1][0]['weightedcount']; ?></div> Merchandize in
+                                <span class="statloc"><?php echo $most_visibility[1]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-h"></div>
+                            <?php endif; ?>
+                            <?php if (isset($most_visibility[2])): ?>
+                                <div class="statvalue"><?php echo $most_visibility[2][0]['weightedcount']; ?></div> Merchandize in
+                                <span class="statloc"><?php echo $most_visibility[2]['Territory']['territoryname']; ?></span>
+                                <div class="clr"></div>
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--Least Visibility Territories-->
+                <div class="span3">
+                    <div id="statcontainer">
+                        <div class="statitem low">
+                            <div class="stattitle title-l">Least Visibility Territories</div>
+                            <?php if (isset($least_visibility[0])): ?>
+                                <div class="statvalue"><?php echo $least_visibility[0][0]['weightedcount']; ?></div> Merchandize in
+                                <span class="statloc"><?php echo $least_visibility[0]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-h"></div>
+                            <?php endif; ?>
+                            <?php if (isset($least_visibility[1])): ?>
+                                <div class="statvalue"><?php echo $least_visibility[1][0]['weightedcount']; ?></div> Merchandize in
+                                <span class="statloc"><?php echo $least_visibility[1]['Territory']['territoryname']; ?></span>
+                                <div class="clr border-h"></div>
+                            <?php endif; ?>
+                            <?php if (isset($least_visibility[2])): ?>
+                                <div class="statvalue"><?php echo $least_visibility[2][0]['weightedcount']; ?></div> Merchandize in
+                                <span class="statloc"><?php echo $least_visibility[2]['Territory']['territoryname']; ?></span>
+                                <div class="clr"></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        <div class="row-fluid">
+
+            <div class="span6" style="margin-left: 0px;">
+                <h3 class="header smaller lighter green">Product By Subregion</h3>
+                <table id="toptenmerchandize" class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th> S/N </th>
+                            <th> Subregions</th>
+                            <th> Total Outlets </th>
+                            <?php
+                                foreach ($product_list as $product) {
+                                    echo "<th> {$product} </th>";
+                                }
+                            ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    $i = 0;
+                    /*$prodCount = count($product_list);
+                    $subregionCount = count($subregion_list);*/
+
+                    if(isset($product_sub_region) && !empty($product_sub_region)) {
+                        foreach ($product_sub_region as $ps) {
+
+                            if ($i == 0) {
+                                $i++;
+                                continue;
+                            }
+
+                            echo "<tr>";
+                            foreach ($ps as $pmatrix) {
+                                echo "<td>{$pmatrix}</td>";
+                            }
+                            echo "</tr>";
+                        }
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="span6">
+                <h3 class="header smaller lighter green">Retail Classification By Subregion</h3>
+                <table id="toptenmerchandize" class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th> S/N </th>
+                        <th> Subregions</th>
+                        <th> Total Outlets </th>
+                        <?php
+                        foreach ($retailtype_list as $retailtype) {
+                            echo "<th> {$retailtype} </th>";
+                        }
+                        ?>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    $i = 0;
+                    /*$prodCount = count($product_list);
+                    $subregionCount = count($subregion_list);*/
+
+                    if(isset($retail_class_sub_region) && !empty($retail_class_sub_region)) {
+                        foreach ($retail_class_sub_region as $rtsub) {
+
+                            if ($i == 0) {
+                                $i++;
+                                continue;
+                            }
+
+                            echo "<tr>";
+                            foreach ($rtsub as $rtmatrix) {
+                                echo "<td>{$rtmatrix}</td>";
+                            }
+                            echo "</tr>";
+                        }
+                    }
+                    ?>
+                    </tbody>
+                </table>
             </div>
         </div>
 

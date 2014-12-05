@@ -21,4 +21,19 @@ class Merchandize extends AppModel {
             'dependent' => true
         )
     );
+
+
+    public function getAllMerchandize() {
+        //Get All Brand Elements
+        $options['fields'] = array(
+            'Merchandize.id',
+            'Merchandize.name',
+            'Merchandize.weight',
+        );
+        $options['order'] = array('Merchandize.id');
+        $options['recursive'] = -1;
+
+        $merchandize = $this->find('all', $options);
+        return $merchandize;
+    }
 }

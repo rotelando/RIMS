@@ -63,7 +63,7 @@
                                                 array('escape'=>false)); ?>
 									</li>
                                     <li>
-                                        <?php echo $this->Html->link('<i class="icon-globe"></i> POPs ',
+                                        <?php echo $this->Html->link('<i class="icon-globe"></i> Retail Blocks ',
                                             array('controller'=>'locations', 'action' => 'index'),
                                             array('escape'=>false)); ?>
                                     </li>
@@ -146,17 +146,17 @@
                         array('escape'=>false)); ?>
         </li>
 
-        <li <?php if(isset($active_item) && $active_item == 'visibilities') echo 'class="active"'; ?>>
+        <li <?php if(isset($active_item) && $active_item == 'outletmerchandize') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-bookmark"></i>
                 <span class="menu-text"> Merchandizing </span>',
-                array('#'=>'#'),
+                array('controller'=>'outletmerchandize', 'action' => 'index'),
                         array('escape'=>false)); ?>
         </li>
 
         <li <?php if(isset($active_item) && $active_item == 'phonebook') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-mobile-phone"></i>
                 <span class="menu-text"> Phone Book </span>',
-                array('#'=>'#'),
+                array('controller'=>'phonebook', 'action' => 'index'),
                 array('escape'=>false)); ?>
         </li>
 

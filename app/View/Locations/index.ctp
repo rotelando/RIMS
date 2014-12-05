@@ -37,7 +37,7 @@
 
                                     <div class="widget-box">
                                         <div class="widget-header">
-                                            <h4><?php if (!isset($data['Location']['id'])) echo "Add"; else echo "Edit"; ?> POP</h4>
+                                            <h4><?php if (!isset($data['Location']['id'])) echo "Add"; else echo "Edit"; ?> Retail Block</h4>
                                         </div>
 
                                         <div class="widget-body" style="padding: 15px;">
@@ -51,7 +51,7 @@
                                             ?>
 
                                             <?php
-                                            echo $this->Form->input('locationname', array('label' => 'POP Name', 'required' => true, 'placeholder' => 'Enter name of POP', 'class' => 'span10 left-stripe', 'type' => 'text'));
+                                            echo $this->Form->input('locationname', array('label' => 'Retail Block Name', 'required' => true, 'placeholder' => 'Enter name of Retail Block', 'class' => 'span10 left-stripe', 'type' => 'text'));
                                             ?>
 
                                             <label> Local Government Areas
@@ -66,9 +66,9 @@
 
                                             <hr/>
                                             <?php if (!isset($data['Location']['id'])): ?>
-                                                <button type="submit" class="btn btn-success">Add POP</button>
+                                                <button type="submit" class="btn btn-success">Add Retail Block</button>
                                             <?php else: ?>
-                                                <button type="submit" class="btn btn-info">Update POP</button>
+                                                <button type="submit" class="btn btn-info">Update Retail Block</button>
                                             <?php endif; ?>
 
 
@@ -79,7 +79,7 @@
                                 <div class="span8">
                                     <!--PAGE CONTENT BEGINS-->
                                     <div class="row-fluid">
-                                        <h3 class="span12 header smaller lighter green">List of POPs</h3>
+                                        <h3 class="span12 header smaller lighter green">List of Retail Blocks</h3>
                                         <p class="pull-right">
                                             <?php
                 //                            echo $this->Html->link('<i class="icon-tag bigger-160"></i> New', array('controller' => 'locations', 'action' => 'add'), array('class' => 'btn btn-app btn-primary btn-mini', 'escape' => false));
@@ -90,7 +90,7 @@
                                         <thead>
                                             <tr>
                                                 <th> S/N </th>
-                                                <th> POP </th>
+                                                <th> Retail Block </th>
                                                 <th> Local Government Areas </th>
                                                 <!--<th> Region </th>-->
                                                 <th style="text-align: center"> Actions </th>

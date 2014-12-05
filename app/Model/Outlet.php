@@ -58,7 +58,7 @@ class Outlet extends AppModel {
     public function leastCrowdedLocations($options = null, $number = 3) {
 
         $options['fields'] = array('Territory.id', 'Territory.territoryname', 'COUNT(Territory.id) as count');
-        $options['group'] = array('Territory.id');
+        $options['group'] = array('Territory.id HAVING count > 0');
         $options['limit'] = $number;
         $options['recursive'] = -1;
         $options['order'] = array('count asc');
@@ -71,7 +71,7 @@ class Outlet extends AppModel {
     public function mostCrowdedLocations($options = null, $number = 3) {
 
         $options['fields'] = array('Territory.id', 'Territory.territoryname', 'COUNT(Territory.id) as count');
-        $options['group'] = array('Territory.id');
+        $options['group'] = array('Territory.id HAVING count > 0');
         $options['limit'] = $number;
         $options['recursive'] = -1;
         $options['order'] = array('count desc');
@@ -128,7 +128,7 @@ class Outlet extends AppModel {
             'Outletclass.id',
             'Count(Outlet.outletclass_id) as count'
         );
-        $options['group'] = array('outletclass_id');
+        $options['group'] = array('outletclass_id HAVING count > 0');
         $options['recursive'] = -1;
         $options['joins'][] = array(
                 'table' => 'outletclasses',
@@ -150,7 +150,7 @@ class Outlet extends AppModel {
             'Outletchannel.id',
             'Count(Outlet.outletchannel_id) as count'
         );
-        $options['group'] = array('outletchannel_id');
+        $options['group'] = array('outletchannel_id HAVING count > 0');
         $options['recursive'] = -1;
         $options['joins'][] = array(
                 'table' => 'outletchannels',
@@ -172,7 +172,7 @@ class Outlet extends AppModel {
             'Retailtype.id',
             'Count(Outlet.retailtype_id) as count'
         );
-        $options['group'] = array('retailtype_id');
+        $options['group'] = array('retailtype_id HAVING count > 0');
         $options['recursive'] = -1;
         $options['joins'][] = array(
                 'table' => 'retailtypes',
@@ -180,6 +180,28 @@ class Outlet extends AppModel {
                 'type' => 'LEFT',
                 'conditions' => array(
                     'Outlet.retailtype_id = Retailtype.id'
+                )
+            );
+
+        $result = $this->find('all', $options);
+        return $result;
+    }
+
+    public function outletTypeDistribution($options = null) {
+
+        $options['fields'] = array(
+            'Outletclass.outletclassname',
+            'Outletclass.id',
+            'Count(Outlet.outletclass_id) as count'
+        );
+        $options['group'] = array('outletclass_id HAVING count > 0');
+        $options['recursive'] = -1;
+        $options['joins'][] = array(
+                'table' => 'outletclasses',
+                'alias' => 'Outletclass',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'Outlet.outletclass_id = Outletclass.id'
                 )
             );
 
@@ -329,6 +351,114 @@ class Outlet extends AppModel {
             $paginatedOutlets = $paginator->paginate('Outlet');
         }
         return $paginatedOutlets;
+    }
+
+    public function getPaginatedPhonenumbers($paginator, $options = null, $count = false) {
+
+        $options['fields'] = array(
+            'Outlet.id',
+            'Outlet.outletname',
+            'Outlet.contactphonenumber',
+            'Outlet.contactalternatenumber',
+            'Outlet.vtunumber'
+        );
+        $options['joins'][] = array(
+            'table' => 'outletclasses',
+            'alias' => 'Outletclass',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Outletclass.id = Outlet.outletclass_id'
+            )
+        );
+        $options['joins'][] = array(
+            'table' => 'retailtypes',
+            'alias' => 'Retailtype',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Retailtype.id = Outlet.retailtype_id'
+            )
+        );
+        $options['joins'][] = array(
+            'table' => 'users',
+            'alias' => 'User',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'User.id = Outlet.user_id'
+            )
+        );
+
+        //$options['conditions']['NOT'] = array('Outlet.contactphonenumber' => null, 'contactalternatenumber' => null, 'vtunumber' => null);
+
+        $paginator->settings = $options;
+
+        if($count) {
+            $paginatedOutlets = $this->find('count', $options);
+        } else {
+            $paginatedOutlets = $paginator->paginate('Outlet');
+        }
+        return $paginatedOutlets;
+    }
+
+    public function getVTUShare($options = null) {
+
+        $options['recursive'] = -1;
+        $outletCount = $this->countOutlet($options);
+
+        $options['conditions']['NOT'] = array('Outlet.vtunumber' => null);
+        $vtu = $this->find('count', $options);
+
+        $nonVtu = $outletCount - $vtu;
+        return array('VTU Service' => $vtu, 'Non VTU Service' => $nonVtu);
+    }
+
+    public function getProductSourceShare($options = null) {
+
+        $options['recursive'] = -1;
+        $outletCount = $this->countOutlet($options);
+
+        $options['joins'][] = array(
+            'table' => 'productsources',
+            'alias' => 'Productsource',
+            'type' => 'RIGHT',
+            'conditions' => array(
+                'Outlet.id = Productsource.outlet_id'
+            )
+        );
+
+        $options['group'] = array('Productsource.outlet_id');
+        //$options['conditions']['NOT'] = array('Outlet.vtunumber' => null);
+        $ps = $this->find('count', $options);
+
+        $nonps = $outletCount - $ps;
+        return array('Product Source' => $ps, 'Non Product Source' => $nonps);
+    }
+
+    public function getRetailClassBySubregion($options = null) {
+
+        $options['fields'] = array(
+            'Subregion.subregionname',
+            'Subregion.id',
+            'Retailtype.retailtypename',
+            'Retailtype.id',
+            'COUNT(Retailtype.id) as retailcount'
+        );
+
+        $options['group'] = array(
+            'Subregion.id',
+            'Retailtype.id HAVING retailcount > 0 AND COUNT(Subregion.id) > 0'
+        );
+        $options['recursive'] = -1;
+        $options['joins'][] = array(
+            'table' => 'retailtypes',
+            'alias' => 'Retailtype',
+            'type' => 'LEFT',
+            'conditions' => array(
+                'Retailtype.id = Outlet.retailtype_id'
+            )
+        );
+
+        $retailsubregion = $this->find('all', $options);
+        return $retailsubregion;
     }
 
 }

@@ -144,4 +144,42 @@ class Outletproduct extends AppModel {
         return $productbylocation;
         //End outlet count by locations
     }
+
+    public function getOutletProductsBySubregion($options = null) {
+
+        $options['fields'] = array(
+            'Subregion.subregionname',
+            'Subregion.id',
+            'Productcategory.productcategoryname',
+            'Productcategory.id',
+            'COUNT(Productcategory.id) as productcount'
+        );
+
+        $options['group'] = array(
+            'Subregion.id',
+            'Productcategory.id HAVING productcount > 0 AND COUNT(Subregion.id) > 0'
+        );
+        $options['recursive'] = -1;
+        array_unshift($options['joins'], array(
+                'table' => 'productcategories',
+                'alias' => 'Productcategory',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'Productcategory.id = Outletproduct.product_id'
+                )
+            )
+        );
+        array_unshift($options['joins'], array(
+                'table' => 'outlets',
+                'alias' => 'Outlet',
+                'type' => 'LEFT',
+                'conditions' => array(
+                    'Outlet.id = Outletproduct.outlet_id'
+                )
+            )
+        );
+
+        $productbysubregion = $this->find('all', $options);
+        return $productbysubregion;
+    }
 }

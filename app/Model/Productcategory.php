@@ -26,4 +26,10 @@ class Productcategory extends AppModel {
         )
     );
 
+    public function getProductCategoryList() {
+
+        $categorylist = $this->find('list');
+        return $categorylist;
+    }
+
 }

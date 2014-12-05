@@ -4,8 +4,8 @@ class DashboardController extends AppController {
 
     public $name = 'dashboard';
     //The first item is assumed to be the Model!
-    public $uses = array('Outlet', 'Brand', 'Product', 'Image', 'User', 'Location', 'State', 'Brief', 'Outletproduct',
-        'Outletmerchandize', 'Outletimage');
+    public $uses = array('Outlet', 'Brand', 'Product', 'Image', 'User', 'Location', 'State', 'Subregion', 'Brief', 'Outletproduct',
+        'Outletmerchandize', 'Outletimage', 'Productcategory');
     public $components = array('Paginator', 'Filter');
     public $helpers = array('MyLink');
 
@@ -15,21 +15,46 @@ class DashboardController extends AppController {
     function index() {
 
         $outlet_count = $this->Outlet->countOutlet($this->postoptions);
+        $merchandize_count = $this->Outletmerchandize->countMerchandize($this->postoptions);
 
         $recentImages = $this->Outletimage->recentImages(6, $this->postoptions);
         $this->set(array('oimages' => $recentImages));
 
         $distrib = $this->Outlet->retailTypeDistribution($this->postoptions);
+        $outclass = $this->Outlet->outletTypeDistribution($this->postoptions);
+
+        //Instead of doing this, you can actually use one and ur array_slice to get the first three and last three
         $least = $this->Outlet->leastCrowdedLocations($this->postoptions);
         $most = $this->Outlet->mostCrowdedLocations($this->postoptions);
+        $leastvis = $this->Outletmerchandize->leastVisibilityTerritories($this->postoptions);
+        $mostvis = $this->Outletmerchandize->mostVisibilityTerritories($this->postoptions);
+
+        $prodSub = $this->Outletproduct->getOutletProductsBySubregion($this->postoptions);
+        $retailSub = $this->Outlet->getRetailClassBySubregion($this->postoptions);
+
+        $productList = $this->Productcategory->getProductCategoryList();
+        $subregionList = $this->Subregion->getSubregionList();
+        $retailtypeList = $this->Retailtype->getRetailtypeAsList();
+
+        $productSubRegion = $this->getProductSubregionMatrix($prodSub, $productList, $subregionList);
+        $retailSubRegion = $this->getRetailSubregionMatrix($retailSub, $retailtypeList, $subregionList);
+
 
         $this->set(
             array(
                 'outlet_count' => $outlet_count,
+                'merchandize_count' => $merchandize_count,
                 'least_location' => $least,
                 'most_location' => $most,
-                'distributions' => $distrib
-
+                'least_visibility' => $leastvis,
+                'most_visibility' => $mostvis,
+                'distributions' => $distrib,
+                'outclass' => $outclass,
+                'product_sub_region' => $productSubRegion,
+                'retail_class_sub_region' => $retailSubRegion,
+                'product_list' => $productList,
+                'subregion_list' => $subregionList,
+                'retailtype_list' => $retailtypeList
             )
         );
     }
@@ -920,7 +945,106 @@ class DashboardController extends AppController {
 
         return $visitexceptioncount;
     }
-    
-    
+
+    private function getProductSubregionMatrix($productSub, &$products, &$subregions) {
+
+        $prodSubMatrix = array();
+        $responseMatrix = array();
+        foreach ($productSub as $prodSub) {
+
+            if(!isset($prodSubMatrix[$prodSub['Subregion']['id']]['total'])) {
+                $prodSubMatrix[$prodSub['Subregion']['id']]['total'] = 0;
+            }
+
+            $prodSubMatrix[$prodSub['Subregion']['id']][$prodSub['Productcategory']['id']] = $prodSub;
+            $prodSubMatrix[$prodSub['Subregion']['id']]['subregionname'] = $prodSub['Subregion']['subregionname'];
+            $prodSubMatrix[$prodSub['Subregion']['id']]['total'] += $prodSub[0]['productcount'];
+
+        }
+
+        /*sort($products);
+        sort($subregions);*/
+        $responseMatrix[0][0] = '\\';
+        $responseMatrix[0][1] = 'Subregion';
+        $responseMatrix[0][2] = 'Total Outets';
+        $i = 2;
+        foreach ($products as $product) {
+            $responseMatrix[0][++$i] = $product;
+        }
+
+        $j = 1;
+        foreach ($subregions as $subregionKey => $subregion) {
+
+            if(!isset($prodSubMatrix[$subregionKey])) { continue; }
+
+            $k = 0;
+            $responseMatrix[$j][$k++] = $j;
+            $responseMatrix[$j][$k++] = $subregion;
+            $responseMatrix[$j][$k++] = $prodSubMatrix[$subregionKey]['total'];
+            foreach ($products as $productKey => $product) {
+
+                if(isset($prodSubMatrix[$subregionKey][$productKey])) {
+                    $responseMatrix[$j][$k++] = $prodSubMatrix[$subregionKey][$productKey]['0']['productcount'];
+                } else {
+                    $responseMatrix[$j][$k++] = 0;
+                }
+            }
+
+            $j++;
+        }
+
+        return $responseMatrix;
+    }
+
+    private function getRetailSubregionMatrix($retailSub, &$retailtypes, &$subregions) {
+
+        $retSubMatrix = array();
+        $responseMatrix = array();
+        foreach ($retailSub as $retSub) {
+
+            if(!isset($retSubMatrix[$retSub['Subregion']['id']]['total'])) {
+                $retSubMatrix[$retSub['Subregion']['id']]['total'] = 0;
+            }
+
+            $retSubMatrix[$retSub['Subregion']['id']][$retSub['Retailtype']['id']] = $retSub;
+            $retSubMatrix[$retSub['Subregion']['id']]['subregionname'] = $retSub['Subregion']['subregionname'];
+            $retSubMatrix[$retSub['Subregion']['id']]['total'] += $retSub[0]['retailcount'];
+
+        }
+
+        /*sort($products);
+        sort($subregions);*/
+        $responseMatrix[0][0] = '\\';
+        $responseMatrix[0][1] = 'Subregion';
+        $responseMatrix[0][2] = 'Total Outets';
+        $i = 2;
+        foreach ($retailtypes as $retailtype) {
+            $responseMatrix[0][++$i] = $retailtype;
+        }
+
+        $j = 1;
+        foreach ($subregions as $subregionKey => $subregion) {
+
+            if(!isset($retSubMatrix[$subregionKey])) { continue; }
+
+            $k = 0;
+            $responseMatrix[$j][$k++] = $j;
+            $responseMatrix[$j][$k++] = $subregion;
+            $responseMatrix[$j][$k++] = $retSubMatrix[$subregionKey]['total'];
+            foreach ($retailtypes as $retailtypeKey => $retailtype) {
+
+                if(isset($retSubMatrix[$subregionKey][$retailtypeKey])) {
+                    $responseMatrix[$j][$k++] = $retSubMatrix[$subregionKey][$retailtypeKey]['0']['retailcount'];
+                } else {
+                    $responseMatrix[$j][$k++] = 0;
+                }
+            }
+
+            $j++;
+        }
+
+        return $responseMatrix;
+    }
+
 
 }

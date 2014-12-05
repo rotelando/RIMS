@@ -431,3 +431,11 @@ div.prod_avail {
     width: 150px;
     margin: 10px;
 }
+
+.export {
+    background: url("../images/csv.png") no-repeat right;
+    height: 32px;
+    width: 32px;
+    margin: 0px 0px 5px 20px;
+    /*float: left;*/
+}

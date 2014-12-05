@@ -39,7 +39,7 @@
 
         <li data-target="#step5" style="min-width: 20%; max-width: 20%;" class="<?php if(isset($active) && $active == 'location') echo 'active'; ?>">
             <span class="step">7</span>
-            <span class="title">POP</span>
+            <span class="title">Retail Block</span>
         </li>
     </ul>
 </div>

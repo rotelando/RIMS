@@ -82,6 +82,8 @@ class AppController extends Controller {
         
         $this->_datePickerList();
 
+        $this->_phonePrefixList();
+
         $this->setDomainName();
 
         //This holds and reset the param values to be used in making ajax calls for filters
@@ -285,6 +287,44 @@ class AppController extends Controller {
             'cust' => 'Custom Range'
         );
         $this->set('datelist', $dateOptionList);
+    }
+
+    public function _phonePrefixList() {
+
+        $list = array();
+
+        //MTN Number Series and Prefixes
+        $list['MTN']['0803'] = '0803';
+        $list['MTN']['0806'] = '0806';
+        $list['MTN']['0703'] = '0703';
+        $list['MTN']['0706'] = '0706';
+        $list['MTN']['0813'] = '0813';
+        $list['MTN']['0816'] = '0816';
+        $list['MTN']['0810'] = '0810';
+        $list['MTN']['0814'] = '0814';
+        $list['MTN']['0903'] = '0903';
+
+        //GLO Number Series and Prefixes
+        $list['GLO']['0705'] = '0705';
+        $list['GLO']['0815'] = '0815';
+        $list['GLO']['0805'] = '0805';
+        $list['GLO']['0807'] = '0807';
+        $list['GLO']['0811'] = '0811';
+
+        //Airtel Number Series and Prefixes
+        $list['Airtel']['0708'] = '0708';
+        $list['Airtel']['0802'] = '0802';
+        $list['Airtel']['0808'] = '0808';
+        $list['Airtel']['0812'] = '0812';
+        $list['Airtel']['0701'] = '0701';
+
+        //Etisalat Number Series and Prefixes
+        $list['Etisalat']['0809'] = '0809';
+        $list['Etisalat']['0817'] = '0817';
+        $list['Etisalat']['0818'] = '0818';
+        $list['Etisalat']['0909'] = '0909';
+
+        $this->set('phoneprefixlist', $list);
     }
 
     public function _getFilterDisplayText($option) {

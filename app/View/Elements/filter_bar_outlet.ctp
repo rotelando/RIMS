@@ -71,8 +71,8 @@
     </div>
 
     <div class="span2" style="margin-top: 20px;">
-        <input type="submit" class="btn btn-small btn-success btnfilter" id="btnfilter" value="Go" />
-        <input type="reset" id="btnreset" class="btn btn-small btn-inverse btnfilter" id="btnfilter" value="Reset"/>
+        <input type="submit" class="btn btn-small btn-success btnfilter" id="btnOutletfilter" value="Go" />
+        <input type="reset" id="btnreset" class="btn btn-small btn-inverse btnfilter" value="Reset"/>
     </div>
 
     <br /><br />

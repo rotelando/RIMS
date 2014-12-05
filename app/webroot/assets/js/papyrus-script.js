@@ -24,6 +24,12 @@ $(function() {
         createNewLink('fret', value);
     });
 
+
+    $("#filter-noType").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('noType', value);
+    });
+
     var $dateFilter = $("#filter-date").chosen({
         width: "215px",
         disable_search_threshold: 10
@@ -68,6 +74,7 @@ $(function() {
         $("#filter-user").val("").trigger("chosen:updated");
         $("#filter-location").val("").trigger("chosen:updated");
         $("#filter-retailtype").val("").trigger("chosen:updated");
+        $("#filter-noType").val("").trigger("chosen:updated");
         $("#filter-date").val("").trigger("chosen:updated");
         $("#getparam").val("");
     });

@@ -465,6 +465,7 @@ $(function() {
         });
     }
 
+
     $('#pgSize').on('change', function() {
 
         var pgSize = $(this).find('option:selected').val();
@@ -486,12 +487,18 @@ $(function() {
         }
     });
 
-    $('#btnfilter').on('click', function(){
+    /*$('#btnOutletfilter').on('click', function(){
         createNewLink('page', 0);
         var param = $('#getparam').val();
         getOutlets(param);
         return false
     });
+    $('#btnPhonefilter').on('click', function(){
+        createNewLink('page', 0);
+        var param = $('#getparam').val();
+        getOutlets(param);
+        return false
+    });*/
 
     function getDateString(now) {
         var yyyy = now.getFullYear();

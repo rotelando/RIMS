@@ -38,4 +38,24 @@ class Productsource extends AppModel {
         $productsources = $this->find('all', $options);
         return $productsources;
     }
+
+    public function productsourceShare($options = null, $outletcount) {
+
+        $options['recursive'] = -1;
+        $options['joins'][] = array(
+            'table' => 'outlets',
+            'alias' => 'Outlet',
+            'type' => 'RIGHT',
+            'conditions' => array(
+                'Outlet.id = Productsource.outlet_id'
+            )
+        );
+
+        $options['group'] = array('Productsource.outlet_id');
+        //$options['conditions']['NOT'] = array('Outlet.vtunumber' => null);
+        $ps = $this->find('count', $options);
+
+        $nonps = $outletcount - $ps;
+        return array('Product Source' => $ps, 'Non Product Source' => $nonps);
+    }
 }

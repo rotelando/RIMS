@@ -85,7 +85,7 @@
                             <a href="/setup/locations/pop">
                                 <div class="border">
                                     <span class="visit-value"><?php echo $popCount; ?></span>
-                                    <span class="visit-name">POPs</span>
+                                    <span class="visit-name">Retail Blocks</span>
                                 </div>
                             </a>
                         </div>
