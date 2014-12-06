@@ -1,0 +1,5 @@
+/nbproject/private/
+/app/tmp/
+/app/config/database.php
+/app/webroot/assets/js/init.js
+/app/View/Helper/MyLinkHelper.php
