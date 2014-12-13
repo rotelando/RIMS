@@ -14,32 +14,30 @@
     </div>
     <!-- Start Modal Body -->
     <div class="modal-body">
-        <input type="hidden" name="id" id="id" />
+        <input type="hidden" name="id" id="omid" />
 
         <label>Outlet</label>
-        <input name="outlet_id" require="1" placeholder="Outlet Id" class="span4" type="text" id="outlet_id" disabled
-               value="<?php echo (isset($outletmerchandize[0]['Outletmerchandize']['outlet_id']) ? $outletmerchandize[0]['Outletmerchandize']['outlet_id'] : ''); ?>"
+        <input name="outlet_id" require="1" class="span4" type="text" id="outlet_id" disabled
+               value="<?php echo (!empty($outlet_id) ? $outlet_id : ''); ?>"
             >
 
         <br />
         <label>Brand</label>
         <select name="brand_id" id="brands" class="span4">
-            <option value="">MTN</option>
         </select>
 
         <br />
         <label>Merchandize Element</label>
         <select name="merchandize_id" id="merchandize" class="span4">
-            <option value="">Umbrella</option>
         </select>
 
         <br />
         <label>Element Count</label>
-        <input name="element_count" require="1" placeholder="Element Count" class="span4" type="text" id="element_count">
+        <input name="element_count" require placeholder="Element Count" class="span4" type="text" id="element_count">
 
         <br />
         <label>Appropriately Deployed</label>
-        <input type="checkbox" value="off" checked="false" />
+        <input type="checkbox" value="off" checked="false" id="omamt" />
 
     </div>
     <!-- End Modal Body -->

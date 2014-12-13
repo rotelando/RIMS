@@ -87,4 +87,46 @@ class Outletimage extends AppModel {
         $image = $this->find('all', $options);
         return $image;
     }
+
+    public function getPaginatedImages($paginatorObject, $options = null, $number) {
+
+        $options['fields'] = array(
+            'Outletimage.id',
+            'Outletimage.description',
+            'Outletimage.url',
+            "DATE_FORMAT(Outletimage.created_at,'%Y-%m-%d') as dateline",
+            'Outletimage.created_at',
+            'Outlet.id',
+            'CONCAT(User.firstname," ",User.lastname) as fullname',
+            'Outlet.outletname',
+            'Location.locationname'
+        );
+        $options['order'] = array('Outletimage.created_at' => 'desc');
+        $options['limit'] = $number;
+        $options['recursive'] = -1;
+
+        array_unshift($options['joins'], array(
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => array(
+                    'Outlet.user_id = User.id'
+                )
+            )
+        );
+        array_unshift($options['joins'], array(
+                'table' => 'outlets',
+                'alias' => 'Outlet',
+                'type' => 'INNER',
+                'conditions' => array(
+                    'Outlet.id = Outletimage.outlet_id'
+                )
+            )
+        );
+
+        $paginatorObject->settings = $options;
+        $images = $paginatorObject->Paginate('Outletimage');
+//        debug($images);
+        return $images;
+    }
 }

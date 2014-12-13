@@ -196,9 +196,11 @@ class AppController extends Controller {
     }
 
     public function _locationLists($setValue = true) {
-        
-        //Nationals
 
+        $outputlocation = array();
+
+        //Nationals
+        $new_nationals = array();
         $nationals = $this->Country->find('list');
         if(isset($nationals)) {
             foreach ($nationals as $key => $value) {
@@ -208,6 +210,7 @@ class AppController extends Controller {
             $outputlocation['Nationals'] = $new_nationals;
         }
 
+        $new_regions = array();
         $regions = $this->Region->find('list');
         if(isset($regions)) {
             foreach ($regions as $key => $value) {
@@ -217,6 +220,7 @@ class AppController extends Controller {
             $outputlocation['Regions'] = $new_regions;
         }
 
+        $new_subregions = array();
         $subregions = $this->Subregion->find('list');
         if(isset($subregions)) {
             foreach ($regions as $key => $value) {
@@ -226,41 +230,54 @@ class AppController extends Controller {
             $outputlocation['Subregions'] = $new_subregions;
         }
 
-        $state = $this->State->find('list');
+        $new_state = array();
+        $state = $this->State->find('all', array('fields' => array('id', 'subregion_id', 'statename'), 'conditions' => array('NOT' => array('subregion_id' => null))));
         if(isset($state)) {
-            foreach ($state as $key => $value) {
-                $key = 'sta_' . $key;
-                $new_state[$key] = $value; 
+            foreach ($state as $value) {
+                $key = 'sta_' . $value['State']['id'];
+                $id = $key;
+                $subregion_id = $value['State']['subregion_id'];
+                $statename = $value['State']['statename'];
+                $new_state[$key] = array('id' => $id, 'subregion_id' => $subregion_id, 'statename' => $statename);
             }
             $outputlocation['States'] = $new_state;
         }
 
         $new_territory = array();
-        $territory = $this->Territory->find('list');
+        $territory = $this->Territory->find('all', array('fields' => array('id', 'territoryname', 'state_id')));
         if(isset($territory)) {
-            foreach ($territory as $key => $value) {
-                $key = 'ter_' . $key;
-                $new_territory[$key] = $value;
+            foreach ($territory as $value) {
+                $key = 'ter_' . $value['Territory']['id'];;
+                $id = $key;
+                $state_id = $value['Territory']['state_id'];
+                $territoryname = $value['Territory']['territoryname'];
+                $new_territory[$key] = array('id' => $id, 'territoryname' => $territoryname, 'state_id' => $state_id);
             }
             $outputlocation['Territories'] = $new_territory;
         }
 
         $new_lga = array();
-        $lga = $this->Location->find('list');
+        $lga = $this->Lga->find('all', array('fields' => array('id', 'lganame', 'territory_id')));
         if(isset($lga)) {
-            foreach ($lga as $key => $value) {
-                $key = 'lga_' . $key;
-                $new_lga[$key] = $value;
+            foreach ($lga as $value) {
+                $key = 'lga_' . $value['Lga']['id'];;
+                $id = $key;
+                $territory_id = $value['Lga']['territory_id'];
+                $lganame = $value['Lga']['lganame'];
+                $new_lga[$key] = array('id' => $id, 'lganame' => $lganame, 'territory_id' => $territory_id);
             }
             $outputlocation['Lgas'] = $new_lga;
         }
 
         $new_location = array();
-        $location = $this->Location->find('list');
+        $location = $this->Location->find('all', array('fields' => array('id', 'locationname', 'lga_id')));
         if(isset($location)) {
-            foreach ($location as $key => $value) {
-                $key = 'loc_' . $key;
-                $new_location[$key] = $value;
+            foreach ($location as $value) {
+                $key = 'loc_' . $value['Location']['id'];;
+                $id = $key;
+                $lga_id = $value['Location']['lga_id'];
+                $locationname = $value['Location']['locationname'];
+                $new_location[$key] = array('id' => $id, 'locationname' => $locationname, 'lga_id' => $lga_id);
             }
             $outputlocation['Locations'] = $new_location;
         }
@@ -348,5 +365,5 @@ class AppController extends Controller {
         
         $this->set(array('breadcrumb' => $breadcrumb));*/
     }
-    
+
 }

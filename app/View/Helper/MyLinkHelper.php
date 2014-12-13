@@ -13,4 +13,5 @@ class MyLinkHelper extends AppHelper {
     public function getLastVisitedUrl() {
         return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $this->url['here'];
     }
+
 }

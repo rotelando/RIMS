@@ -55,4 +55,16 @@ class State extends AppModel {
             return -1;
         }
     }
+
+    public function stateBySubregion($subregion_id) {
+        $new_state = array();
+        $state = $this->find('list', array('conditions' => array('subregion_id' => $subregion_id)));
+        if (isset($state)) {
+            foreach ($state as $key => $value) {
+                $key = 'sta_' . $key;
+                $new_state[$key] = $value;
+            }
+        }
+        return $new_state;
+    }
 }

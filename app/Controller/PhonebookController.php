@@ -29,7 +29,9 @@ class PhonebookController extends AppController {
         $this->_setTitleOfPage('Phone Book');
     }
 
-    public function index() {}
+    public function index() {
+        $this->set(array('controller' => 'phonebook', 'action' => 'index'));
+    }
 
     public function paginatedPhonebook() {
 

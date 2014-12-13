@@ -13,9 +13,13 @@ class OutletimagesController extends AppController {
     public $postoptions = array();
     
     public function index() {
-        
-        $recentImages = $this->Outletimage->recentImages(20);
-        $this->set('images', $recentImages);
+
+        $options = $this->Filter->getPostDataFilterOptions($this->modelClass);
+        $paginatedImages = $this->Outletimage->getPaginatedImages($this->Paginator, $options, 100);
+        $last_image_taken = $this->Outletimage->recentImages(1, $options);
+
+        $this->set(array('images' => $paginatedImages, 'last_image_taken' => array_values($last_image_taken)));
+        $this->set(array('controller' => 'outletimages', 'action' => 'index'));
     }
     
     public function beforeFilter() {
@@ -27,7 +31,7 @@ class OutletimagesController extends AppController {
     
     private function _setViewVariables() {
         $this->_setSidebarActiveItem('images');
-        $this->_setTitleOfPage('Images');
+        $this->_setTitleOfPage('Outlet Images');
     }
     
     public function generateimagedata() {

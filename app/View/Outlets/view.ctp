@@ -109,7 +109,7 @@
                                         <div class="profile-info-name"> Contact Name </div>
 
                                         <div class="profile-info-value">
-                                            <span><?php echo $outlet['Outlet']['contactfirstname']; ?>
+                                            <span><?php echo ucwords($outlet['Outlet']['contactfirstname'] . ' ' . $outlet['Outlet']['contactlastname']);  ; ?>
                                                 &nbsp;&nbsp;
                                                 <!--&nbsp;&nbsp;-->
                                                 <?php // echo $this->Html->link('<i class="icon-user"></i>Image', array(),array('escape'=>false,'class'=>'btn btn-inverse btn-minier')); ?>
@@ -147,7 +147,7 @@
                                     </div>
                                     
                                     <div class="profile-info-row">
-                                        <div class="profile-info-name"> Advocacy Class </div>
+                                        <div class="profile-info-name"> Outlet Type </div>
 
                                         <div class="profile-info-value">
                                             <span><?php echo $outlet['Outletclass']['outletclassname']; ?>&nbsp;&nbsp;</span>
@@ -439,7 +439,7 @@
 
                             <?php if (isset($productsources) && count($productsources) != 0): ?>
 
-                                <table id="tbl-merch" class="table table-striped table-bordered table-hover">
+                                <table id="tbl-psrc" class="table table-striped table-bordered table-hover">
                                     <thead>
                                     <tr>
                                         <th width="3%"> S/N </th>
@@ -520,7 +520,7 @@
 
 <?php echo $this->element('_outlet_dialog', array('outlet' => $outlet)); ?>
 
-<?php echo $this->element('_outletmerchandize_dialog', array('outletmerchandize' => $outletmerchandize)); ?>
+<?php echo $this->element('_outletmerchandize_dialog', array('outlet_id' => $outlet['Outlet']['id'])); ?>
 
 <?php echo $this->element('_outletproduct_dialog', array('outletmerchandize' => $outletmerchandize)); ?>
 

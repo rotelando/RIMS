@@ -85,4 +85,14 @@ class LgasController extends AppController {
         ));
     }
 
+    public function territory($id) {
+
+        $result = $this->Lga->lgasByTerritories($id);
+        $response = json_encode($result);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+
+    }
+
 }

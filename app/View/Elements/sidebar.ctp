@@ -163,7 +163,7 @@
         <li <?php if(isset($active_item) && $active_item == 'images') echo 'class="active"'; ?>>
             <?php echo $this->Html->link('<i class="icon-picture"></i>
                 <span class="menu-text"> Images </span>',
-                    array('#'=>'#'),
+                    array('controller'=>'outletimages'),
                         array('escape'=>false)); ?>
         </li>
 

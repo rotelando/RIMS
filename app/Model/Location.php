@@ -86,5 +86,19 @@ class Location extends AppModel {
             return -1;
         }
     }
+
+    public function popByLgas($id) {
+
+        $new_location = array();
+        $location = $this->find('list', array('conditions' => array('lga_id' => $id)));
+        if(isset($location)) {
+            foreach ($location as $key => $value) {
+                $key = 'loc_' . $key;
+                $new_location[$key] = $value;
+            }
+            $outputlocation['Locations'] = $new_location;
+        }
+        return $new_location;
+    }
      
 }

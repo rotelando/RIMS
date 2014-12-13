@@ -110,4 +110,21 @@ class LocationsController extends AppController {
         $this->set('response', $response);
     }
 
+    public function lga($id) {
+
+        $result = $this->Location->popByLgas($id);
+        $response = json_encode($result);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+    }
+
+    public function all() {
+        $result = $this->_locationLists(false);
+        $response = json_encode($result);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+    }
+
 }

@@ -27,6 +27,8 @@ console.log(param);*/
 
 $(function() {
 
+    //var _s = require('underscore.string');
+
     try {
     $('.image-list a').vanillabox();
     } catch (e) {};
@@ -304,6 +306,7 @@ $(function() {
         var tbody = '<tbody>';
         for(var i = 0; i < data.length; i++) {
             tbody += '<tr>';
+            //tbody += '<td>' + _s.capitalize(data[i].Outlet.outletname) + '</td>';
             tbody += '<td>' + data[i].Outlet.outletname + '</td>';
             tbody += '<td>' + data[i].User.username + '</td>';
             tbody += '<td>' + data[i].Location.locationname + '</td>';

@@ -24,8 +24,8 @@ class OutletmerchandizeController extends AppController {
 
         $options = $this->postoptions;
 
-        $outletmerchandize = $this->_getVisibilityEvaluations(10);
-        $this->set('visibilities' , $outletmerchandize);
+        /*$outletmerchandize = $this->_getVisibilityEvaluations(10);
+        $this->set('visibilities' , $outletmerchandize);*/
         
         $visibilitycount = $this->Outletmerchandize->find('count');
         $this->set('visibilitycount' , $visibilitycount);
@@ -43,14 +43,14 @@ class OutletmerchandizeController extends AppController {
 
         $visibilitytable = $this->_getVisibilitySummary($options);
         $this->set('visibilitytable', $visibilitytable);
-        
-//        debug($this->request->data);
+        $this->set(array('controller' => 'outletmerchandize', 'action' => 'index'));
     }
 
     public function shares() {
 
         $outletmerchandizecount = $this->Outletmerchandize->find('count');
         $this->set('visibilitycount' , $outletmerchandizecount);
+        $this->set(array('controller' => 'outletmerchandize', 'action' => 'shares'));
     }
 
     public function merchandizeshare() {
@@ -115,14 +115,15 @@ class OutletmerchandizeController extends AppController {
         }
 
         if (isset($this->params['url']['oid'],
-                  $this->params['url']['bn'],
-                  $this->params['url']['ben'],
+                  $this->params['url']['bid'],
+                  $this->params['url']['mid'],
                   $this->params['url']['amt'])) {
 
             $outletmerchandize["Outletmerchandize"]['outlet_id'] = $this->params['url']['oid'];
-            $outletmerchandize["Outletmerchandize"]['brandid'] = $this->params['url']['bn'];
-            $outletmerchandize["Outletmerchandize"]['visibilityelementid'] = $this->params['url']['ben'];
+            $outletmerchandize["Outletmerchandize"]['brand_id'] = $this->params['url']['bid'];
+            $outletmerchandize["Outletmerchandize"]['merchandize_id'] = $this->params['url']['mid'];
             $outletmerchandize["Outletmerchandize"]['elementcount'] = $this->params['url']['amt'];
+            $outletmerchandize["Outletmerchandize"]['appropriatelydeployed'] = $this->params['url']['adep'];
 
             if($this->Outletmerchandize->save($outletmerchandize)) {
                 $resp['status'] = 1;

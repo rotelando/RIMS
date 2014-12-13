@@ -44,7 +44,7 @@ class FilterComponent extends Component {
 
             $locParam = $this->controller->params['url']['floc'];
             
-            $options = $this->getOptionValueFromString($locParam);
+            $this->getOptionValueFromString($locParam, $options);
             
         }
         //condition for fieldrep filter
@@ -174,25 +174,28 @@ class FilterComponent extends Component {
 
         //condition for retailtype filter
         //This comes first so as not to override the rest
-        if (isset($this->controller->request->data[$model]['retailtypelist']) && $this->controller->request->data[$model]['retailtypelist'] != '') {
-            $retailtypeids = $this->controller->request->data[$model]['retailtypelist'];
+        if (isset($this->controller->request->data['retailtypelist']) && $this->controller->request->data['retailtypelist'] != '') {
+            $retailtypeids = $this->controller->request->data['retailtypelist'];
             $options['conditions'] = array('Outlet.retailtype_id' => $retailtypeids);
         }
 
-        if (isset($this->controller->request->data[$model]['locFilter']) && $this->controller->request->data[$model]['locFilter'] != '') {
 
-            $locParam = $this->controller->request->data[$model]['locFilter'];
+        $locParam = $this->getSelectedLocation();
+        $this->getOptionValueFromString($locParam, $options);
+        /*if (isset($this->controller->request->data['locFilter']) && $this->controller->request->data['locFilter'] != '') {
+
+            $locParam = $this->controller->request->data['locFilter'];
             $options = $this->getOptionValueFromString($locParam);
-        }
+        }*/
         
         //condition for fieldrep filter
-        if (isset($this->controller->request->data[$model]['userFilter']) && $this->controller->request->data[$model]['userFilter'] != '') {
-            $options['conditions']['Outlet.user_id'] = $this->controller->request->data[$model]['userFilter'];
+        if (isset($this->controller->request->data['userFilter']) && $this->controller->request->data['userFilter'] != '') {
+            $options['conditions']['Outlet.user_id'] = $this->controller->request->data['userFilter'];
         }
         
-        if (isset($this->controller->request->data[$model]['dateFilter']) && $this->controller->request->data[$model]['dateFilter'] != '') {
+        if (isset($this->controller->request->data['dateFilter']) && $this->controller->request->data['dateFilter'] != '') {
 
-            $fdate = $this->controller->request->data[$model]['dateFilter'];
+            $fdate = $this->controller->request->data['dateFilter'];
             switch ($fdate) {
                 case "yes":
                     $toDate = date('Y-m-d');
@@ -312,26 +315,26 @@ class FilterComponent extends Component {
 
         $options = array();
         
-        if (isset($this->controller->request->data[$model]['locFilter']) && $this->controller->request->data[$model]['locFilter'] != '') {
+        if (isset($this->controller->request->data['locFilter']) && $this->controller->request->data['locFilter'] != '') {
             
-            $locParam = $this->controller->request->data[$model]['locFilter'];
+            $locParam = $this->controller->request->data['locFilter'];
 
             $options['Location'] = $this->getLocationLabelFromParam($locParam);
         }
         
         //condition for fieldrep filter
-        if (isset($this->controller->request->data[$model]['userFilter']) && $this->controller->request->data[$model]['userFilter'] != '') {
+        if (isset($this->controller->request->data['userFilter']) && $this->controller->request->data['userFilter'] != '') {
             $filteruser = $this->user->find('first', 
                     array(
                         'conditions' => array(
-                            'User.id' => $this->controller->request->data[$model]['userFilter']),
+                            'User.id' => $this->controller->request->data['userFilter']),
                         'recursive' => -1));
             $options['User'] = $filteruser['User'];
         }
         
-        if (isset($this->controller->request->data[$model]['dateFilter']) && $this->controller->request->data[$model]['dateFilter'] != '') {
+        if (isset($this->controller->request->data['dateFilter']) && $this->controller->request->data['dateFilter'] != '') {
 
-            $fdate = $this->controller->request->data[$model]['dateFilter'];
+            $fdate = $this->controller->request->data['dateFilter'];
             switch ($fdate) {
                 case "yes":
                     $options['date'] = 'Yesterday';
@@ -362,7 +365,7 @@ class FilterComponent extends Component {
                     break;
                 
                 case "cust":    
-                    $options['date'] = "Betweeen {$this->controller->request->data[$model]['sdate']} and {$this->controller->request->data[$model]['edate']}";
+                    $options['date'] = "Betweeen {$this->controller->request->data['sdate']} and {$this->controller->request->data['edate']}";
                     break;
 
                 default:
@@ -373,11 +376,33 @@ class FilterComponent extends Component {
         
         return $options;
     }
+
+    private function getSelectedLocation() {
+
+        if (isset($this->controller->request->data['locRetblock']) && $this->controller->request->data['locRetblock'] != '') {
+
+            return $this->controller->request->data['locRetblock'];
+        } else if(isset($this->controller->request->data['locLga']) && $this->controller->request->data['locLga'] != '') {
+
+            return $this->controller->request->data['locLga'];
+        } else if(isset($this->controller->request->data['locTerritory']) && $this->controller->request->data['locTerritory'] != '') {
+
+            return $this->controller->request->data['locTerritory'];
+        } else if(isset($this->controller->request->data['locState']) && $this->controller->request->data['locState'] != '') {
+
+            return $this->controller->request->data['locState'];
+        } else if(isset($this->controller->request->data['locFilter']) && $this->controller->request->data['locFilter'] != '') {
+
+            return $this->controller->request->data['locFilter'];
+        }
+
+        return '';
+    }
     
-    private function getOptionValueFromString($locParamString) {
+    private function getOptionValueFromString($locParamString, &$options) {
 
         $locArr = explode('_', $locParamString);
-        
+
         if($locArr[0] == 'nat') {
             $options['conditions']['Country.id'] = $locArr[1];
         } else if($locArr[0] == 'reg') {
@@ -393,8 +418,6 @@ class FilterComponent extends Component {
         } else if($locArr[0] == 'loc') {
             $options['conditions']['Location.id'] = $locArr[1];
         }
-
-        return $options;
     }
 
     private function getLocationLabelFromParam($locParamString) {

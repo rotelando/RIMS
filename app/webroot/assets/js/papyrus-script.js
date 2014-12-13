@@ -7,14 +7,37 @@ $(function() {
 
     //$("#filter-user").multipleSelect();
     //$("#filter-location").multipleSelect();
-    $("#filter-user").chosen({width: "170px"}).on('change', function() {
-        var value = $(this).find('option:selected').val();
-        createNewLink('fuser', value);
-    });
 
+    /*Location filters start*/
     $("#filter-location").chosen({width: "170px"}).on('change', function() {
         var value = $(this).find('option:selected').val();
         createNewLink('floc', value);
+    });
+
+    $("#filter-state").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('floc', value);
+    });
+
+    $("#filter-territory").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('floc', value);
+    });
+
+    $("#filter-lga").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('floc', value);
+    });
+
+    $("#filter-retblock").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('floc', value);
+    });
+    /*Location filters end*/
+
+    $("#filter-user").chosen({width: "170px"}).on('change', function() {
+        var value = $(this).find('option:selected').val();
+        createNewLink('fuser', value);
     });
 
     $("#filter-retailtype").chosen({width: "170px"}).on('change', function() {

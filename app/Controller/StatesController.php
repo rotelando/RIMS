@@ -119,4 +119,13 @@ class StatesController extends AppController {
         $this->view = 'ajax_response';
         $this->set('response', $response);
     }
+
+    public function subregion($subregion_id) {
+
+        $result = $this->State->stateBySubregion($subregion_id);
+        $response = json_encode($result);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+    }
 }

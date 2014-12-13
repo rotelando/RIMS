@@ -170,6 +170,9 @@
 
         <?php //echo $this->Html->script('select2-3.4.8/select2'); ?>
         <?php //echo $this->Html->script('multiple-select/jquery.multiple.select'); ?>
+        <?php //echo $this->Html->script('require'); ?>
+        <?php //echo $this->Html->script('underscore.string.min'); ?>
+
         <?php echo $this->Html->script('chosen_v1.2.0/chosen.jquery.min'); ?>
         <?php echo $this->Html->script('jquery-ui-1.10.3.custom.min'); ?>
 

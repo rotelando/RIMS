@@ -69,4 +69,18 @@ class Lga extends AppModel {
             return -1;
         }
     }
+
+    public function lgasByTerritories($id) {
+
+        $new_lga = array();
+        $lga = $this->find('list', array('conditions' => array('territory_id' => $id)));
+        if(isset($lga)) {
+            foreach ($lga as $key => $value) {
+                $key = 'lga_' . $key;
+                $new_lga[$key] = $value;
+            }
+            $outputlocation['Lgas'] = $new_lga;
+        }
+        return $new_lga;
+    }
 } 

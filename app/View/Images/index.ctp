@@ -138,17 +138,17 @@
                                             echo '<strong>Outet Name:</strong> ' . ucwords($images[$i]['Outlet']['outletname']) .'<br />'; 
                                             echo '<strong>Location:</strong> ' .$images[$i]['Location']['locationname'].'<br />'; 
                                             echo '<strong>Staff:</strong> ' .ucfirst($images[$i][0]['fullname']).'<br />'; 
-                                            echo '<strong>Date:</strong> ' .$images[$i]['Image']['createdat'].'<br />'; 
+                                            echo '<strong>Date:</strong> ' .$images[$i]['Outletimage']['created_at'].'<br />';
                                         ?>"
                                 >
                                     
-                                    <a href="<?php echo $this->MyLink->getImageUrlPath($images[$i]['Image']['filename']); ?>" 
-                                       title="<?php echo $images[$i]['Outlet']['outletname'] . ' at ' . $images[$i]['Location']['locationname'] . " on " . $images[$i]['Image']['createdat'] ?>" 
+                                    <a href="<?php echo $this->MyLink->getImageUrlPath($images[$i]['Outletimage']['url']); ?>"
+                                       title="<?php echo $images[$i]['Outlet']['outletname'] . ' at ' . $images[$i]['Location']['locationname'] . " on " . $images[$i]['Outletimage']['created_at'] ?>"
                                        class="thumbnail">
                                     <!--<a href="<?php // echo $this->base . '/images/index/' . $images[$i]['Image']['id']; ?>" class="thumbnail">-->
                                         <!--<img src="http://placehold.it/300x300" alt="">-->
                                         <?php // echo $this->Html->image($images[$i]['Image']['filename'], array('width' => '600', 'height' => '450')); ?>
-                                        <img src="<?php echo $this->MyLink->getImageUrlPath($images[$i]['Image']['filename']); ?>" alt="">
+                                        <img src="<?php echo $this->MyLink->getImageUrlPath($images[$i]['Outletimage']['url']); ?>" alt="">
                                     </a>
                                 </li>
                 

@@ -69,4 +69,18 @@ class Territory extends AppModel {
             return -1;
         }
     }
+
+    public function territoryByState($id) {
+
+        $new_territory = array();
+        $territory = $this->find('list', array('conditions' => array('state_id' => $id)));
+        if(isset($territory)) {
+            foreach ($territory as $key => $value) {
+                $key = 'ter_' . $key;
+                $new_territory[$key] = $value;
+            }
+            $outputlocation['Territories'] = $new_territory;
+        }
+        return $new_territory;
+    }
 } 

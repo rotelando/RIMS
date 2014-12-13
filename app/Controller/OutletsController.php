@@ -55,6 +55,8 @@ class OutletsController extends AppController {
                 'pop' => $pop,
             )
         );
+
+        $this->set(array('controller' => 'outlets', 'action' => 'index'));
         $this->setLegend();
     }
 
@@ -88,6 +90,7 @@ class OutletsController extends AppController {
 
     public function all() {
 
+        $this->set(array('controller' => 'outlets', 'action' => 'all'));
     }
 
     public function loadall() {

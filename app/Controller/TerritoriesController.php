@@ -85,4 +85,12 @@ class TerritoriesController extends AppController {
         ));
     }
 
+    public function state($id) {
+
+        $result = $this->Territory->territoryByState($id);
+        $response = json_encode($result);
+        $this->layout = 'ajax';
+        $this->view = 'ajax_response';
+        $this->set('response', $response);
+    }
 }

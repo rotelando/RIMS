@@ -98,7 +98,8 @@ $(function() {
             var tddata_1 = $(tds[1]).html().toString().trim();
             var tddata_2 = $(tds[2]).html().toString().trim();
             var tddata_3 = $(tds[3]).html().toString().trim();
-            var id = $(this).data('id');
+            var tddata_4 = $(tds[4]).html().toString().trim();
+            var id = $(trs).attr('data-id');
 
             $("select#brands option").each(function() { 
                 this.selected = (this.text.toString().trim() == tddata_1.toString().trim()); 
@@ -108,8 +109,14 @@ $(function() {
                 this.selected = (this.text.toString().trim() == tddata_2.toString().trim()); 
             });
 
+            var $chkAmount = $('#omamt');
+            if(tddata_4 == '0') {
+                $chkAmount.prop('checked', false);
+            } else {
+                $chkAmount.prop('checked', true);
+            }
             $('#element_count').val(tddata_3);
-            $('#id').val(id);
+            $('#omid').val(id);
         });
     }
 
@@ -121,26 +128,33 @@ $(function() {
     $('#add-merch').on('click', function(){
         $('div#mer-dialog > div.modal-header > h3').html('Add New Merchandize Data');
         $('div#mer-dialog #outlet_id').val();
-        $('div#mer-dialog #id').val('');
+        $('div#mer-dialog #omid').val('');
     });
 
 
     function saveMerchandize() {
             
-            var id = $('div#mer-dialog #id').val();
+            var id = $('div#mer-dialog #omid').val();
             var vid = $('div#mer-dialog #outlet_id').val();
             var bn = $('div#mer-dialog #brands').find('option:selected').val();
-            var bn_text = $('div#mer-dialog #brands').find('option:selected').html();;
+            var bn_text = $('div#mer-dialog #brands').find('option:selected').html();
             var ben = $('div#mer-dialog #merchandize').find('option:selected').val();
-            var ben_text = $('div#mer-dialog #merchandize').find('option:selected').html();;
+            var ben_text = $('div#mer-dialog #merchandize').find('option:selected').html();
             var amt = $('div#mer-dialog #element_count').val();
+            var $chkAmount = $('#omamt');
+            var adep = 0;
             
             console.log(bn + ' ' + bn_text + ' ' + ben + ' ' + ben_text + " " + vid + ' ' + amt);
-            var meUrl =  config.URL + 'outletmerchandize/save?';
-            var param = 'id=' + id + '&oid=' + vid + '&bn=' + bn + '&mer=' + ben + '&amt=' + amt;
+            var meUrl =  config.URL + 'outletmerchandize/save';
+            var param = 'id=' + id + '&oid=' + vid + '&bid=' + bn + '&mid=' + ben + '&amt=' + amt;
+            if($chkAmount.prop('checked') == true) {
+                adep = 1;
+            }
+            param += '&adep=' + adep;
 
             console.log(param);
-            return;
+            $('#mer-dialog').modal('hide');
+            //return;
             //save data
             $.ajax({
                 url: meUrl,
@@ -153,21 +167,22 @@ $(function() {
                         alert += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>';
                         alert += '<strong>Success!</strong> ' + response.message + '</div>';
                         $('#merch-not').html(alert);
-                        var rid = response.data.Visibilityevaluation.id;
-                        var rvid = response.data.Visibilityevaluation.visitid;
+                        var rid = response.data.Outletmerchandize.id;
+                        var roid = response.data.Outletmerchandize.outlet_id;
                         var rbrandname = response.data.Brand.brandname;
-                        var rbrandelement = response.data.Brandelement.brandelementname;
-                        var ramount = response.data.Visibilityevaluation.elementcount;
+                        var rmerchandize = response.data.Merchandize.name;
+                        var ramount = response.data.Outletmerchandize.elementcount;
+                        var radep = response.data.Outletmerchandize.appropriatelydeployed;
 
                         if(!id) {
 
                             var opentr = '<tr data-id="' + rid + '">';
                             var td0 = '<td>' + 'new' + '</td>';
                             var td1 = '<td>' + rbrandname + '</td>';
-                            var td2 = '<td>' + rbrandelement + '</td>';
+                            var td2 = '<td>' + rmerchandize + '</td>';
                             var td3 = '<td>' + ramount + '</td>';
+                            var td3 = '<td>' + radep + '</td>';
                             var buttons = '<div class="hidden-phone visible-desktop action-buttons">';
-                            buttons += '<a href="/visits/view/' + vid + '" class="blue" data-rel="tooltip" data-placement="top" data-original-title="Visit Details"><i class="icon-zoom-in bigger-130"></i></a> | ';
                             buttons += '<a href="#mer-dialog" data-id="' + rid + '" data-toggle="modal" class="green edit-merch" data-rel="tooltip" data-placement="top" data-original-title="Edit"><i class="icon-pencil bigger-130"></i></a> | ';
                             buttons += '<a href="#dialog-del" data-id="' + rid + '" class="red mer-delete" data-toggle="modal" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i></a>';
                             buttons += '</div>';
@@ -182,19 +197,16 @@ $(function() {
 
                             $('#tbl-merch tbody').append(opentr + td0 + td1 + td2 + td3 + td4 + closetr);
 
-                            
-
-
                         } else {
 
                             var row = $('#tbl-merch tr[data-id=' + rid + ']');
                             var rtds = $(row).children();
                             $(rtds[1]).html(rbrandname);
-                            $(rtds[2]).html(rbrandelement);
+                            $(rtds[2]).html(rmerchandize);
                             $(rtds[3]).html(ramount);
+                            $(rtds[3]).html(radep);
 
                             var buttons = '<div class="hidden-phone visible-desktop action-buttons">';
-                            buttons += '<a href="/outletmerchandize/view/' + vid + '" class="blue" data-rel="tooltip" data-placement="top" data-original-title="Visit Details"><i class="icon-zoom-in bigger-130"></i></a> | ';
                             buttons += '<a href="#mer-dialog" data-id="' + rid + '" data-toggle="modal" class="green edit-merch" data-rel="tooltip" data-placement="top" data-original-title="Edit"><i class="icon-pencil bigger-130"></i></a> | ';
                             buttons += '<a href="#dialog-del" data-id="' + rid + '" class="red mer-delete" data-toggle="modal" data-rel="tooltip" data-placement="top" data-original-title="Delete"><i class="icon-trash bigger-130"></i></a>';
                             buttons += '</div>';
@@ -206,7 +218,6 @@ $(function() {
 
                         onLoadDeleteMerchandizeDialog();
                         deleteMerchandize();
-                        $('#mer-dialog').modal('hide')
 
                     } else {
 

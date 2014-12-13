@@ -5,7 +5,7 @@ $(document).ready(function() {
     } catch (e) {};
 
     //Query Parameter for filter box
-    var floc = $('#filter-location option:selected').val();
+    /*var floc = $('#filter-location option:selected').val();
     var fuser = $('#filter-user option:selected').val();
     var fdate = $('#filter-date option:selected').val();
     var sdate = '';
@@ -17,6 +17,12 @@ $(document).ready(function() {
     }
     
     var param = buildQueryParam(floc, fuser, fdate, sdate, edate);
+*/
+    var param = $('#getparam').val();
+    if(typeof param == 'undefined') {
+        param = '';
+    }
+    console.log(param);
     //End Query Parameter for filter box
     
     $('.pagination .active').wrapInner('<a href="#"></a>');

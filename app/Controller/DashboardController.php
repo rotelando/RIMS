@@ -11,8 +11,29 @@ class DashboardController extends AppController {
 
     public $urloptions = array();
     public $postoptions = array();
-    
+
+    public function beforeFilter() {
+        parent::beforeFilter();
+        $this->_setViewVariables();
+
+        //get current user settings :)
+        $this->setCurrentUserSettings();
+    }
+
+    private function _setViewVariables() {
+        $this->_setSidebarActiveItem('dashboard');
+        $this->_setTitleOfPage('Dashboard');
+        $this->set(array('controller' => 'dashboard', 'action' => 'index'));
+    }
+
+    public function _setSidebarActiveItem($topMenu) {
+        $this->set(array('active_item' => $topMenu));
+    }
+
     function index() {
+
+        $this->urloptions = $this->Filter->getUrlFilterOptions('Outlet');
+        $this->postoptions = $this->Filter->getPostDataFilterOptions('Outlet');
 
         $outlet_count = $this->Outlet->countOutlet($this->postoptions);
         $merchandize_count = $this->Outletmerchandize->countMerchandize($this->postoptions);
@@ -59,33 +80,13 @@ class DashboardController extends AppController {
         );
     }
 
-    public function beforeFilter() {
-        parent::beforeFilter();
-        $this->_setViewVariables();
-
-        //get current user settings :)
-        $this->setCurrentUserSettings();
-
-        $this->urloptions = $this->Filter->getUrlFilterOptions('Outlet');
-        $this->postoptions = $this->Filter->getPostDataFilterOptions('Outlet');
-       
-    }
-
-    private function _setViewVariables() {
-        $this->_setSidebarActiveItem('dashboard');
-        $this->_setTitleOfPage('Dashboard');
-    }
-
-    public function _setSidebarActiveItem($topMenu) {
-        $this->set(array('active_item' => $topMenu));
-    }
-
     public function outletProductDistribution() {
 
         $resp = [];
         $colors = ['#3266cc', '#dc3812', '#fe9900', '#109619', '#990099', '#aaab11', '#e67300', '#dd4578', '#f2f2f2', '#8b0607'];
 
-        $outletproducts = $this->Outletproduct->outletProductDistribution($this->postoptions);
+        $this->urloptions = $this->Filter->getUrlFilterOptions('Outlet');
+        $outletproducts = $this->Outletproduct->outletProductDistribution($this->urloptions);
 
         $i = 0;
 
@@ -109,6 +110,7 @@ class DashboardController extends AppController {
         $resp = [];
         $i = 0;
 
+        $this->urloptions = $this->Filter->getUrlFilterOptions('Outlet');
         $outletmerchandize = $this->Outletmerchandize->outletMerchandizeDistribution($this->urloptions);
         foreach ($outletmerchandize as $value) {
             $data['name'] = $value['Brand']['brandname'];
@@ -124,97 +126,6 @@ class DashboardController extends AppController {
         $this->set('response', $response);
 
     }
-
-    private function _getBriefCount() {
-        $options['joins'] = array(
-            array(
-                'table' => 'Brief2',
-                'alias' => 'Brief2',
-                'type' => 'INNER',
-                'conditions' => array(
-                    'Brief.groupidentity = Brief2.groupidentity',
-                    'Brief.createdat = Brief2.createdat'
-                )
-            )
-        );
-
-        //Now you can use the paginate option
-        $briefcount = $this->Brief->find('count', $options);
-        return $briefcount;
-    }
-
-
-    private function _getBrandProduct($brandId) {
-//        if (isset($this->params['url']['floc'])) {
-//            $options['conditions']['location_id'] = $this->params['url']['floc'];
-//        }
-//        //condition for fieldrep filter
-//        if (isset($this->params['url']['fuid'])) {
-//            $options['conditions']['userid'] = $this->params['url']['fuid'];
-//        }
-        
-        /*$options['fields'] = array(
-            'Brand.id',
-            'Brand.brandname',
-            'Product.id',
-            'Product.productname',
-            'Product.compareproductid',
-            'Productavailability.id',
-            'Productavailability.quantityavailable',
-            'SUM(Productavailability.quantityavailable) AS totalquantity'
-        );
-        $options['order'] = array('Product.id');
-        //Comment to Include Brands
-        $options['conditions']['Brand.id'] = $brandId;
-        $options['group'] = array('Product.id');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'products',
-                'alias' => 'Product',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Product.id = Productavailability.productid'
-                )
-            ),
-            array(
-                'table' => 'brands',
-                'alias' => 'Brand',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Product.brandid = Brand.id'
-                )
-            ),
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Productavailability.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-        $brandproducts = $this->Productavailability->find('all', $options);
-        return $brandproducts;*/
-    }
-
-
 
     //        link="j-myJSFunction-China, 90"
 //        animation='0' showShadow='0' showBevel='0' showMarkerLabels='1' fillColor='F1f1f1' 
@@ -262,6 +173,7 @@ class DashboardController extends AppController {
 //        }
 //EOF;
         //outlet count by locations
+        $this->urloptions = $this->Filter->getUrlFilterOptions('Outlet');
         $outletbylocation = $this->Outlet->getOutletCountByLocation($this->urloptions);
         foreach ($outletbylocation as $outletdetail) {
             $id = $outletdetail['State']['internalid'];
@@ -381,484 +293,6 @@ class DashboardController extends AppController {
         $this->layout = 'ajax';
         $this->view = 'ajax_response';
         $this->set('response', $response);
-    }
-
-    private function _orderCountByLocation() {
-        $options['fields'] = array('State.internalid, COUNT(Outlet.location_id) as ordercount');
-        $options['group'] = array('State.internalid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Order.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        $orderbylocation = $this->Order->find('all', $options);
-
-        return $orderbylocation;
-    }
-
-    private function _actualVisitCountByLocation() {
-        $options['fields'] = array('State.internalid, COUNT(State.internalid) as visitcount');
-        $options['group'] = array('State.internalid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-        $visitbylocation = $this->Visit->find('all', $options);
-        return $visitbylocation;
-    }
-
-    private function _scheduleVisitCountByLocation() {
-        $options['fields'] = array('State.internalid, COUNT(State.internalid) as schedulecount');
-        $options['group'] = array('State.internalid');
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Schedule.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-        $schedulebylocation = $this->Schedule->find('all', $options);
-        return $schedulebylocation;
-    }
-
-    //Outlet, Visit and Sales performance monitor
-    public function performance() {
-
-        $options = $this->Filter->getPostDataFilterOptions('Order');
-        
-        if(!isset($options['conditions']["DATE_FORMAT( Order.createdat,  '%Y-%m-%d' ) <="])) {
-            //Use last 2 weeks as default date range for the performance graph
-            $today = date('Y-m-d');
-            $lastweek = strtotime("-2 weeks");
-            $lastweekdate = date('Y-m-d', $lastweek);
-            $options['conditions']["DATE_FORMAT( Order.createdat,  '%Y-%m-%d' ) <="] = $today;
-            $options['conditions']["DATE_FORMAT( Order.createdat,  '%Y-%m-%d' ) >="] = $lastweekdate;
-        }
-
-        $options['fields'] = array(
-            "DATE_FORMAT( Order.createdat,  '%Y-%m-%d' ) as datecreated", 
-            'COUNT(Order.createdat) as count');
-        $options['recursive'] = -1;
-        $options['group'] = array("DATE_FORMAT( Order.createdat,  '%Y-%m-%d' )");
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Order.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            )
-        );
-        $rs = $this->Order->find('all', $options);
-
-        $order_data = array();
-        foreach ($rs as $result) {
-            $order_data[] = array(strtotime($result[0]['datecreated']) * 1000, intval($result[0]['count']));
-        }
-
-        //Outlet Performance Data
-        $options = $this->Filter->getPostDataFilterOptions('Outlet');
-        if(!isset($options['conditions']["DATE_FORMAT( Outlet.createdat,  '%Y-%m-%d' ) <="])) {
-            //Use last 2 weeks as default date range for the performance graph
-            $today = date('Y-m-d');
-            $lastweek = strtotime("-2 weeks");
-            $lastweekdate = date('Y-m-d', $lastweek);
-            $options['conditions']["DATE_FORMAT( Outlet.createdat,  '%Y-%m-%d' ) <="] = $today;
-            $options['conditions']["DATE_FORMAT( Outlet.createdat,  '%Y-%m-%d' ) >="] = $lastweekdate;
-        }
-        $options['fields'] = array(
-            "DATE_FORMAT( Outlet.createdat,  '%Y-%m-%d' ) as datecreated", 
-            'COUNT(Outlet.createdat) as count');
-        $options['recursive'] = -1;
-        $options['group'] = array("DATE_FORMAT( Outlet.createdat,  '%Y-%m-%d' )");
-        $rs = $this->Outlet->find('all', $options);
-
-        $outlet_data = array();
-        foreach ($rs as $result) {
-            $outlet_data[] = array(strtotime($result[0]['datecreated']) * 1000, intval($result[0]['count']));
-        }
-
-        //Visit Performance Data
-         $options = $this->Filter->getPostDataFilterOptions('Visit');
-        if(!isset($options['conditions']["DATE_FORMAT( Visit.createdat,  '%Y-%m-%d' ) <="])) {
-            //Use last 2 weeks as default date range for the performance graph
-            $today = date('Y-m-d');
-            $lastweek = strtotime("-2 weeks");
-            $lastweekdate = date('Y-m-d', $lastweek);
-            $options['conditions']["DATE_FORMAT( Visit.createdat,  '%Y-%m-%d' ) <="] = $today;
-            $options['conditions']["DATE_FORMAT( Visit.createdat,  '%Y-%m-%d' ) >="] = $lastweekdate;
-        }
-        $options['fields'] = array(
-            "DATE_FORMAT( Visit.createdat,  '%Y-%m-%d' ) as datecreated", 
-            'COUNT(Visit.createdat) as count');
-        $options['recursive'] = -1;
-        $options['group'] = array("DATE_FORMAT( Visit.createdat,  '%Y-%m-%d' )");
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            )
-        );
-        
-        $rs = $this->Visit->find('all', $options);
-
-        $visit_data = array();
-        foreach ($rs as $result) {
-            $visit_data[] = array(strtotime($result[0]['datecreated']) * 1000, intval($result[0]['count']));
-        }
-
-        $response = array();
-
-        $series_outlet_data['name'] = 'Outlet';
-        $series_outlet_data['data'] = $outlet_data;
-        $series_outlet_data['color'] = '#438eb8';
-
-        $series_visit_data['name'] = 'Visit';
-        $series_visit_data['data'] = $visit_data;
-        $series_visit_data['color'] = '#109619';
-
-        $series_order_data['name'] = 'Sales';
-        $series_order_data['data'] = $order_data;
-        $series_order_data['color'] = '#dc3813';
-
-
-        $response[] = $series_outlet_data;
-        $response[] = $series_visit_data;
-        $response[] = $series_order_data;
-
-        $jsonresponse = json_encode($response);
-
-        $this->layout = 'ajax';
-        $this->view = 'ajax_response';
-        $this->set('response', $jsonresponse);
-
-//        $jsonresponse = $rs;
-//        $this->set('response', print_r($jsonresponse));
-    }
-
-    public function visitaccuracy($stateInternalId = null) {
-
-        $statename = 'Overall';
-        if (!is_null($stateInternalId)) {
-            $options['conditions'] = array('State.internalid' => $stateInternalId);
-            $nameofstate = $this->State->find('all', array(
-                'fields' => array('State.statename'),
-                'conditions' => array('State.internalid' => $stateInternalId)));
-//            debug($nameofstate);
-            if (isset($nameofstate[0]['State']['statename'])) {
-                $statename = $nameofstate[0]['State']['statename'];
-            } else {
-                $statename = "Unnamed";
-            }
-        }
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Schedule.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-
-        $planned = $this->Schedule->find('count', $options);
-
-        $options['joins'] = array(
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        $actual = $this->Visit->find('count', $options);
-
-        $settings = $this->setCurrentUserSettings();
-        $target = intval($settings['Setting']['TargetVisit']);
-        if ($planned != 0) {
-            $actual_vs_planned = intval(($actual / $planned) * 100);
-        } else {
-            $actual_vs_planned = 100;
-        }
-
-        if (isset($target) || $target > 0) {
-            $actual_vs_target = intval(($actual / $target) * 100);
-            $planned_vs_target = intval(($planned / $target) * 100);
-        } else {
-            $actual_vs_target = 100;
-            $planned_vs_target = 100;
-        }
-
-        $options['joins'] = array(
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        $outletcount = $this->Outlet->find('count', $options);
-
-        //Order Relationship
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Order.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'states',
-                'alias' => 'State',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'State.id = Location.stateid'
-                )
-            )
-        );
-        $ordercount = $this->Order->find('count', $options);
-
-        $response = array(
-            'planned' => $planned,
-            'actual' => $actual,
-            'target' => $target,
-            'actual_vs_planned' => $actual_vs_planned,
-            'actual_vs_target' => $actual_vs_target,
-            'planned_vs_target' => $planned_vs_target,
-            'outletcount' => $outletcount,
-            'ordercount' => $ordercount,
-            'statename' => $statename,
-        );
-
-
-
-        $jsonresponse = json_encode($response);
-
-        $this->layout = 'ajax';
-        $this->view = 'ajax_response';
-        $this->set('response', $jsonresponse);
-    }
-
-    private function _getResentImages($number) {
-        
-        $options = $this->Filter->getPostDataFilterOptions('Image');
-        
-        $options['fields'] = array(
-            'Image.id',
-            'Image.description',
-            'Image.filename',
-            'Image.createdat',
-            'Outlet.id',
-            'CONCAT(User.firstname," ",User.lastname) as fullname',
-            'Outlet.outletname',
-            'Location.locationname',
-        );
-        $options['order'] = array('Image.createdat DESC');
-        $options['limit'] = $number;
-        $options['recursive'] = -1;
-        $options['joins'] = array(
-            array(
-                'table' => 'visits',
-                'alias' => 'Visit',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Visit.id = Image.visitid'
-                )
-            ),
-            array(
-                'table' => 'outlets',
-                'alias' => 'Outlet',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Outlet.id = Visit.outletid'
-                )
-            ),
-            array(
-                'table' => 'locations',
-                'alias' => 'Location',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'Location.id = Outlet.location_id'
-                )
-            ),
-            array(
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'LEFT',
-                'conditions' => array(
-                    'User.id = Outlet.userid'
-                )
-            )
-        );
-
-        $images = $this->Image->find('all', $options);
-        return $images;
     }
     
     function _getActualVsPlannedVisitToday() {
